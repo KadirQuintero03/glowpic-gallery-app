@@ -1,0 +1,46 @@
+main{
+    position: fixed;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background-color: white;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    z-index: 200;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Barra Lateral */
+.clickable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.clickable:hover {
+    opacity: 0.8;
+}
+
+
+.sidebar-overlay ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-overlay li {
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.sidebar-overlay li:hover {
+    background-color: #f2f2f2;
+}
