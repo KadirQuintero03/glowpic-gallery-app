@@ -1,0 +1,14 @@
+<div class="container">
+  <main class="main-content">
+    <div *ngIf="isLoading" class="loading-message">
+      Cargando imágenes...
+    </div>
+
+    <section class="photos-masonry">
+      <div *ngFor="let image of images" class="image-container">
+        <!-- Usa image.url directamente de la respuesta -->
+        <img [src]="image.url" [alt]="'Imagen ' + image.id">
+      </div>
+    </section>
+  </main>
+</div>
