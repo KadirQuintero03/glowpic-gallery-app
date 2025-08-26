@@ -37,9 +37,10 @@ export class AuthService {
   }
 
   // Registro de usuario
-  register(emailOrUsername: string, password: string): Observable<TokenResponse> {
+  register(username: string, email: string, password: string): Observable<TokenResponse> {
     return this.http.post<TokenResponse>(`${this.baseUrl}/api/auth/register`, {
-      emailOrUsername,
+      username,
+      email,
       password,
     });
   }
