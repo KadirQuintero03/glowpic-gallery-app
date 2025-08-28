@@ -1,0 +1,5 @@
+###REGISTER
+nombre: minimo 10 caracteres
+email: que sea valida la estructura
+contraseña: minimo 8 caracteres
+

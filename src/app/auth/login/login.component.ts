@@ -8,7 +8,7 @@ import { Router } from "@angular/router";
   styleUrls: ["./login.component.css"],
 })
 export class LoginComponent {
-  emailOrUsername = "";
+  email = "";
   password = "";
   showPassword = false;
 
@@ -19,21 +19,15 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
-    this.authService.login(this.emailOrUsername, this.password).subscribe({
+    console.log("Intentando iniciar sesión con:", this.email, this.password);
+    this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
-        const token = res.access_token || res.token; // Adapta según el campo real
+        const token = res.access_token || res.token;
+        this.router.navigate(["/home"]);
         if (token) {
           this.authService.saveToken(token);
           this.router.navigate(["/home"]);
-        } else {
-          alert("Login fallido: No se recibió un token válido.");
         }
-      },
-      error: (err) => {
-        console.error("Error de login:", err);
-        alert(
-          `Error de login: ${err.error?.message || "Credenciales incorrectas"}`
-        );
       },
     });
   }
