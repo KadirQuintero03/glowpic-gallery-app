@@ -5,6 +5,10 @@
     gap: 8px;
 }
 
+H2 {
+    margin: 16px 0px 16px 0px !important;
+}
+
 .logoContainer img {
     width: 32px;
     height: 32px;
@@ -53,7 +57,7 @@
     width: 24px;
 }
 
-.upload{
+.upload {
     width: 30px;
 }
 
