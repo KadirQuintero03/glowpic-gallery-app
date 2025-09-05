@@ -35,7 +35,8 @@ class caseUseUserLogin():
                 FailureProccess(401,'Contraseña incorrecta')
             
             result = self.hanler_jwt.create_token({"id":user_find.id},timedelta(minutes=30))
-            return SuccessProccess(200,result)
+            
+            
+            return SuccessProccess(200,userDto.email)
         except Exception as e:
-            print(e)
             return FailureProccess(500,f'Error internal sever {e}')

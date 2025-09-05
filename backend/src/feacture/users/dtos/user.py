@@ -12,3 +12,4 @@ class userDtoRegiter(BaseModel):
 class userDtoLogin(BaseModel):
     email : EmailStr 
     password : str
+
