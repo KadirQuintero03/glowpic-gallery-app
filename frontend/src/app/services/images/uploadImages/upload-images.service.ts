@@ -15,6 +15,13 @@ export class UploadImagesService {
     const formData = new FormData();
     formData.append('file', file); // 'image' debe coincidir con el nombre que espera tu backend
 
+    const email = localStorage.getItem("user_email"); // obtener email del usuario
+    if (email) {
+      formData.append("email_client", email);
+    }
+
+    formData.append("file", file); // 👈 SOLO una vez
+
     // Si tu backend necesita autenticación
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('access_token')}`,

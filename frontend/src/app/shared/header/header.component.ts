@@ -32,11 +32,10 @@ export class HeaderComponent {
     this.showUserProfile.emit(true);
   }
 
-  constructor(private uploadService: UploadImagesService, private router: Router) {}
-  
-    Exit(): void {
-      this.router.navigate(['/login']);
-    }
+  constructor(private uploadService: UploadImagesService, private router: Router) { }
+  Exit(): void {
+    this.router.navigate(['/login']);
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -48,10 +47,11 @@ export class HeaderComponent {
   uploadImage(file: File) {
     this.uploadService.uploadImage(file).subscribe({
       next: (response) => {
+        console.log("✅ Respuesta al subir imagen:", response);
         alert('Imagen subida correctamente');
       },
       error: (error) => {
-        console.error('Error al subir la imagen', error);
+        console.error('❌ Error al subir la imagen', error);
         alert('Error al subir la imagen');
       },
     });

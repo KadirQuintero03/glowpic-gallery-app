@@ -16,19 +16,24 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onLogin() {
-    console.log("Intentando iniciar sesión con:", this.email, this.password);
+    console.log("📤 Intentando iniciar sesión con:", this.email, this.password);
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
+        console.log("✅ Respuesta recibida en LoginComponent:", res);
+
         const token = res.access_token || res.token;
-        this.router.navigate(["/home"]);
         if (token) {
           this.authService.saveToken(token);
+          this.authService.saveEmail(this.email) // guardo el email del usuario
           this.router.navigate(["/home"]);
         }
       },
+      error: (err) => {
+        console.error("❌ Error en login.component.ts:", err);
+      }
     });
   }
 }
