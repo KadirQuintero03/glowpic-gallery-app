@@ -1,0 +1,24 @@
+<main>
+  <app-header 
+    (changeStateNav)="navState = $event" 
+    (StateConfigTrue)="configState = $event" 
+    (showUserProfile)="userProfileState = $event"
+  />
+
+  <app-nav *ngIf="navState" />
+
+  <app-user-config 
+    *ngIf="configState" 
+    (StateConfigFalse)="configState = $event" 
+  />
+
+  <!-- ✅ Aquí insertamos el modal del perfil -->
+  <app-user-profile 
+    *ngIf="userProfileState" 
+    [user]="usuario" 
+    (closeProfile)="userProfileState = false">
+  </app-user-profile>
+
+  <!-- Router outlet para las vistas -->
+  <router-outlet></router-outlet>
+</main>
