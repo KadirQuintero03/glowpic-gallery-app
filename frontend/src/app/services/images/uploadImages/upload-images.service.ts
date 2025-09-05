@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/app/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UploadImagesService {
-  private baseUrl = 'http://localhost:3100/api/images/images/upload'; //URL
+  private baseURL = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   uploadImage(file: File): Observable<any> {
     const formData = new FormData();
@@ -19,6 +20,6 @@ export class UploadImagesService {
       Authorization: `Bearer ${localStorage.getItem('access_token')}`,
     });
 
-    return this.http.post(this.baseUrl, formData, { headers });
+    return this.http.post(`${this.baseURL}images/images/upload`, formData, { headers });
   }
 }

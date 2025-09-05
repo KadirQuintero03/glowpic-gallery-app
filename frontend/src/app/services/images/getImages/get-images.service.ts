@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/app/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GetImagesService {
-  private baseURL = 'http://localhost:3100/api/images/images/';
+  private baseURL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +17,7 @@ export class GetImagesService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.get<any[]>(this.baseURL, { headers });
+    return this.http.get<any[]>(`${this.baseURL}images/images`, { headers });
   }
 
   // Añade este nuevo método

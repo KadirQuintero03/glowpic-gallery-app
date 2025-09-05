@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { of } from "rxjs";
+import { environment } from "src/app/environments/environment";
 
 interface TokenResponse {
   token?: string; // Si el backend usa "token" en lugar de "access_token"
@@ -14,13 +15,13 @@ interface TokenResponse {
   providedIn: "root",
 })
 export class AuthService {
-  private baseUrl = "https://storagemultimedia.onrender.com/";
+  private baseURL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<TokenResponse> {
     return this.http
-      .post<TokenResponse>(`${this.baseUrl}api/user/login`, {
+      .post<TokenResponse>(`${this.baseURL}user/login`, {
         email,
         password,
       })
@@ -40,7 +41,7 @@ export class AuthService {
     email: string,
     password: string
   ): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.baseUrl}api/user/register`, {
+    return this.http.post<TokenResponse>(`${this.baseURL}user/register`, {
       name,
       email,
       password,
