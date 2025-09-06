@@ -46,7 +46,7 @@ Un proyecto backend desarrollado con **FastAPI** que implementa principios de **
 |---------------|-------------|------------|
 | **Rate Limiting** | Control de tasa de peticiones por usuario/IP | `security/rate_limiting/` |
 | **Idempotencia** | Prevención de operaciones duplicadas | `security/idempotency/` |
-| **Paginación** | Implementación de consultas paginadas | `shared/utils/pagination.py` |
+| **Paginación** | Implementación de consultas paginadas | 
 | **Validación JWT** | Middleware de autenticación con tokens | `security/jwt/` |
 | **Validación de Datos** | Middleware de validación de entrada | `shared/middleware/` |
 
@@ -102,7 +102,8 @@ StorageMultimedia/
 2. **Configuración del entorno**
    ```bash
    cp .env.example .env
-   # Edita el archivo .env con tus configuraciones si tienes otras
+   # Edita el archivo .env con tus configuraciones si tienes otras 
+   # Solo si tienes tus propias credenciales
    ```
 
 3. **Usando Docker directamente**
@@ -111,22 +112,7 @@ StorageMultimedia/
    docker build -t glowpic-api:latest .
 
    # Ejecutar el contenedor
-   docker run -d \
-     --name glowpic-api \
-     -p 8080:8080 \
-     --env-file .env \
-     glowpic-api:latest
-   ```
-4. **Comandos Docker útiles**
-   ```bash
-   # Ver logs del contenedor
-   docker logs -f glowpic-api
-
-   # Detener el contenedor
-   docker stop glowpic-api
-
-   # Reiniciar el contenedor
-   docker restart glowpic-api
+   docker run -d --name glowpic-api -p 8080:8080 --env-file .env glowpic-api:latest
    ```
 
 ### ✅ Verificación de Instalación
@@ -199,19 +185,6 @@ GET /api/v1/multimedia?page=1&limit=10&user_id=123
 | `404` | Recurso no encontrado |
 | `422` | Error de validación |
 | `500` | Error interno del servidor |
-
-## 🧪 Testing (Próximamente)
-
-```bash
-# Ejecutar tests unitarios
-pytest tests/unit/
-
-# Ejecutar tests de integración
-pytest tests/integration/
-
-# Coverage report
-pytest --cov=src tests/
-```
 
 ## 🔧 Desarrollo
 
