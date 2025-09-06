@@ -4,28 +4,23 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
 [![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
 [![Turso](https://img.shields.io/badge/Turso-4F46E5?style=for-the-badge&logo=sqlite&logoColor=white)](https://turso.tech/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
 > **Backend moderno para gestión de usuarios y almacenamiento de archivos multimedia**
 
 Un proyecto backend desarrollado con **FastAPI** que implementa principios de **Clean Architecture**, **SOLID** y patrones de diseño para la gestión eficiente de usuarios y archivos multimedia.
 
-## 🚀 Demo en Vivo
+##  Características Principales
 
-- **API Base:** [https://storagemultimedia.onrender.com](https://storagemultimedia.onrender.com)
-- **Documentación Swagger:** [https://storagemultimedia.onrender.com/docs](https://storagemultimedia.onrender.com/docs)
-- **Redoc:** [https://storagemultimedia.onrender.com/redoc](https://storagemultimedia.onrender.com/redoc)
+- **Gestión de usuarios** con autenticación segura
+- **Almacenamiento multimedia** en la nube (Cloudinary)
+- **Consultas paginadas** para optimizar rendimiento
+- **Arquitectura limpia** y modular
+- **Documentación automática** con Swagger/OpenAPI
+- **Estructura escalable** y mantenible
+- **Base de datos SQLite** en la nube con Turso
 
-## ✨ Características Principales
-
-- 🔐 **Gestión de usuarios** con autenticación segura
-- 📁 **Almacenamiento multimedia** en la nube (Cloudinary)
-- 📊 **Consultas paginadas** para optimizar rendimiento
-- 🏗️ **Arquitectura limpia** y modular
-- 📚 **Documentación automática** con Swagger/OpenAPI
-- 🧪 **Estructura escalable** y mantenible
-- ⚡ **Base de datos SQLite** en la nube con Turso
-
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 
 | Tecnología | Propósito | Versión |
 |------------|-----------|---------|
@@ -34,6 +29,34 @@ Un proyecto backend desarrollado con **FastAPI** que implementa principios de **
 | **Uvicorn** | Servidor ASGI | 0.29.0+ |
 | **Cloudinary** | Almacenamiento multimedia | - |
 | **Turso** | Base de datos SQLite en la nube | - |
+
+##  Patrones de Diseño y Características Avanzadas
+
+### Patrones de Diseño Implementados
+
+- **Repository Pattern**: Abstracción del acceso a datos, permitiendo cambiar la fuente de datos sin afectar la lógica de negocio.
+- **Factory Pattern**: Implementado en `response_factory.py` para la creación de respuestas HTTP estandarizadas.
+- **Adapter Pattern**: Utilizado en `cloudinary_adapter.py` para integrar el servicio de Cloudinary.
+- **Strategy Pattern**: Aplicado en el sistema de autenticación para soportar diferentes métodos.
+- **Singleton Pattern**: Utilizado en las conexiones a bases de datos y servicios externos.
+
+### Middleware y Características Avanzadas
+
+| Característica | Descripción | Ubicación |
+|---------------|-------------|------------|
+| **Rate Limiting** | Control de tasa de peticiones por usuario/IP | `security/rate_limiting/` |
+| **Idempotencia** | Prevención de operaciones duplicadas | `security/idempotency/` |
+| **Paginación** | Implementación de consultas paginadas | `shared/utils/pagination.py` |
+| **Validación JWT** | Middleware de autenticación con tokens | `security/jwt/` |
+| **Validación de Datos** | Middleware de validación de entrada | `shared/middleware/` |
+
+### Características de Seguridad
+
+- **Encriptación de Contraseñas**: Implementación segura con bcrypt
+- **Sanitización de Entrada**: Validación y limpieza de datos entrantes
+- **Headers de Seguridad**: Implementación de headers CORS y seguridad
+- **Rate Limiting por IP**: Protección contra ataques de fuerza bruta
+- **Manejo de Tokens**: Sistema robusto de JWT con refresh tokens
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -65,54 +88,54 @@ StorageMultimedia/
 
 - Python 3.11 o superior
 - Git
-- Cuenta en [Cloudinary](https://cloudinary.com/) (opcional para desarrollo)
-- Cuenta en [Turso](https://turso.tech/) (opcional para desarrollo)
+- Docker: Versión 20.10 o superior
+- Docker Compose: Versión 2.0 o superior
 
-### Instalación Local
+### Instalación Local con Docker
 
 1. **Clona el repositorio**
    ```bash
-   git clone https://github.com/david123456858/StorageMultimedia.git
-   cd StorageMultimedia
+   git clone https://github.com/KadirQuintero03/glowpic-gallery-app.git
+   cd backend
    ```
 
-2. **Crea el entorno virtual**
-   ```bash
-   python -m venv env
-   ```
-
-3. **Activa el entorno virtual**
-   ```bash
-   # Windows
-   env\Scripts\activate
-   
-   # macOS/Linux
-   source env/bin/activate
-   ```
-
-4. **Instala las dependencias**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. **Configura las variables de entorno**
+2. **Configuración del entorno**
    ```bash
    cp .env.example .env
-   # Edita .env con tus credenciales
+   # Edita el archivo .env con tus configuraciones si tienes otras
    ```
 
-6. **Ejecuta la aplicación**
+3. **Usando Docker directamente**
    ```bash
-   uvicorn src.frameworks.fastApi.main:app --reload
+   # Construir la imagen
+   docker build -t glowpic-api:latest .
+
+   # Ejecutar el contenedor
+   docker run -d \
+     --name glowpic-api \
+     -p 8080:8080 \
+     --env-file .env \
+     glowpic-api:latest
+   ```
+4. **Comandos Docker útiles**
+   ```bash
+   # Ver logs del contenedor
+   docker logs -f glowpic-api
+
+   # Detener el contenedor
+   docker stop glowpic-api
+
+   # Reiniciar el contenedor
+   docker restart glowpic-api
    ```
 
 ### ✅ Verificación de Instalación
 
-Una vez iniciado el servidor, verifica que todo funcione correctamente:
+Una vez iniciado el servidor con docker, verifica que todo funcione correctamente:
 
-- **Servidor local:** [http://localhost:8000](http://localhost:8000)
-- **Documentación:** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Health check:** `GET http://localhost:8000/health`
+- **Servidor local:** [http://localhost:8080](http://localhost:8080)
+- **Documentación:** [http://localhost:8080/docs](http://localhost:8080/docs)
+- **Health check:** `GET http://localhost:8080/health`
 
 ## 📚 Uso de la API
 
@@ -161,7 +184,6 @@ GET /api/v1/multimedia?page=1&limit=10&user_id=123
 			"url": "https://res.cloudinary.com",
 			"thumbnail_url": "https://res.cloudinary.com"
 		}
-    }
   ]
 }
 ```
@@ -191,24 +213,6 @@ pytest tests/integration/
 pytest --cov=src tests/
 ```
 
-## 🚀 Deployment
-
-### Render (Recomendado)
-
-1. Conecta tu repositorio de GitHub
-2. Configura las variables de entorno
-3. El servicio se despliega automáticamente
-
-### Variables de Entorno Requeridas
-
-```env
-CLOUDINARY_CLOUD_NAME=tu_cloud_name
-CLOUDINARY_API_KEY=tu_api_key
-CLOUDINARY_API_SECRET=tu_api_secret
-TURSO_DATABASE_URL=tu_database_url
-TURSO_AUTH_TOKEN=tu_auth_token
-```
-
 ## 🔧 Desarrollo
 
 ### Agregar Nueva Funcionalidad
@@ -236,18 +240,12 @@ TURSO_AUTH_TOKEN=tu_auth_token
 
 ## 📝 Roadmap
 
-- [ ] Sistema de autenticación JWT
 - [ ] Tests unitarios y de integración
 - [ ] Documentación de API más detallada
-- [ ] Soporte para videos
 - [ ] Sistema de notificaciones
 - [ ] Cache con Redis
 - [ ] Métricas y monitoreo
 
-## 🐛 Problemas Conocidos
-
-- **Límite de tamaño de archivos:** Cloudinary tiene límites en plan gratuito
-- **Conexiones concurrentes:** Turso tiene límites en plan gratuito
 
 ## 📧 Contacto
 
