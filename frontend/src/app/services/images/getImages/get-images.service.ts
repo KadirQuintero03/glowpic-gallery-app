@@ -9,7 +9,7 @@ import { environment } from 'src/app/environments/environment';
 export class GetImagesService {
   private baseURL = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getImages(): Observable<any[]> {
     const token = localStorage.getItem('access_token');
@@ -17,7 +17,12 @@ export class GetImagesService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.get<any[]>(`${this.baseURL}images/images`, { headers });
+    const email = localStorage.getItem('user_email'); // 👈 recuperar email guardado
+    if (!email) {
+      throw new Error('No se encontró el email del usuario en localStorage');
+    }
+    console.log(email)
+    return this.http.get<any[]>(`${this.baseURL}multimedia/${email}`, { headers });
   }
 
   // Añade este nuevo método

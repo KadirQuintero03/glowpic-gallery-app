@@ -60,17 +60,17 @@ export class AuthService {
     return localStorage.getItem("access_token");
   }
 
-  // Guardar email en localStorage
-  saveEmail(email: string) {
-    localStorage.setItem("user_email", email);
-  }
-
   // Obtener email del localStorage
   getEmail(): string | null {
     return localStorage.getItem("user_email");
   }
 
-  // Logout: eliminar token
+  // Guardar email en localStorage
+  saveEmail(email: string) {
+    localStorage.setItem("user_email", email);
+  }
+
+  // Logout: eliminar token 
   logout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_email");
