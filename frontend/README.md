@@ -4,11 +4,40 @@ Aplicación web para gestión de imágenes con funciones avanzadas como autentic
 
 ---
 
+## Descripción General
+
+GlowPic Gallery es una plataforma que permite a los usuarios:
+- Gestionar archivos multimedia en la nube
+- Organizar contenido en álbumes y carpetas
+- Compartir contenido de forma segura
+- Administrar perfiles de usuario y configuraciones
+
+La aplicación está construida usando:
+- Backend: FastAPI (Python)
+- Frontend: Angular
+- Base de datos: SQLite (Turso)
+- Almacenamiento: Cloudinary
+- Cache: Redis
+
 ## 📋 Requisitos Previos
 
 ### Conocimientos Básicos Recomendados
 - Familiaridad con línea de comandos (CLI).
 - Conceptos básicos de Docker (imágenes, contenedores, puertos).
+
+- ### Software Necesario
+- Docker Engine 20.10.x o superior
+- Docker Compose v2.x o superior
+- Git
+
+### Verificación de Requisitos
+```bash
+# Verificar versión de Docker
+docker --version
+
+# Verificar versión de Docker Compose
+docker compose version
+```
 
 ### Software Necesario
 - Docker instalado ([Descargar Docker](https://www.docker.com/get-started)).
@@ -86,4 +115,5 @@ En "Configuración", actualiza tu nombre, correo o contraseña.
 
 Seguridad:
 Recibirás un correo de confirmación al cambiar datos sensibles.
+
 
