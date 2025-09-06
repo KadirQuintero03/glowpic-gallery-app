@@ -48,7 +48,7 @@ export class HeaderComponent {
     this.uploadService.uploadImage(file).subscribe({
       next: (response) => {
         console.log("✅ Respuesta al subir imagen:", response);
-        alert('Imagen subida correctamente');
+        console.log('Imagen subida correctamente');
       },
       error: (error) => {
         console.error('❌ Error al subir la imagen', error);

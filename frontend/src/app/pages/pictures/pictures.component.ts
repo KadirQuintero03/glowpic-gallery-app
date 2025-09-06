@@ -10,6 +10,8 @@ import { GetImagesService } from 'src/app/services/images/getImages/get-images.s
 export class PicturesComponent implements OnInit {
   images: any[] = [];
   isLoading = true;
+  currentPage = 1;
+  pageSize = 15;
 
   constructor(private imageService: GetImagesService) { }
 
@@ -18,21 +20,36 @@ export class PicturesComponent implements OnInit {
   }
 
   loadImages(): void {
-    this.imageService.getImages().subscribe({
+    const email = localStorage.getItem('user_email'); // 👈 el email guardado
+
+    if (!email) {
+      console.error('❌ No se encontró el email en localStorage');
+      this.isLoading = false;
+      return;
+    }
+
+    this.imageService.getImages(email, this.currentPage, this.pageSize).subscribe({
       next: (response) => {
-        console.log("✅ Imágenes recibidas:", response);
-        this.images = response;
+        this.images = response?.data?.value || []; // 👈 usa el array correcto
         this.isLoading = false;
+        this.loadImages()
       },
       error: (error) => {
         console.error('❌ Error al cargar imágenes:', error);
         this.isLoading = false;
-      }
+      },
     });
   }
 
-  refreshImages(): void {
-    this.isLoading = true;
+  nextPage(): void {
+    this.currentPage++;
     this.loadImages();
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadImages();
+    }
   }
 }

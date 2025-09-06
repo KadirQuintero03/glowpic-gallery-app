@@ -1,73 +1,79 @@
-/* Contenedor Principal */
 .container {
-  display: flex;
-  height: 100vh;
-  width: 100%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  padding-bottom: 6px;
 }
 
-
-/* Contenedor Principal */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.loading-message {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #555;
 }
 
-/* Sección de Fotos */
+/* Masonry / Grid mejorado */
 .photos-masonry {
-  column-count: 5;
-  column-gap: 16px;
-  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
 }
 
-@media (max-width: 1200px) {
-  .photos-masonry {
-    column-count: 4;
-  }
+.image-container {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
 }
 
-@media (max-width: 900px) {
-  .photos-masonry {
-    column-count: 3;
-  }
+.image-container:hover {
+  transform: scale(1.02);
 }
 
-@media (max-width: 600px) {
-  .photos-masonry {
-    column-count: 2;
-  }
-}
-
-@media (max-width: 400px) {
-  .photos-masonry {
-    column-count: 1;
-  }
-}
-
-.photos-masonry img {
+.image-container img {
   width: 100%;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  display: block;
-  break-inside: avoid;
-}
-
-.photo-row {
-  display: flex;
-  gap: 10px;
-  height: 150px;
-  background: #eee;
-  margin-bottom: 20px;
-  border-radius: 5px;
-}
-
-.photo-row img {
-  width: 150px;
-  height: auto;
-  border-radius: 8px;
+  height: 220px;
   object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #eee;
 }
 
-.photos-section {
-  width: 90%;
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 1rem;
+}
+
+.pagination button,
+.pagination a {
+  background: #007bff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled),
+.pagination a:hover {
+  background: #0056b3;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span,
+.pagination strong {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
 }

@@ -1,14 +1,34 @@
 <div class="container">
   <main class="main-content">
+
+    <!-- Loader -->
     <div *ngIf="isLoading" class="loading-message">
       Cargando imágenes...
     </div>
 
-    <section class="photos-masonry">
+    <!-- Mensaje si no hay imágenes -->
+    <div *ngIf="!isLoading && images.length === 0" class="no-images">
+      No hay imágenes disponibles.
+    </div>
+
+    <!-- Galería -->
+    <section *ngIf="!isLoading && images.length > 0" class="photos-masonry">
       <div *ngFor="let image of images" class="image-container">
-        <!-- Usa image.url directamente de la respuesta -->
-        <img [src]="image.url" [alt]="'Imagen ' + image.id">
+        <!-- Miniatura (thumbnail_url) -->
+        <a [href]="image.url" target="_blank">
+          <img [src]="image.thumbnail_url || image.url" [alt]="'Imagen ' + image.id">
+        </a>
+        <!-- Fecha debajo (opcional) -->
+        <p class="image-date">{{ image.created_at | date:'short' }}</p>
       </div>
     </section>
+
+    <!-- Paginación -->
+    <div class="pagination" *ngIf="!isLoading && images.length > 0">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">⬅️ Anterior</button>
+      <span>Página {{ currentPage }}</span>
+      <button (click)="nextPage()">Siguiente ➡️</button>
+    </div>
+
   </main>
 </div>
