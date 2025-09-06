@@ -50,9 +50,9 @@ app.include_router(multimedia.routeMultimedia(), prefix='/api',tags=['Multimedia
 ## middlerware handler error validation
 app.add_exception_handler(RequestValidationError,validation_Exception_handler)  # type: ignore
 
-@app.get('/ping')
+@app.get('/health')
 def get_health():
-    return { "message":" pong "}
+    return { "message":"i life"}
 
 #ruta de mi herma y prog steven
 @app.get('/hello')
