@@ -17,7 +17,7 @@ interface TokenResponse {
 export class AuthService {
   private baseURL = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(email: string, password: string): Observable<TokenResponse> {
     return this.http
@@ -26,9 +26,11 @@ export class AuthService {
         password,
       })
       .pipe(
-        tap(),
+        tap((response) => {
+          console.log("✅ Respuesta del backend (AuthService):", response);
+        }),
         catchError((error) => {
-          console.error("Error de login:", error);
+          console.error("❌ Error de login:", error);
           alert("Error de login, por favor verifica tus credenciales.");
           return of({ access_token: "", token_type: "" } as TokenResponse);
         })
@@ -58,8 +60,19 @@ export class AuthService {
     return localStorage.getItem("access_token");
   }
 
+  // Guardar email en localStorage
+  saveEmail(email: string) {
+    localStorage.setItem("user_email", email);
+  }
+
+  // Obtener email del localStorage
+  getEmail(): string | null {
+    return localStorage.getItem("user_email");
+  }
+
   // Logout: eliminar token
   logout() {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user_email");
   }
 }
