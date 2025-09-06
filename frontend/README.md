@@ -25,7 +25,7 @@ La aplicación está construida usando:
 - Familiaridad con línea de comandos (CLI).
 - Conceptos básicos de Docker (imágenes, contenedores, puertos).
 
-- ### Software Necesario
+### Software Necesario
 - Docker Engine 20.10.x o superior
 - Docker Compose v2.x o superior
 - Git
@@ -115,5 +115,6 @@ En "Configuración", actualiza tu nombre, correo o contraseña.
 
 Seguridad:
 Recibirás un correo de confirmación al cambiar datos sensibles.
+
 
 
