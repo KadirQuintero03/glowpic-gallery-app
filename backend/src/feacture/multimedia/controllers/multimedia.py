@@ -20,7 +20,9 @@ class ControllerMultimedia:
 
     def get_all_multimedia(self,email_client: str,page:int,size_page:int):
         response = self.case_use.get_all_multimedia(email_client,page,size_page)
-        ResponseFactory().create_process(response)
+        if not response:
+            return JSONResponse(content={"error": "Multimedia no encontrada"}, status_code=404)
+        return JSONResponse(content={"data": response}, status_code=200)
 
     def get_multimedia_by_id(self, id: int):
         result = self.case_use.get_multimedia_by_id(id)
