@@ -29,61 +29,82 @@ La aplicación está construida usando:
 - Docker Engine 20.10.x o superior
 - Docker Compose v2.x o superior
 - Git
+- Node.js 18+
+- npm
+- Angular +V16
+
+1. Clonar el repositorio:
+```bash
+git clone <repository-url>
+cd frontend
+```
+
+2. Instalar dependencias:
+```bash
+npm install
+```
+
+3. Ejecutar en modo desarrollo:
+```bash
+ng s --o
+```
+
+La aplicación estará disponible en `http://localhost:4200`
+
+## 🐳 Despliegue con Docker
+
+### Software Necesario
+- Docker instalado ([Descargar Docker](https://www.docker.com/get-started)).
 
 ### Verificación de Requisitos
 ```bash
 # Verificar versión de Docker
 docker --version
-
-# Verificar versión de Docker Compose
-docker compose version
 ```
 
-### Software Necesario
-- Docker instalado ([Descargar Docker](https://www.docker.com/get-started)).
+### Construcción de la imagen
+
+```bash
+docker build --t frontend .
+```
+
+### Verificar que la imagen se haya construido
+```bash
+docker images
+```
+
+### Ejecución del contenedor en primer plano
+
+```bash
+docker run -p 4200:4200 frontend
+```
+
+### Ejecución del contenedor en segundo plano
+
+```bash
+docker run -d -p 4200:4200 --name mi-contenedor frotend
+```
+
+**Explicacion de los parametros:**
+- `-d`: Ejecuta en segundo plano
+- `-p 4200:4200`: Mapea puerto 4200 del host al 80 del contenedor
+
+
+### Ver que el contenedor se este ejecutando correctamente
+```bash
+docker ps
+```
+
+
+### Si queremos detener el contenedor usamos
+```bash
+docker stop mi-contenedor
+```
+
+### Acceder a la aplicación en**: http://localhost:4200 
 
 ---
 
-## 🚀 Ejecutar la Aplicación con Docker
-
-### Para Usuarios con Experiencia en Docker
-1. **Descargar la imagen** (si está disponible en un registro):  
-   ```bash
-   docker pull [nombre-imagen]
-
-2. **Ejecutar el contenedor**:  
-   ```bash
-   docker run -d -p 80:80 --name gallery-app [nombre-imagen]
-
-3. **Acceder a la aplicación en**: http://localhost:80 
-
----
-### Para Usuarios sin Experiencia en Docker
-1. **Instalar Docker**
-Windows/macOS:
-Descargar Docker Desktop desde la página oficial y seguir el asistente de instalación.
-**Link para instalar windows:**https://docs.docker.com/desktop/setup/install/windows-install/
-**Link para instalar en MacOs:**https://docs.docker.com/desktop/setup/install/mac-install/
-Linux (Ubuntu):
-   ```bash
-   sudo apt-get update && sudo apt-get install docker.io
-   sudo systemctl start docker
-   sudo systemctl enable docker
-
-2. **Ejecutar el Contenedor**
-Descargar y ejecutar la imagen:
-   ```bash
-   docker run -d -p 80:80 --name gallery-app tu-usuario/imagen-galería:latest
-
-3. **Acceder a la Aplicación**
-Abre tu navegador e ingresa a:
-http://localhost:80
-
-4. **Verificar estado:**
-   ```bash
-   docker ps  # Debe mostrar el contenedor en ejecución.
-   
----
 ### 📖 Manual de Usuario
 1. Autenticación
 Registro:
@@ -96,25 +117,6 @@ Usa tu correo y contraseña registrados.
 Subir imágenes:
 Haz clic en "Subir" y selecciona archivos desde tu dispositivo.
 
-Álbumes:
-Crea álbumes personalizados y organiza tus imágenes arrastrándolas.
-
-Etiquetado:
-Marca imágenes como favoritas (⭐) o archívalas para ocultarlas temporalmente.
-
-3. Imágenes Privadas
-Protección con clave:
-Al subir una imagen, activa "Privada" y define una clave de acceso.
-
-Visualizar privadas:
-Ingresa la clave al intentar abrir una imagen protegida.
-
-4. Perfil de Usuario
-Editar datos:
-En "Configuración", actualiza tu nombre, correo o contraseña.
-
-Seguridad:
-Recibirás un correo de confirmación al cambiar datos sensibles.
 
 
 
