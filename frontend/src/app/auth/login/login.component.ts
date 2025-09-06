@@ -25,11 +25,12 @@ export class LoginComponent {
         console.log("✅ Respuesta recibida en LoginComponent:", res);
 
         const token = res.access_token || res.token;
-        if (token) {
-          this.authService.saveToken(token);
-          this.authService.saveEmail(this.email) // guardo el email del usuario
-          this.router.navigate(["/home"]);
-        }
+        this.authService.saveEmail(this.email) // guardo el email del usuario
+        this.router.navigate(["/home"]);
+        // if (token) {
+        //   this.authService.saveToken(token);
+        //   this.router.navigate(["/home"]);
+        // }
       },
       error: (err) => {
         console.error("❌ Error en login.component.ts:", err);

@@ -11,7 +11,7 @@ export class PicturesComponent implements OnInit {
   images: any[] = [];
   isLoading = true;
 
-  constructor(private imageService: GetImagesService) {}
+  constructor(private imageService: GetImagesService) { }
 
   ngOnInit(): void {
     this.loadImages();
@@ -20,11 +20,12 @@ export class PicturesComponent implements OnInit {
   loadImages(): void {
     this.imageService.getImages().subscribe({
       next: (response) => {
-        this.images = response; // Asigna la respuesta directamente
+        console.log("✅ Imágenes recibidas:", response);
+        this.images = response;
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error al cargar imágenes:', error);
+        console.error('❌ Error al cargar imágenes:', error);
         this.isLoading = false;
       }
     });

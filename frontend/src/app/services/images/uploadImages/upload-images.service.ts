@@ -13,11 +13,10 @@ export class UploadImagesService {
 
   uploadImage(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('file', file); // 'image' debe coincidir con el nombre que espera tu backend
 
-    const email = localStorage.getItem("user_email"); // obtener email del usuario
-    if (email) {
-      formData.append("email_client", email);
+    const email_client = localStorage.getItem("user_email"); // obtener email del usuario
+    if (email_client) {
+      formData.append("email_client", email_client);
     }
 
     formData.append("file", file); // 👈 SOLO una vez
@@ -27,6 +26,8 @@ export class UploadImagesService {
       Authorization: `Bearer ${localStorage.getItem('access_token')}`,
     });
 
-    return this.http.post(`${this.baseURL}images/images/upload`, formData, { headers });
+    console.log(email_client, formData)
+
+    return this.http.post(`${this.baseURL}multimedia/`, formData, { headers });
   }
 }
