@@ -24,7 +24,7 @@ export class LoginComponent {
       next: (res) => {
         console.log("✅ Respuesta recibida en LoginComponent:", res);
 
-        const token = res.access_token || res.token;
+        // const token = res.access_token || res.token;
         this.authService.saveEmail(this.email) // guardo el email del usuario
         this.router.navigate(["/home"]);
         // if (token) {
