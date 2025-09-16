@@ -9,12 +9,15 @@ import { ArchivedComponent } from './pages/archived/archived.component';
 import { FavoritesComponent } from './pages/favorites/favorites.component';
 import { PrivateFolderComponent } from './pages/private-folder/private-folder.component';
 import { PicturesComponent } from './pages/pictures/pictures.component';
+import { MainPageComponent } from './pages/main-page/main-page.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },  // Redirige al login por defecto
+  { path: '', redirectTo: 'mainpage', pathMatch: 'full' },  // Redirige al login por defecto
+  { path: 'mainpage', component: MainPageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'home', component: HomeComponent, children: [  // Subrutas dentro de home
+  {
+    path: 'home', component: HomeComponent, children: [  // Subrutas dentro de home
       { path: 'pictures', component: PicturesComponent },
       { path: 'albums', component: AlbumsComponent },
       { path: 'archived', component: ArchivedComponent },
@@ -31,4 +34,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

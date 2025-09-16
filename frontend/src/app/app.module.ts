@@ -18,6 +18,7 @@ import { UserProfileComponent } from './model/user-profile/user-profile.componen
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
+import { MainPageComponent } from './pages/main-page/main-page.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { MatIconModule } from '@angular/material/icon';
     NavComponent,
     PicturesComponent,
     UserConfigComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    MainPageComponent
   ],
   imports: [
     BrowserModule,
