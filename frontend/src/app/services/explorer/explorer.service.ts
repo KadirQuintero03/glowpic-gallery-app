@@ -8,11 +8,11 @@ export interface ExplorerEntry {
     type: "directory" | "file";
     path: string;
     size?: number;
-    modified_at?: number;
+    modifiedAt?: number;
 }
 
 export interface ExplorerResponse {
-    current_path: string;
+    currentPath: string;
     entries: ExplorerEntry[];
 }
 
@@ -20,14 +20,14 @@ export interface ExplorerResponse {
     providedIn: "root",
 })
 export class ExplorerService {
-    private baseURL = environment.apiUrl;
+    private baseURL = environment.apiUrl; // ej: http://localhost:3000/
 
     constructor(private http: HttpClient) { }
 
     // Lista el contenido (carpetas + archivos) de una ruta relativa
     listDirectory(path: string = ""): Observable<ExplorerResponse> {
         const params = new HttpParams().set("path", path);
-        return this.http.get<ExplorerResponse>(`${this.baseURL}explorer/`, { params });
+        return this.http.get<ExplorerResponse>(`${this.baseURL}explorer`, { params });
     }
 
     // URL directa para ver/descargar un archivo

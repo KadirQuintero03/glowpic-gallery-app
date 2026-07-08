@@ -24,7 +24,7 @@ export class ExplorerComponent implements OnInit {
 
         this.explorerService.listDirectory(path).subscribe({
             next: (res) => {
-                this.currentPath = res.current_path;
+                this.currentPath = res.currentPath;
                 this.entries = res.entries;
                 this.loading = false;
             },

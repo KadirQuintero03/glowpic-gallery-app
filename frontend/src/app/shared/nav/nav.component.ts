@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./nav.component.css'],
 })
 export class NavComponent {
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   Explorer(): void {
     this.router.navigate(['home/explorer']);
