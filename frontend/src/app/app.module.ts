@@ -6,19 +6,15 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
-import { ArchivedComponent } from './pages/archived/archived.component';
-import { PrivateFolderComponent } from './pages/private-folder/private-folder.component';
-import { FavoritesComponent } from './pages/favorites/favorites.component';
-import { AlbumsComponent } from './pages/albums/albums.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NavComponent } from './shared/nav/nav.component';
-import { PicturesComponent } from './pages/pictures/pictures.component';
 import { UserConfigComponent } from './model/user-config/user-config.component';
 import { UserProfileComponent } from './model/user-profile/user-profile.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+import { ExplorerComponent } from './pages/explorer/explorer.component';
 
 @NgModule({
   declarations: [
@@ -26,16 +22,12 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
     HomeComponent,
     RegisterComponent,
     LoginComponent,
-    ArchivedComponent,
-    PrivateFolderComponent,
-    FavoritesComponent,
-    AlbumsComponent,
     HeaderComponent,
     NavComponent,
-    PicturesComponent,
     UserConfigComponent,
     UserProfileComponent,
-    MainPageComponent
+    MainPageComponent,
+    ExplorerComponent
   ],
   imports: [
     BrowserModule,

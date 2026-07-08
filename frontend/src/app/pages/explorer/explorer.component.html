@@ -1,0 +1,19 @@
+<div class="explorer-container">
+    <div class="explorer-toolbar">
+        <button (click)="goUp()" [disabled]="!currentPath">⬅ Subir</button>
+        <span class="current-path">/{{ currentPath }}</span>
+    </div>
+
+    <div *ngIf="loading">Cargando...</div>
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <div class="explorer-grid" *ngIf="!loading">
+        <div class="explorer-item" *ngFor="let entry of entries" (click)="openEntry(entry)">
+            <span *ngIf="entry.type === 'directory'">📁</span>
+            <img *ngIf="entry.type === 'file' && isImage(entry.name)" [src]="explorerService.getFileUrl(entry.path)"
+                alt="" class="thumb" />
+            <span *ngIf="entry.type === 'file' && !isImage(entry.name)">📄</span>
+            <p>{{ entry.name }}</p>
+        </div>
+    </div>
+</div>

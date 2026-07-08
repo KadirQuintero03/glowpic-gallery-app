@@ -7,15 +7,13 @@ from src.security.idempotency.idempotency_handler import handlerIdempotency
 
 # part feacture
 from src.feacture.users.entity.user import User
-from src.feacture.multimedia.entity.multimedia import Multimedia
 
 # part routes
 from src.feacture.users.routes import routesUser
-from src.feacture.multimedia.routes import multimedia 
+from src.feacture.explorer.routes import explorer
 
 # part config
 from src.config.db.db import dataBaseTurso, Base
-from src.config.cloudinary.config import config
 
 from src.shared.utils.encrypt.encrypt import key
 from src.shared.middleware.hanlerValidation import validation_Exception_handler
@@ -45,7 +43,7 @@ dataBaseTurso.test_connection()
 
 ## apartado de rutas
 app.include_router(routesUser.moduleRouterUser(), prefix='/api',tags=['users']) 
-app.include_router(multimedia.routeMultimedia(), prefix='/api',tags=['Multimedia'])
+app.include_router(explorer.routeExplorer(), prefix='/api', tags=['Explorer'])
 
 ## middlerware handler error validation
 app.add_exception_handler(RequestValidationError,validation_Exception_handler)  # type: ignore

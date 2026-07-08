@@ -1,0 +1,55 @@
+.explorer-container {
+    padding: 16px;
+}
+
+.explorer-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.current-path {
+    font-family: monospace;
+    color: #555;
+}
+
+.explorer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+.explorer-item {
+    cursor: pointer;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+
+.explorer-item:hover {
+    background: #f0f0f0;
+}
+
+.explorer-item span {
+    font-size: 40px;
+}
+
+.thumb {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.explorer-item p {
+    margin-top: 4px;
+    font-size: 12px;
+    word-break: break-word;
+}
+
+.error {
+    color: #c0392b;
+    margin-bottom: 12px;
+}

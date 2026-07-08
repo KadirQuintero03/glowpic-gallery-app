@@ -4,12 +4,8 @@ import { HomeComponent } from './home/home.component';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { AlbumsComponent } from './pages/albums/albums.component';
-import { ArchivedComponent } from './pages/archived/archived.component';
-import { FavoritesComponent } from './pages/favorites/favorites.component';
-import { PrivateFolderComponent } from './pages/private-folder/private-folder.component';
-import { PicturesComponent } from './pages/pictures/pictures.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+import { ExplorerComponent } from './pages/explorer/explorer.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'mainpage', pathMatch: 'full' },  // Redirige al login por defecto
@@ -18,12 +14,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   {
     path: 'home', component: HomeComponent, children: [  // Subrutas dentro de home
-      { path: 'pictures', component: PicturesComponent },
-      { path: 'albums', component: AlbumsComponent },
-      { path: 'archived', component: ArchivedComponent },
-      { path: 'favorites', component: FavoritesComponent },
-      { path: 'private-folder', component: PrivateFolderComponent },
-      { path: '', redirectTo: 'pictures', pathMatch: 'full' }  // Redirigir por defecto a pictures
+      { path: 'explorer', component: ExplorerComponent },
+      { path: '', redirectTo: 'explorer', pathMatch: 'full' }  // Redirigir por defecto al explorer
     ]
   },
   { path: '**', redirectTo: 'login' }  // Ruta en caso de error
