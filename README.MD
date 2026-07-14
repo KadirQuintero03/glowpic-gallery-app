@@ -1,6 +1,8 @@
-# GlowPic Gallery Application
+# Galería de Imágenes GlowPic 🖼️
 
-Aplicación web moderna para almacenamiento y gestión de archivos multimedia, construida con FastAPI y Angular. Este proyecto implementa una arquitectura de microservicios que separa el backend y frontend en contenedores independientes.
+Aplicación web para gestión de imágenes con funciones avanzadas como autenticación de usuarios, carga de imágenes, álbumes personalizados, etiquetado de favoritos, imágenes privadas con clave y configuración de perfil. Desplegada en Docker con Nginx.
+
+---
 
 ## Descripción General
 
@@ -17,123 +19,104 @@ La aplicación está construida usando:
 - Almacenamiento: Cloudinary
 - Cache: Redis
 
-## Requisitos Previos
+## 📋 Requisitos Previos
+
+### Conocimientos Básicos Recomendados
+- Familiaridad con línea de comandos (CLI).
+- Conceptos básicos de Docker (imágenes, contenedores, puertos).
 
 ### Software Necesario
 - Docker Engine 20.10.x o superior
 - Docker Compose v2.x o superior
 - Git
+- Node.js 18+
+- npm
+- Angular +V16
+
+1. Clonar el repositorio:
+```bash
+git clone <repository-url>
+cd frontend
+```
+
+2. Instalar dependencias:
+```bash
+npm install
+```
+
+3. Ejecutar en modo desarrollo:
+```bash
+ng s --o
+```
+
+La aplicación estará disponible en `http://localhost:4200`
+
+## 🐳 Despliegue con Docker
+
+### Software Necesario
+- Docker instalado ([Descargar Docker](https://www.docker.com/get-started)).
 
 ### Verificación de Requisitos
 ```bash
 # Verificar versión de Docker
 docker --version
-
-# Verificar versión de Docker Compose
-docker compose version
 ```
 
-## Componentes del Proyecto
+### Construcción de la imagen
 
-El proyecto está dividido en dos componentes principales, cada uno con su propia documentación detallada y para levantar individualmente:
-
-- [Backend API Documentation](./backend/README.md)
-  - FastAPI REST API
-  - Gestión de usuarios y autenticación
-  - Almacenamiento en la nube
-  - rate limiting
-
-- [Frontend Application Documentation](./frontend/README.md)
-  - Interfaz de usuario en Angular
-  - Gestión de estado
-  - Componentes reutilizables
-  - Rutas y navegación
-
-## Despliegue con Docker Compose
-
-1. Clonar el repositorio
 ```bash
-git clone https://github.com/KadirQuintero03/glowpic-gallery-app.git
-cd glowpic-gallery-app
+docker build --t frontend .
 ```
 
-2. Construir y levantar los servicios
+### Verificar que la imagen se haya construido
 ```bash
-docker compose up --build -d
+docker images
 ```
 
-## Puertos y Endpoints
+### Ejecución del contenedor en primer plano
 
-### Puertos por Defecto
-- Frontend: http://localhost:4200
-- Backend API: http://localhost:8080
-- Documentación API: http://localhost:8080/docs
-
-### Pruebas Rápidas
-
-1. Verificar que el backend está funcionando:
 ```bash
-curl http://localhost:8080/health
+docker run -p 4200:4200 frontend
 ```
 
-2. Verificar que el frontend está funcionando:
+### Ejecución del contenedor en segundo plano
+
 ```bash
-curl http://localhost:4200
+docker run -d -p 4200:4200 --name mi-contenedor frotend
 ```
 
-3. Probar el registro de usuario:
+**Explicacion de los parametros:**
+- `-d`: Ejecuta en segundo plano
+- `-p 4200:4200`: Mapea puerto 4200 del host al 80 del contenedor
+
+
+### Ver que el contenedor se este ejecutando correctamente
 ```bash
-curl -X POST http://localhost:8080/api/v1/users/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test","email":"test@example.com","password":"password123"}'
+docker ps
 ```
 
-## Detener los Servicios
 
-Para detener todos los servicios:
+### Si queremos detener el contenedor usamos
 ```bash
-docker compose down
+docker stop mi-contenedor
 ```
 
-Para detener y eliminar volúmenes:
-```bash
-docker compose down -v
-```
+### Acceder a la aplicación en**: http://localhost:4200 
 
-## Mantenimiento
+---
 
-### Logs de los Servicios
-```bash
-# Ver logs del backend
-docker compose logs backend
+### 📖 Manual de Usuario
+1. Autenticación
+Registro:
+Ingresa correo, nombre de usuario y contraseña para crear una cuenta.
 
-# Ver logs del frontend
-docker compose logs frontend
+Inicio de sesión:
+Usa tu correo y contraseña registrados.
 
-# Ver logs en tiempo real
-docker compose logs -f
-```
+2. Gestión de Imágenes
+Subir imágenes:
+Haz clic en "Subir" y selecciona archivos desde tu dispositivo.
 
-### Reiniciar Servicios
-```bash
-# Reiniciar un servicio específico
-docker compose restart backend
-docker compose restart frontend
 
-# Reiniciar todos los servicios
-docker compose restart
-```
 
-## Problemas Comunes
 
-1. **Los puertos están en uso**
-   - Verificar que los puertos 4200 y 8080 estén disponibles
-   - Modificar los puertos en docker-compose.yml si es necesario
-
-2. **Problemas de permisos con Docker**
-   - Asegurarse de que el usuario actual pertenece al grupo docker
-   - Ejecutar los comandos con sudo si es necesario
-
-3. **Problemas de red**
-   - Verificar que la red de Docker está funcionando correctamente
-   - Comprobar que no hay conflictos con VPNs o firewalls
