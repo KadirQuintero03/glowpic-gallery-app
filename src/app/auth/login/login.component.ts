@@ -8,33 +8,21 @@ import { Router } from "@angular/router";
   styleUrls: ["./login.component.css"],
 })
 export class LoginComponent {
-  email = "";
-  password = "";
-  showPassword = false;
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-  }
+  phone = "";
+  errorMessage = "";
 
   constructor(private authService: AuthService, private router: Router) { }
 
-  onLogin() {
-    console.log("📤 Intentando iniciar sesión con:", this.email, this.password);
-    this.authService.login(this.email, this.password).subscribe({
-      next: (res) => {
-        console.log("✅ Respuesta recibida en LoginComponent:", res);
+  onLogin(): void {
+    const cleaned = this.phone.trim();
 
-        // const token = res.access_token || res.token;
-        this.authService.saveEmail(this.email) // guardo el email del usuario
-        this.router.navigate(["/home"]);
-        // if (token) {
-        //   this.authService.saveToken(token);
-        //   this.router.navigate(["/home"]);
-        // }
-      },
-      error: (err) => {
-        console.error("❌ Error en login.component.ts:", err);
-      }
-    });
+    if (!/^\+?[0-9]{7,15}$/.test(cleaned)) {
+      this.errorMessage = "Ingresa un número de teléfono válido (solo dígitos, con o sin +código de país).";
+      return;
+    }
+
+    this.errorMessage = "";
+    this.authService.savePhone(cleaned);
+    this.router.navigate(["/home"]);
   }
 }

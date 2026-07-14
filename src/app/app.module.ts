@@ -4,7 +4,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NavComponent } from './shared/nav/nav.component';
@@ -20,7 +19,6 @@ import { ExplorerComponent } from './pages/explorer/explorer.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    RegisterComponent,
     LoginComponent,
     HeaderComponent,
     NavComponent,

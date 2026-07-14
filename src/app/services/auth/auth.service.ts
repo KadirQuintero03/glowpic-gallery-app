@@ -1,78 +1,29 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
-import { of } from "rxjs";
-import { environment } from "src/app/environments/environment";
 
-interface TokenResponse {
-  token?: string; // Si el backend usa "token" en lugar de "access_token"
-  token_type: string;
-  access_token: string; // Mantén esto si también es posible
-}
+const PHONE_KEY = "glowpic_phone";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private baseURL = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
-
-  login(email: string, password: string): Observable<TokenResponse> {
-    return this.http
-      .post<TokenResponse>(`${this.baseURL}user/login`, {
-        email,
-        password,
-      })
-      .pipe(
-        tap((response) => {
-          console.log("✅ Respuesta del backend (AuthService):", response);
-        }),
-        catchError((error) => {
-          console.error("❌ Error de login:", error);
-          alert("Error de login, por favor verifica tus credenciales.");
-          return of({ access_token: "", token_type: "" } as TokenResponse);
-        })
-      );
+  // Guarda el número de teléfono ingresado
+  savePhone(phone: string): void {
+    localStorage.setItem(PHONE_KEY, phone);
   }
 
-  // Registro de usuario
-  register(
-    name: string,
-    email: string,
-    password: string
-  ): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.baseURL}user/register`, {
-      name,
-      email,
-      password,
-    });
+  // Obtiene el número de teléfono guardado
+  getPhone(): string | null {
+    return localStorage.getItem(PHONE_KEY);
   }
 
-  // Guardar token en localStorage
-  saveToken(token: string) {
-    localStorage.setItem("access_token", token);
+  // true si ya hay un número guardado (sesión "iniciada")
+  isLoggedIn(): boolean {
+    return !!this.getPhone();
   }
 
-  // Obtener token del localStorage
-  getToken(): string | null {
-    return localStorage.getItem("access_token");
-  }
-
-  // Obtener email del localStorage
-  getEmail(): string | null {
-    return localStorage.getItem("user_email");
-  }
-
-  // Guardar email en localStorage
-  saveEmail(email: string) {
-    localStorage.setItem("user_email", email);
-  }
-
-  // Logout: eliminar token 
-  logout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_email");
+  // Cierra sesión: elimina el número guardado
+  logout(): void {
+    localStorage.removeItem(PHONE_KEY);
   }
 }

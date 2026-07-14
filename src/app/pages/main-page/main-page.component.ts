@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { ThemeService, ThemeMode } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-main-page',
@@ -8,4 +8,13 @@ import { Router } from '@angular/router';
 })
 export class MainPageComponent {
 
+  constructor(private themeService: ThemeService) { }
+
+  get isLight(): boolean {
+    return this.themeService.getTheme() === 'light';
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 }

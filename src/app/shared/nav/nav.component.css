@@ -3,14 +3,15 @@ main{
     left: 0;
     width: 250px;
     height: calc(100vh - 60px);
-    background-color: white;
-    border-right: 1px solid #ddd;
+    background-color: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
     padding: 20px;
     z-index: 200;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    color: var(--sidebar-foreground);
 }
 
 /* Barra Lateral */
@@ -42,5 +43,6 @@ main{
 }
 
 .sidebar-overlay li:hover {
-    background-color: #f2f2f2;
+    background-color: var(--accent);
+    color: var(--accent-foreground);
 }

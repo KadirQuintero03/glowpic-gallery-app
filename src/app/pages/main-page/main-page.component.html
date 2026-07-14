@@ -1,51 +1,73 @@
 <div class="home-container">
+    <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'">
+        <svg *ngIf="!isLight" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+        <svg *ngIf="isLight" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <span>{{ isLight ? 'Modo oscuro' : 'Modo claro' }}</span>
+    </button>
+
     <div class="container">
         <div class="home-content">
             <div class="home-header">
-                <h1 class="home-title">GlowPic</h1>
-                <p class="home-subtitle">Almacena tus imágenes y videos de manera segura</p>
+                <div class="home-logo">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                        <path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84 0 0 0 .497-3.753C20.18 7.773 21.692 5.25 22 4.009z" />
+                    </svg>
+                    <h1 class="home-title">GlowPic</h1>
+                </div>
+                <p class="home-subtitle">La galería de tu bot de Telegram</p>
             </div>
 
             <div class="home-description">
                 <p>
-                    GlowPic es tu solución confiable para el almacenamiento seguro de contenido multimedia. Protege tus
-                    recuerdos más preciados con nuestra plataforma diseñada para la seguridad y facilidad de uso.
+                    GlowPic es el visor web de todo lo que tu bot de Telegram guarda por ti. Cada foto, video, nota de
+                    voz o documento que le envías al bot queda organizado automáticamente por categorías, y aquí
+                    puedes explorarlos, revisarlos y descargarlos desde cualquier navegador, sin tener que buscar
+                    mensaje por mensaje en el chat.
                 </p>
             </div>
 
             <div class="home-cards">
                 <div class="home-card">
                     <div class="home-card-icon primary">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                             <polyline points="10,17 15,12 10,7" />
                             <line x1="15" y1="12" x2="3" y2="12" />
                         </svg>
                     </div>
-                    <h3 class="home-card-title">Iniciar Sesión</h3>
+                    <h3 class="home-card-title">Ingresar a mi galería</h3>
                     <p class="home-card-description">
-                        Accede a tu cuenta existente y gestiona tus archivos multimedia de forma segura.
+                        Ingresa con el número de teléfono que usas para hablarle al bot y accede a tus archivos.
                     </p>
                     <a href="/login" class="btn btn-primary">
-                        Iniciar Sesión
+                        Ingresar
                     </a>
                 </div>
 
                 <div class="home-card">
                     <div class="home-card-icon secondary">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <line x1="19" y1="8" x2="19" y2="14" />
-                            <line x1="22" y1="11" x2="16" y2="11" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84 0 0 0 .497-3.753C20.18 7.773 21.692 5.25 22 4.009z" />
                         </svg>
                     </div>
-                    <h3 class="home-card-title">Registrarse</h3>
+                    <h3 class="home-card-title">¿Aún no tienes cuenta?</h3>
                     <p class="home-card-description">
-                        Crea una nueva cuenta y comienza a almacenar tus imágenes y videos hoy mismo.
+                        Escríbele <code>/start</code> al bot en Telegram para registrarte; tu galería se crea sola.
                     </p>
-                    <a href="/register" class="btn btn-secondary">
-                        Crear Cuenta
+                    <a href="https://telegram.org" target="_blank" rel="noopener" class="btn btn-secondary">
+                        Abrir Telegram
                     </a>
                 </div>
             </div>
@@ -54,27 +76,29 @@
                 <div class="home-features-list">
                     <div class="home-feature-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            strokeWidth="2">
+                            stroke-width="2">
+                            <path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84 0 0 0 .497-3.753C20.18 7.773 21.692 5.25 22 4.009z" />
+                        </svg>
+                        <span class="home-feature-text">Sincronizado con tu bot de Telegram</span>
+                    </div>
+                    <div class="home-feature-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
+                        </svg>
+                        <span class="home-feature-text">Archivos organizados por categoría</span>
+                    </div>
+                    <div class="home-feature-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                             <circle cx="12" cy="16" r="1" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <span class="home-feature-text">Encriptación segura</span>
-                    </div>
-                    <div class="home-feature-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            strokeWidth="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        <span class="home-feature-text">Protección de datos</span>
-                    </div>
-                    <div class="home-feature-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            strokeWidth="2">
-                            <path d="M14 9V5a3 3 0 0 0-6 0v4" />
-                            <rect x="2" y="9" width="20" height="12" rx="2" ry="2" />
-                        </svg>
-                        <span class="home-feature-text">Acceso privado</span>
+                        <span class="home-feature-text">Acceso privado por tu número</span>
                     </div>
                 </div>
             </div>

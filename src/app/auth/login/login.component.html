@@ -2,48 +2,32 @@
   <div class="container">
     <div class="login-content">
       <div class="login-header">
-        <a href="/" class="login-title"> GlowPic </a>
-        <p class="login-subtitle">Inicia sesión en tu cuenta</p>
+        <a href="/" class="login-title">GlowPic</a>
+        <p class="login-subtitle">Ingresa con tu número de teléfono</p>
       </div>
 
       <div class="login-form">
-
         <form (ngSubmit)="onLogin()">
           <div class="login-form-group">
-            <label for="email" class="login-form-label">Correo electrónico</label>
-            <input id="email" type="email" [(ngModel)]="email" name="email" class="login-form-input"
-              placeholder="tu@email.com" required>
+            <label for="phone" class="login-form-label">Número de teléfono</label>
+            <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="login-form-input"
+              placeholder="+57 300 1234567" required autocomplete="tel">
+            <p class="login-hint">Usa el mismo número con el que hablas con el bot en Telegram.</p>
           </div>
 
-          <div class="login-form-group">
-            <label for="password" class="login-form-label">Contraseña</label>
-            <div class="password-wrapper">
-              <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
-                class="login-form-input" placeholder="Contraseña" required>
-              <span class="eye-icon" (click)="togglePasswordVisibility()">👁️</span>
-            </div>
-          </div>
+          <p *ngIf="errorMessage" class="login-error">{{ errorMessage }}</p>
 
-          <button type="submit" class="login-submit-btn">Iniciar sesión</button>
+          <button type="submit" class="login-submit-btn">Ingresar</button>
         </form>
-
-        <div class="login-links">
-          <p>
-            ¿No tienes una cuenta?
-            <a routerLink="/register" class="login-link">Regístrate</a>
-          </p>
-        </div>
       </div>
 
       <div class="login-security">
         <div class="login-security-info">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <circle cx="12" cy="16" r="1" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
           </svg>
           <span class="login-security-text">
-            Tu información está protegida con encriptación de extremo a extremo
+            Tu número solo se usa para vincular tu galería con tu cuenta de Telegram
           </span>
         </div>
       </div>

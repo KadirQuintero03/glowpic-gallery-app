@@ -3,12 +3,14 @@
   top: 60px;
   right: 20px;
   width: 320px;
-  background: #fff;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   padding: 24px;
   z-index: 2000;
   animation: fadeIn 0.3s ease-in-out;
+  color: var(--foreground);
 }
 
 .user-profile-box {
@@ -23,7 +25,7 @@
   margin-bottom: 12px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #28a745;
+  border: 2px solid var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +40,7 @@
 .user-profile-box h2 {
   font-size: 20px;
   margin-bottom: 15px;
+  color: var(--foreground);
 }
 
 .profile-info {
@@ -48,24 +51,24 @@
 .profile-info p {
   margin: 8px 0;
   font-size: 16px;
-  color: #333;
+  color: var(--muted-foreground);
 }
 
 button {
   margin-top: 20px;
   width: 100%;
-  background: #28a745;
-  color: white;
+  background: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   padding: 10px;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: filter 0.2s ease;
 }
 
 button:hover {
-  background: #0056b3;
+  filter: brightness(1.1);
 }
 
 @keyframes fadeIn {

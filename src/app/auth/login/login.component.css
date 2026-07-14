@@ -122,16 +122,14 @@
   font-size: 0.85rem;
 }
 
-.password-wrapper {
-  position: relative;
+.login-hint {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
 }
 
-.eye-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 16px;
-  color: #999;
+.login-error {
+  color: var(--destructive);
+  font-size: 0.9rem;
+  margin: -8px 0 16px;
 }

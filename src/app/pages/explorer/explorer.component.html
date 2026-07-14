@@ -1,19 +1,85 @@
 <div class="explorer-container">
+
+    <!-- Barra superior: migas de pan + resumen -->
     <div class="explorer-toolbar">
-        <button (click)="goUp()" [disabled]="!currentPath">⬅ Subir</button>
-        <span class="current-path">/{{ currentPath }}</span>
+        <button class="up-btn" (click)="goUp()" [disabled]="!currentPath" aria-label="Subir un nivel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="19" x2="12" y2="5" />
+                <polyline points="5 12 12 5 19 12" />
+            </svg>
+        </button>
+
+        <nav class="breadcrumbs" aria-label="Ruta actual">
+            <span class="crumb" (click)="goToRoot()">🏠 Mi galería</span>
+            <ng-container *ngFor="let crumb of breadcrumbs">
+                <span class="crumb-separator">/</span>
+                <span class="crumb" (click)="goToBreadcrumb(crumb.path)">{{ crumb.name }}</span>
+            </ng-container>
+        </nav>
+
+        <span class="explorer-summary" *ngIf="!loading">
+            {{ folderCount }} carpeta{{ folderCount === 1 ? '' : 's' }} · {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }}
+        </span>
     </div>
 
-    <div *ngIf="loading">Cargando...</div>
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    <!-- Estado de carga -->
+    <div class="state-message" *ngIf="loading">
+        <div class="spinner"></div>
+        <span>Cargando tu galería...</span>
+    </div>
 
-    <div class="explorer-grid" *ngIf="!loading">
-        <div class="explorer-item" *ngFor="let entry of entries" (click)="openEntry(entry)">
-            <span *ngIf="entry.type === 'directory'">📁</span>
-            <img *ngIf="entry.type === 'file' && isImage(entry.name)" [src]="explorerService.getFileUrl(entry.path)"
-                alt="" class="thumb" />
-            <span *ngIf="entry.type === 'file' && !isImage(entry.name)">📄</span>
-            <p>{{ entry.name }}</p>
+    <!-- Estado de error -->
+    <div class="state-message error" *ngIf="errorMessage && !loading">
+        <span>⚠️ {{ errorMessage }}</span>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="state-message empty" *ngIf="!loading && !errorMessage && entries.length === 0">
+        <span>📭 Esta carpeta está vacía todavía.</span>
+        <p>Envíale una foto, video o documento al bot en Telegram para que aparezca aquí.</p>
+    </div>
+
+    <!-- Grid de carpetas y archivos -->
+    <div class="explorer-grid" *ngIf="!loading && entries.length > 0">
+        <div class="explorer-item" *ngFor="let entry of entries" [class.is-folder]="entry.type === 'directory'"
+            (click)="openEntry(entry)">
+
+            <div class="item-thumb">
+                <img *ngIf="kindOf(entry) === 'image'" [src]="explorerService.getFileUrl(entry.path)" alt=""
+                    loading="lazy" />
+
+                <div class="item-icon folder" *ngIf="kindOf(entry) === 'directory'">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z" />
+                    </svg>
+                </div>
+
+                <div class="item-icon video" *ngIf="kindOf(entry) === 'video'">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4 4h12a2 2 0 0 1 2 2v2.5l4-2.2v11.4l-4-2.2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                    </svg>
+                </div>
+
+                <div class="item-icon audio" *ngIf="kindOf(entry) === 'audio'">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 18V5l12-2v13" />
+                        <circle cx="6" cy="18" r="3" />
+                        <circle cx="18" cy="16" r="3" />
+                    </svg>
+                </div>
+
+                <div class="item-icon document" *ngIf="kindOf(entry) === 'document'">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+                    </svg>
+                </div>
+
+                <span class="play-badge" *ngIf="kindOf(entry) === 'video'">▶</span>
+            </div>
+
+            <p class="item-name" [title]="entry.name">{{ entry.name }}</p>
+            <span class="item-meta" *ngIf="entry.type === 'file' && entry.size">{{ formatSize(entry.size) }}</span>
+            <span class="item-meta" *ngIf="entry.type === 'directory'">Carpeta</span>
         </div>
     </div>
 </div>
