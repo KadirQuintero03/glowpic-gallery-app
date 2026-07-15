@@ -82,4 +82,22 @@
             <span class="item-meta" *ngIf="entry.type === 'directory'">Carpeta</span>
         </div>
     </div>
+
+    <!-- Visor modal: imagen, video o audio -->
+    <div class="viewer-overlay" *ngIf="viewerEntry" (click)="closeViewer()">
+        <div class="viewer-content" (click)="$event.stopPropagation()">
+            <button class="viewer-close" (click)="closeViewer()" aria-label="Cerrar">✕</button>
+
+            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry.name" class="viewer-media viewer-image" />
+
+            <video *ngIf="viewerKind === 'video'" [src]="viewerUrl" class="viewer-media viewer-video" controls autoplay></video>
+
+            <div class="viewer-audio-box" *ngIf="viewerKind === 'audio'">
+                <div class="viewer-audio-icon">🎵</div>
+                <audio [src]="viewerUrl" class="viewer-audio" controls autoplay></audio>
+            </div>
+
+            <p class="viewer-filename">{{ viewerEntry.name }}</p>
+        </div>
+    </div>
 </div>

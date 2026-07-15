@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, HostListener, OnInit } from "@angular/core";
 import { ExplorerEntry, ExplorerService } from "src/app/services/explorer/explorer.service";
 
 type FileKind = "directory" | "image" | "video" | "audio" | "document";
@@ -13,6 +13,10 @@ export class ExplorerComponent implements OnInit {
     entries: ExplorerEntry[] = [];
     loading = false;
     errorMessage = "";
+
+    // Estado del visor modal (imagen/video/audio)
+    viewerEntry: ExplorerEntry | null = null;
+    viewerKind: FileKind | null = null;
 
     constructor(public explorerService: ExplorerService) { }
 
@@ -49,9 +53,32 @@ export class ExplorerComponent implements OnInit {
     openEntry(entry: ExplorerEntry): void {
         if (entry.type === "directory") {
             this.load(entry.path);
+            return;
+        }
+
+        const kind = this.kindOf(entry);
+
+        if (kind === "image" || kind === "video" || kind === "audio") {
+            this.viewerEntry = entry;
+            this.viewerKind = kind;
         } else {
+            // Documentos y otros formatos sin visor nativo: se abren/descargan en pestaña nueva
             window.open(this.explorerService.getFileUrl(entry.path), "_blank");
         }
+    }
+
+    closeViewer(): void {
+        this.viewerEntry = null;
+        this.viewerKind = null;
+    }
+
+    get viewerUrl(): string {
+        return this.viewerEntry ? this.explorerService.getFileUrl(this.viewerEntry.path) : "";
+    }
+
+    @HostListener("document:keydown.escape")
+    onEscapeKey(): void {
+        if (this.viewerEntry) this.closeViewer();
     }
 
     goUp(): void {
