@@ -28,18 +28,26 @@ export class ExplorerComponent implements OnInit {
         this.loading = true;
         this.errorMessage = "";
 
-        this.explorerService.listDirectory(path).subscribe({
-            next: (res) => {
-                this.currentPath = res.currentPath;
-                this.entries = this.sortEntries(res.entries);
-                this.loading = false;
-            },
-            error: (err) => {
-                console.error("Error al listar directorio:", err);
-                this.errorMessage = "No se pudo cargar el directorio.";
-                this.loading = false;
-            },
-        });
+        try {
+            this.explorerService.listDirectory(path).subscribe({
+                next: (res) => {
+                    this.currentPath = res.currentPath;
+                    this.entries = this.sortEntries(res.entries);
+                    this.loading = false;
+                },
+                error: (err: Error) => {
+                    console.error("Error al listar directorio:", err);
+                    this.errorMessage = err.message ?? "No se pudo cargar el directorio.";
+                    this.loading = false;
+                },
+            });
+        } catch (err) {
+            // requireOwner() dentro de listDirectory() lanza si no hay sesión.
+            const msg = err instanceof Error ? err.message : "No se pudo cargar el directorio.";
+            console.error("Error al listar directorio:", err);
+            this.errorMessage = msg;
+            this.loading = false;
+        }
     }
 
     // Carpetas primero, luego archivos, ambos alfabéticamente

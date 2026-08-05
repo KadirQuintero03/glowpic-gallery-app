@@ -3,21 +3,45 @@
     <div class="login-content">
       <div class="login-header">
         <a href="/" class="login-title">GlowPic</a>
-        <p class="login-subtitle">Ingresa con tu número de teléfono</p>
+        <p class="login-subtitle" *ngIf="step === 'phone'">Ingresa con tu número de teléfono</p>
+        <p class="login-subtitle" *ngIf="step === 'code'">Ingresa el código que te enviamos por Telegram</p>
       </div>
 
       <div class="login-form">
-        <form (ngSubmit)="onLogin()">
+        <!-- Paso 1: número de teléfono -->
+        <form *ngIf="step === 'phone'" (ngSubmit)="onRequestCode()">
           <div class="login-form-group">
             <label for="phone" class="login-form-label">Número de teléfono</label>
             <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="login-form-input"
-              placeholder="+57 300 1234567" required autocomplete="tel">
-            <p class="login-hint">Usa el mismo número con el que hablas con el bot en Telegram.</p>
+              placeholder="+57 300 1234567" required autocomplete="tel" [disabled]="loading">
+            <p class="login-hint">Usa el mismo número que vinculaste con el bot de Telegram usando /web.</p>
           </div>
 
           <p *ngIf="errorMessage" class="login-error">{{ errorMessage }}</p>
 
-          <button type="submit" class="login-submit-btn">Ingresar</button>
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            {{ loading ? 'Enviando código...' : 'Enviar código por Telegram' }}
+          </button>
+        </form>
+
+        <!-- Paso 2: código de 4 dígitos -->
+        <form *ngIf="step === 'code'" (ngSubmit)="onVerifyCode()">
+          <div class="login-form-group">
+            <label for="code" class="login-form-label">Código de acceso</label>
+            <input id="code" type="text" inputmode="numeric" maxlength="4" [(ngModel)]="code" name="code"
+              class="login-form-input" placeholder="0000" required autocomplete="one-time-code" [disabled]="loading">
+            <p class="login-hint" *ngIf="infoMessage">{{ infoMessage }}</p>
+          </div>
+
+          <p *ngIf="errorMessage" class="login-error">{{ errorMessage }}</p>
+
+          <button type="submit" class="login-submit-btn" [disabled]="loading">
+            {{ loading ? 'Verificando...' : 'Ingresar' }}
+          </button>
+
+          <button type="button" class="login-secondary-btn" (click)="backToPhone()" [disabled]="loading">
+            Usar otro número
+          </button>
         </form>
       </div>
 
@@ -27,7 +51,7 @@
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
           </svg>
           <span class="login-security-text">
-            Tu número solo se usa para vincular tu galería con tu cuenta de Telegram
+            Tu número solo se usa para verificar tu identidad mediante un código enviado por Telegram
           </span>
         </div>
       </div>
