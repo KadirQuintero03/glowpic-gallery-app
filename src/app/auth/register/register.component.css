@@ -146,6 +146,12 @@
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 16px;
-  color: #999;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon:hover {
+  color: var(--foreground);
 }
