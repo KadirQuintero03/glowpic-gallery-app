@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { ExplorerComponent } from './pages/explorer/explorer.component';
+import { SettingsMenuComponent } from './shared/settings-menu/settings-menu.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ExplorerComponent } from './pages/explorer/explorer.component';
     UserConfigComponent,
     UserProfileComponent,
     MainPageComponent,
-    ExplorerComponent
+    ExplorerComponent,
+    SettingsMenuComponent
   ],
   imports: [
     BrowserModule,
