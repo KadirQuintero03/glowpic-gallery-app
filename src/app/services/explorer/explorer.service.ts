@@ -10,6 +10,11 @@ export interface ExplorerEntry {
     path: string;
     size?: number;
     modifiedAt?: number;
+    // Dimensiones opcionales del archivo (si el backend llega a reportarlas
+    // en el futuro); mientras tanto GlowPic las calcula en el cliente al
+    // generar la miniatura y las guarda en ThumbnailService.
+    width?: number;
+    height?: number;
 }
 
 export interface ExplorerResponse {
