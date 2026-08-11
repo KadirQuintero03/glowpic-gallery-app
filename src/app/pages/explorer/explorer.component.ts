@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from "@angular/core";
 import { ExplorerEntry, ExplorerService } from "src/app/services/explorer/explorer.service";
-import { StoredThumbnail, ThumbnailService } from "src/app/services/thumbnail/thumbnail.service";
+import { ThumbnailService } from "src/app/services/thumbnail/thumbnail.service";
+import type { StoredThumbnail } from "src/app/services/thumbnail/thumbnail.service";
 
 type FileKind = "directory" | "image" | "video" | "audio" | "document";
 
