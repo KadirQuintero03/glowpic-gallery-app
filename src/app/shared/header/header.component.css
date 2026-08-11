@@ -76,3 +76,26 @@ H2 {
 .fileUpload input {
     display: none;
 }
+
+/* Icono de cerrar sesión: fondo sólido fijo para garantizar contraste
+   tanto en modo claro como en modo oscuro, sin depender de las variables
+   de color del tema activo. */
+.exit-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e0344c;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.exit-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
