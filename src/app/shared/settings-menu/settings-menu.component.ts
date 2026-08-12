@@ -4,7 +4,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { ThemeService } from 'src/app/services/theme/theme.service';
 
 /**
- * Botón de ajustes reutilizado en el navbar superior de GlowPic (dentro de
+ * Botón de ajustes reutilizado en el navbar superior de TeleDrive (dentro de
  * app-header, que persiste en todas las pestañas bajo /home). Despliega un
  * panel pequeño con dos acciones: cambiar entre modo claro/oscuro (aplicado
  * a toda la app mediante ThemeService) y cerrar sesión.
@@ -21,7 +21,7 @@ export class SettingsMenuComponent {
     private themeService: ThemeService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   get isLight(): boolean {
     return this.themeService.getTheme() === 'light';

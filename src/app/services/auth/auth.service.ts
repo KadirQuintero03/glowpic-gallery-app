@@ -3,8 +3,8 @@ import { Injectable } from "@angular/core";
 import { catchError, map, Observable, throwError } from "rxjs";
 import { environment } from "src/app/environments/environment";
 
-const PHONE_KEY = "glowpic_phone";
-const OWNER_KEY = "glowpic_owner";
+const PHONE_KEY = "teledrive_phone";
+const OWNER_KEY = "teledrive_owner";
 
 interface RequestCodeResponse {
   success: boolean;
@@ -17,7 +17,7 @@ interface VerifyCodeResponse {
 }
 
 /**
- * Maneja el login de GlowPic con verificación en dos pasos vía Telegram:
+ * Maneja el login de TeleDrive con verificación en dos pasos vía Telegram:
  * 1) requestAccessCode(phone): el backend busca el teléfono entre los
  *    usuarios vinculados por el bot de Telegram (/web) y, si existe, le
  *    envía un código de 4 dígitos por Telegram.
@@ -67,7 +67,7 @@ export class AuthService {
   }
 
   // Guarda el "owner" (carpeta) asignado tras verificar el código. Es el
-  // dato que determina qué carpeta puede ver este usuario en GlowPic.
+  // dato que determina qué carpeta puede ver este usuario en TeleDrive.
   private saveOwner(owner: string): void {
     localStorage.setItem(OWNER_KEY, owner);
   }

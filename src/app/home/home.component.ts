@@ -12,6 +12,6 @@ export class HomeComponent {
 
   usuario = {
     name: 'Goku',
-    email: 'goku@glowpic.com'
+    email: 'goku@teledrive.com'
   };
 }

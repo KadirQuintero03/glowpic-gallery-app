@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const DB_NAME = 'glowpic-thumbnails';
+const DB_NAME = 'teledrive-thumbnails';
 const STORE_NAME = 'thumbnails';
 const DB_VERSION = 1;
 
@@ -14,7 +14,7 @@ export interface StoredThumbnail {
 
 /**
  * Genera y guarda miniaturas de imágenes y videos en IndexedDB para que
- * GlowPic pueda mostrar una previsualización instantánea de cada archivo
+ * TeleDrive pueda mostrar una previsualización instantánea de cada archivo
  * (sin tener que volver a descargar/decodificar el original) y para
  * conocer sus dimensiones reales y así respetar su orientación al
  * mostrarlo en la galería.

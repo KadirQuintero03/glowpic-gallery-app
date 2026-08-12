@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-const STORAGE_KEY = 'glowpic-theme';
+const STORAGE_KEY = 'teledrive-theme';
 export type ThemeMode = 'dark' | 'light';
 
 @Injectable({
