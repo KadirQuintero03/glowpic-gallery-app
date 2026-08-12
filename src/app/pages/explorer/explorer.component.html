@@ -23,7 +23,7 @@
         </nav>
 
         <span class="explorer-summary" *ngIf="!loading">
-            {{ folderCount }} carpeta{{ folderCount === 1 ? '' : 's' }} · {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }}
+            {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }} · {{ totalSizeLabel || '0 B' }} ocupados
         </span>
     </div>
 
@@ -56,7 +56,8 @@
 
     <!-- Carpetas de la ruta actual -->
     <div class="folder-section" *ngIf="!loading && folderEntries.length > 0">
-        <div class="explorer-item is-folder" *ngFor="let entry of folderEntries" (click)="openEntry(entry)">
+        <div class="explorer-item is-folder" *ngFor="let entry of folderEntries; trackBy: trackByEntryPath"
+            (click)="openEntry(entry)">
             <div class="item-thumb">
                 <div class="item-icon folder">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
@@ -70,37 +71,33 @@
     </div>
 
     <!-- Archivos agrupados en bloques por fecha -->
-    <section class="date-group" *ngFor="let group of dateGroups">
+    <section class="date-group" *ngFor="let group of dateGroups; trackBy: trackByGroupKey">
         <h3 class="date-group-header">{{ group.label }}</h3>
 
         <div class="explorer-masonry">
             <div class="explorer-item file-card" [class.orientation-vertical]="orientationOf(entry) === 'vertical'"
                 [class.orientation-horizontal]="orientationOf(entry) === 'horizontal'"
-                [class.orientation-square]="orientationOf(entry) === 'square'" *ngFor="let entry of group.entries"
-                (click)="openEntry(entry)">
+                [class.orientation-square]="orientationOf(entry) === 'square'"
+                *ngFor="let entry of group.entries; trackBy: trackByEntryPath" (click)="openEntry(entry)">
 
                 <div class="item-thumb dynamic" [style.aspect-ratio]="aspectRatioOf(entry)">
 
-                    <!-- Imágenes: miniatura guardada si existe, si no la original (que a la vez genera la miniatura) -->
-                    <img *ngIf="kindOf(entry) === 'image' && thumbnails[entry.path]"
-                        [src]="thumbnails[entry.path].dataUrl" alt="" loading="lazy" />
-                    <img *ngIf="kindOf(entry) === 'image' && !thumbnails[entry.path]"
-                        [src]="explorerService.getFileUrl(entry.path)" alt="" loading="lazy"
+                    <!-- Imágenes: un único <img> estable (nunca se reemplaza con *ngIf) para
+                         que un clic no se pierda si la miniatura termina de generarse justo
+                         en ese instante. Empieza mostrando el archivo original y pasa a la
+                         miniatura cacheada en cuanto está lista. -->
+                    <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy"
                         (load)="onImageLoad(entry, $event)" />
 
-                    <!-- Videos: miniatura guardada si existe; si no, un <video> oculto genera el fotograma -->
+                    <!-- Videos: se muestra el propio <video> posicionado en un fotograma real
+                         (nunca queda en negro), y en segundo plano se intenta cachear ese
+                         fotograma como miniatura para cargas futuras. -->
                     <ng-container *ngIf="kindOf(entry) === 'video'">
                         <img *ngIf="thumbnails[entry.path]" [src]="thumbnails[entry.path].dataUrl" alt=""
                             loading="lazy" />
-                        <video *ngIf="!thumbnails[entry.path]" class="hidden-thumb-video"
-                            [src]="explorerService.getFileUrl(entry.path)" muted preload="metadata"
-                            (loadeddata)="onVideoLoaded(entry, $event)"></video>
-                        <div class="item-icon video" *ngIf="!thumbnails[entry.path]">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M4 4h12a2 2 0 0 1 2 2v2.5l4-2.2v11.4l-4-2.2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-                            </svg>
-                        </div>
+                        <video *ngIf="!thumbnails[entry.path]" class="thumb-video"
+                            [src]="explorerService.getFileUrl(entry.path)" muted playsinline preload="metadata"
+                            (loadedmetadata)="onVideoMetadata($event)" (seeked)="onVideoSeeked(entry, $event)"></video>
                         <span class="play-badge">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                 <polygon points="5 3 19 12 5 21 5 3" />
@@ -136,16 +133,14 @@
             <div class="viewer-actions">
                 <button class="viewer-action-btn" (click)="toggleInfo()" [class.active]="showInfo"
                     aria-label="Ver información del archivo">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10" />
                         <line x1="12" y1="16" x2="12" y2="12" />
                         <line x1="12" y1="8" x2="12.01" y2="8" />
                     </svg>
                 </button>
                 <button class="viewer-action-btn" (click)="closeViewer()" aria-label="Cerrar">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>

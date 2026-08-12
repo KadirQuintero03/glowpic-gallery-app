@@ -22,6 +22,15 @@ export class ExplorerComponent implements OnInit {
     loading = false;
     errorMessage = "";
 
+    // dateGroups y folderEntries se calculan UNA sola vez por cada load()
+    // (no son getters). Si fueran getters, Angular los recalcularía en
+    // cada ciclo de detección de cambios devolviendo arrays/objetos nuevos
+    // cada vez, lo que hace que *ngFor destruya y recree todo el DOM del
+    // grid constantemente (incluso con un simple hover) y por eso los
+    // clics se pierden entre el mousedown y el mouseup.
+    dateGroups: DateGroup[] = [];
+    folderEntries: ExplorerEntry[] = [];
+
     // Estado del visor modal (imagen/video/audio)
     viewerEntry: ExplorerEntry | null = null;
     viewerKind: FileKind | null = null;
@@ -47,6 +56,8 @@ export class ExplorerComponent implements OnInit {
                 next: (res) => {
                     this.currentPath = res.currentPath;
                     this.entries = this.sortEntries(res.entries);
+                    this.folderEntries = this.entries.filter((e) => e.type === "directory");
+                    this.dateGroups = this.computeDateGroups();
                     this.loading = false;
                     this.preloadThumbnails();
                 },
@@ -103,9 +114,21 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
-    // Se dispara cuando el <video> oculto usado para previsualizar termina
-    // de cargar su primer fotograma: genera y almacena su miniatura.
-    async onVideoLoaded(entry: ExplorerEntry, event: Event): Promise<void> {
+    // Se dispara cuando el <video> usado como miniatura carga sus metadatos:
+    // lo posiciona en un instante distinto de 0 (el primer fotograma suele
+    // ser negro) para que la miniatura muestre un frame real del video.
+    onVideoMetadata(event: Event): void {
+        const video = event.target as HTMLVideoElement;
+        if (video.duration && isFinite(video.duration)) {
+            video.currentTime = Math.min(0.5, video.duration / 2);
+        }
+    }
+
+    // Se dispara cuando el video terminó de posicionarse en el fotograma
+    // elegido: intenta capturarlo y guardarlo como miniatura para la
+    // próxima vez. Si falla (por ejemplo por restricciones de origen), el
+    // propio <video> se sigue mostrando como previsualización igualmente.
+    async onVideoSeeked(entry: ExplorerEntry, event: Event): Promise<void> {
         if (this.thumbnails[entry.path]) return;
 
         const video = event.target as HTMLVideoElement;
@@ -113,7 +136,8 @@ export class ExplorerComponent implements OnInit {
             const thumb = await this.thumbnailService.createFromVideo(entry.path, video);
             this.thumbnails = { ...this.thumbnails, [entry.path]: thumb };
         } catch {
-            // Si el navegador no permite capturar el fotograma, se conserva el ícono genérico.
+            // Si el navegador no permite capturar el fotograma (p. ej. por CORS),
+            // el frame del propio <video> ya se está mostrando como miniatura.
         }
     }
 
@@ -130,6 +154,14 @@ export class ExplorerComponent implements OnInit {
         const thumb = this.thumbnails[entry.path];
         if (!thumb || !thumb.width || !thumb.height) return "4 / 3";
         return `${thumb.width} / ${thumb.height}`;
+    }
+
+    // URL a usar en el <img> del grid: la miniatura ya cacheada si existe,
+    // o el archivo original en caso contrario. Se mantiene SIEMPRE el mismo
+    // elemento <img> (nunca se reemplaza con *ngIf) para que un clic no se
+    // pierda si la miniatura termina de generarse justo en ese instante.
+    imageThumbSrc(entry: ExplorerEntry): string {
+        return this.thumbnails[entry.path]?.dataUrl ?? this.explorerService.getFileUrl(entry.path);
     }
 
     openEntry(entry: ExplorerEntry): void {
@@ -260,14 +292,23 @@ export class ExplorerComponent implements OnInit {
         return this.entries.filter((e) => e.type === "file").length;
     }
 
-    // Carpetas de la ruta actual: se muestran siempre arriba, sin agrupar por fecha
-    get folderEntries(): ExplorerEntry[] {
-        return this.entries.filter((e) => e.type === "directory");
+    // Almacenamiento total ocupado por los archivos de la carpeta actual
+    // (reemplaza al contador de carpetas creadas en el resumen del header).
+    get totalSize(): number {
+        return this.entries
+            .filter((e) => e.type === "file" && e.size)
+            .reduce((sum, e) => sum + (e.size ?? 0), 0);
+    }
+
+    get totalSizeLabel(): string {
+        return this.formatSize(this.totalSize);
     }
 
     // Archivos de la ruta actual, agrupados en bloques por fecha de
     // modificación (todo lo subido el mismo día queda en un mismo bloque).
-    get dateGroups(): DateGroup[] {
+    // Se llama UNA vez desde load(), no es un getter (ver comentario junto
+    // a la declaración de dateGroups más arriba).
+    private computeDateGroups(): DateGroup[] {
         const files = this.entries.filter((e) => e.type === "file");
         const groupsMap = new Map<string, ExplorerEntry[]>();
 
@@ -285,6 +326,16 @@ export class ExplorerComponent implements OnInit {
                 label: this.dateLabelOf(key, groupEntries[0].modifiedAt),
                 entries: groupEntries,
             }));
+    }
+
+    // Identidad estable para *ngFor: evita que Angular recree las tarjetas
+    // (y por lo tanto pierda clics) cuando solo cambia una miniatura.
+    trackByGroupKey(_index: number, group: DateGroup): string {
+        return group.key;
+    }
+
+    trackByEntryPath(_index: number, entry: ExplorerEntry): string {
+        return entry.path;
     }
 
     private dateKeyOf(modifiedAt?: number): string {
