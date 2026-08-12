@@ -96,8 +96,8 @@
                         <img *ngIf="thumbnails[entry.path]" [src]="thumbnails[entry.path].dataUrl" alt=""
                             loading="lazy" />
                         <video *ngIf="!thumbnails[entry.path]" class="thumb-video"
-                            [src]="explorerService.getFileUrl(entry.path)" muted playsinline preload="metadata"
-                            (loadedmetadata)="onVideoMetadata($event)" (seeked)="onVideoSeeked(entry, $event)"></video>
+                            [src]="explorerService.getFileUrl(entry.path)" muted autoplay playsinline preload="auto"
+                            (playing)="onVideoPlaying(entry, $event)"></video>
                         <span class="play-badge">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                 <polygon points="5 3 19 12 5 21 5 3" />
@@ -167,10 +167,6 @@
 
             <!-- Panel de información del archivo, desplegado con el botón superior -->
             <div class="viewer-info-panel" *ngIf="showInfo" (click)="$event.stopPropagation()">
-                <div class="viewer-info-preview" *ngIf="viewerThumbnail">
-                    <img [src]="viewerThumbnail.dataUrl" alt="" />
-                </div>
-
                 <ul class="viewer-info-list">
                     <li>
                         <span class="info-label">Nombre</span>

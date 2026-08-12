@@ -114,30 +114,29 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
-    // Se dispara cuando el <video> usado como miniatura carga sus metadatos:
-    // lo posiciona en un instante distinto de 0 (el primer fotograma suele
-    // ser negro) para que la miniatura muestre un frame real del video.
-    onVideoMetadata(event: Event): void {
+    // Deja que el <video> reproduzca un instante corto desde el inicio
+    // (sin necesitar saltos/seek, que dependen de que el backend soporte
+    // range requests) para saltar el fotograma inicial -a menudo negro- y
+    // luego lo pausa, dejando un frame real visible como miniatura.
+    onVideoPlaying(entry: ExplorerEntry, event: Event): void {
         const video = event.target as HTMLVideoElement;
-        if (video.duration && isFinite(video.duration)) {
-            video.currentTime = Math.min(0.5, video.duration / 2);
-        }
+        window.setTimeout(() => {
+            video.pause();
+            this.captureVideoThumbnail(entry, video);
+        }, 400);
     }
 
-    // Se dispara cuando el video terminó de posicionarse en el fotograma
-    // elegido: intenta capturarlo y guardarlo como miniatura para la
-    // próxima vez. Si falla (por ejemplo por restricciones de origen), el
-    // propio <video> se sigue mostrando como previsualización igualmente.
-    async onVideoSeeked(entry: ExplorerEntry, event: Event): Promise<void> {
+    // Intenta cachear ese fotograma en IndexedDB para la próxima vez. Si
+    // falla (por ejemplo por restricciones de origen al leer el canvas),
+    // el propio <video> pausado se sigue mostrando igualmente como miniatura.
+    private async captureVideoThumbnail(entry: ExplorerEntry, video: HTMLVideoElement): Promise<void> {
         if (this.thumbnails[entry.path]) return;
 
-        const video = event.target as HTMLVideoElement;
         try {
             const thumb = await this.thumbnailService.createFromVideo(entry.path, video);
             this.thumbnails = { ...this.thumbnails, [entry.path]: thumb };
         } catch {
-            // Si el navegador no permite capturar el fotograma (p. ej. por CORS),
-            // el frame del propio <video> ya se está mostrando como miniatura.
+            // El <video> pausado en pantalla ya cumple como miniatura visible.
         }
     }
 
