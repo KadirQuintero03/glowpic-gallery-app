@@ -48,6 +48,15 @@ export class ExplorerService {
         return `${this.baseURL}explorer/file?${params.toString()}`;
     }
 
+    // Elimina un archivo del directorio del usuario. La petición pasa por la
+    // API intermedia (que valida el owner), nunca expone credenciales.
+    deleteFile(path: string): Observable<void> {
+        const owner = this.requireOwner();
+        return this.http
+            .post<void>(`${this.baseURL}explorer/delete`, { path, owner })
+            .pipe(catchError((err) => throwError(() => this.toErrorMessage(err))));
+    }
+
     private requireOwner(): string {
         const owner = this.authService.getOwner();
         if (!owner) {

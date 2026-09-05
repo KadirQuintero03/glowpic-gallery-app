@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-  navState: boolean = true; // Estado inicial de la navegación
+  // El panel lateral es estático (siempre visible) en TeleDrive.
   configState: boolean = false; //Estado inicial de la configuracion de usuario
   userProfileState = false;
 

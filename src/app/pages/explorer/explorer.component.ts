@@ -1,9 +1,12 @@
-import { Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { Subscription } from "rxjs";
 import { ExplorerEntry, ExplorerService } from "src/app/services/explorer/explorer.service";
 import { ThumbnailService } from "src/app/services/thumbnail/thumbnail.service";
 import type { StoredThumbnail } from "src/app/services/thumbnail/thumbnail.service";
 
 type FileKind = "directory" | "image" | "video" | "audio" | "document";
+type ViewMode = "grid" | "list";
 
 interface DateGroup {
     key: string;
@@ -16,7 +19,7 @@ interface DateGroup {
     templateUrl: "./explorer.component.html",
     styleUrls: ["./explorer.component.css"],
 })
-export class ExplorerComponent implements OnInit {
+export class ExplorerComponent implements OnInit, OnDestroy {
     currentPath = "";
     entries: ExplorerEntry[] = [];
     loading = false;
@@ -37,14 +40,45 @@ export class ExplorerComponent implements OnInit {
     showInfo = false;
 
     // Miniaturas ya generadas y almacenadas (IndexedDB), indexadas por ruta.
-    // Sirven de previsualización instantánea y también aportan las
-    // dimensiones reales usadas para respetar la orientación del archivo.
     thumbnails: Record<string, StoredThumbnail> = {};
 
-    constructor(public explorerService: ExplorerService, private thumbnailService: ThumbnailService) { }
+    // Vista activa: cuadrícula (miniaturas cuadradas) o lista (columnas)
+    viewMode: ViewMode = "grid";
+
+    // Búsqueda global (llega por query param ?search=) y filtrado local
+    searchQuery = "";
+    isSearching = false;
+    showEmpty = false;
+
+    // Selección múltiple y borrado
+    selectedPaths = new Set<string>();
+    deletingPaths = new Set<string>();
+
+    private loadedAtPath: string | null = null;
+    private querySub?: Subscription;
+
+    constructor(
+        public explorerService: ExplorerService,
+        private thumbnailService: ThumbnailService,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit(): void {
-        this.load("");
+        this.querySub = this.route.queryParamMap.subscribe((params) => {
+            const path = params.get("path") ?? "";
+            this.searchQuery = params.get("search") ?? "";
+            if (this.loadedAtPath !== null && this.loadedAtPath === path) {
+                // Cambió solo la búsqueda: re-filtra sin recargar del backend.
+                this.applyFilters();
+            } else {
+                this.loadedAtPath = path;
+                this.load(path);
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.querySub?.unsubscribe();
     }
 
     load(path: string): void {
@@ -56,9 +90,8 @@ export class ExplorerComponent implements OnInit {
                 next: (res) => {
                     this.currentPath = res.currentPath;
                     this.entries = this.sortEntries(res.entries);
-                    this.folderEntries = this.entries.filter((e) => e.type === "directory");
-                    this.dateGroups = this.computeDateGroups();
                     this.loading = false;
+                    this.setDisplayedEntries();
                     this.preloadThumbnails();
                 },
                 error: (err: Error) => {
@@ -76,6 +109,37 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
+    // Recalcula los bloques visibles (carpetas y archivos por fecha) a partir
+    // de la lista completa cargada en this.entries y del término de búsqueda.
+    private applyFilters(): void {
+        this.setDisplayedEntries();
+    }
+
+    private setDisplayedEntries(): void {
+        const visible = this.applySearch();
+        this.folderEntries = visible.filter((e) => e.type === "directory");
+        this.dateGroups = this.computeDateGroups(visible);
+        this.isSearching = this.searchQuery.trim().length > 0;
+        this.showEmpty = visible.length === 0;
+    }
+
+    // Filtrado local, sin importar del backend: ignora tildes y mayúsculas.
+    private applySearch(): ExplorerEntry[] {
+        const q = this.searchQuery
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+        if (!q) return this.entries;
+        return this.entries.filter((e) => {
+            const name = e.name
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+            return name.includes(q);
+        });
+    }
+
     // Carpetas primero, luego archivos, ambos alfabéticamente
     private sortEntries(entries: ExplorerEntry[]): ExplorerEntry[] {
         return [...entries].sort((a, b) => {
@@ -85,7 +149,6 @@ export class ExplorerComponent implements OnInit {
     }
 
     // Recupera del almacenamiento local las miniaturas ya generadas
-    // previamente para los archivos que se están mostrando ahora mismo.
     private async preloadThumbnails(): Promise<void> {
         for (const entry of this.entries) {
             if (entry.type !== "file") continue;
@@ -100,8 +163,6 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
-    // Se dispara cuando una imagen del grid termina de cargar: calcula su
-    // orientación real y genera/almacena su miniatura para próximas visitas.
     async onImageLoad(entry: ExplorerEntry, event: Event): Promise<void> {
         if (this.thumbnails[entry.path]) return;
 
@@ -114,10 +175,6 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
-    // Deja que el <video> reproduzca un instante corto desde el inicio
-    // (sin necesitar saltos/seek, que dependen de que el backend soporte
-    // range requests) para saltar el fotograma inicial -a menudo negro- y
-    // luego lo pausa, dejando un frame real visible como miniatura.
     onVideoPlaying(entry: ExplorerEntry, event: Event): void {
         const video = event.target as HTMLVideoElement;
         window.setTimeout(() => {
@@ -126,9 +183,6 @@ export class ExplorerComponent implements OnInit {
         }, 400);
     }
 
-    // Intenta cachear ese fotograma en IndexedDB para la próxima vez. Si
-    // falla (por ejemplo por restricciones de origen al leer el canvas),
-    // el propio <video> pausado se sigue mostrando igualmente como miniatura.
     private async captureVideoThumbnail(entry: ExplorerEntry, video: HTMLVideoElement): Promise<void> {
         if (this.thumbnails[entry.path]) return;
 
@@ -140,25 +194,8 @@ export class ExplorerComponent implements OnInit {
         }
     }
 
-    // Orientación visual conocida de una entrada, según su miniatura ya generada
-    orientationOf(entry: ExplorerEntry): "vertical" | "horizontal" | "square" | "unknown" {
-        const thumb = this.thumbnails[entry.path];
-        if (!thumb || !thumb.width || !thumb.height) return "unknown";
-        if (thumb.width > thumb.height) return "horizontal";
-        if (thumb.height > thumb.width) return "vertical";
-        return "square";
-    }
-
-    aspectRatioOf(entry: ExplorerEntry): string {
-        const thumb = this.thumbnails[entry.path];
-        if (!thumb || !thumb.width || !thumb.height) return "4 / 3";
-        return `${thumb.width} / ${thumb.height}`;
-    }
-
     // URL a usar en el <img> del grid: la miniatura ya cacheada si existe,
-    // o el archivo original en caso contrario. Se mantiene SIEMPRE el mismo
-    // elemento <img> (nunca se reemplaza con *ngIf) para que un clic no se
-    // pierda si la miniatura termina de generarse justo en ese instante.
+    // o el archivo original en caso contrario.
     imageThumbSrc(entry: ExplorerEntry): string {
         return this.thumbnails[entry.path]?.dataUrl ?? this.explorerService.getFileUrl(entry.path);
     }
@@ -176,7 +213,6 @@ export class ExplorerComponent implements OnInit {
             this.viewerKind = kind;
             this.showInfo = false;
         } else {
-            // Documentos y otros formatos sin visor nativo: se abren/descargan en pestaña nueva
             window.open(this.explorerService.getFileUrl(entry.path), "_blank");
         }
     }
@@ -205,7 +241,6 @@ export class ExplorerComponent implements OnInit {
         return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : "";
     }
 
-    // Fecha/hora formateada del archivo abierto, para el panel de información
     get viewerFormattedDate(): string {
         if (!this.viewerEntry?.modifiedAt) return "Fecha desconocida";
         return new Intl.DateTimeFormat("es-CO", {
@@ -247,6 +282,55 @@ export class ExplorerComponent implements OnInit {
         this.load("");
     }
 
+    // ---- Acciones rápidas (overlay al pasar el cursor) ----
+    downloadFile(entry: ExplorerEntry): void {
+        window.open(this.explorerService.getFileUrl(entry.path), "_blank");
+    }
+
+    toggleSelect(entry: ExplorerEntry): void {
+        if (this.selectedPaths.has(entry.path)) {
+            this.selectedPaths.delete(entry.path);
+        } else {
+            this.selectedPaths.add(entry.path);
+        }
+        this.selectedPaths = new Set(this.selectedPaths);
+    }
+
+    isSelected(entry: ExplorerEntry): boolean {
+        return this.selectedPaths.has(entry.path);
+    }
+
+    isDeleting(entry: ExplorerEntry): boolean {
+        return this.deletingPaths.has(entry.path);
+    }
+
+    get selectedCount(): number {
+        return this.selectedPaths.size;
+    }
+
+    clearSelection(): void {
+        this.selectedPaths = new Set();
+    }
+
+    deleteFile(entry: ExplorerEntry): void {
+        if (!window.confirm(`¿Eliminar "${entry.name}"? Esta acción no se puede deshacer.`)) {
+            return;
+        }
+
+        this.deletingPaths = new Set(this.deletingPaths).add(entry.path);
+        this.explorerService.deleteFile(entry.path).subscribe({
+            next: () => {
+                this.selectedPaths = new Set([...this.selectedPaths].filter((p) => p !== entry.path));
+                this.deletingPaths = new Set([...this.deletingPaths].filter((p) => p !== entry.path));
+                this.load(this.currentPath);
+            },
+            error: (err: Error) => {
+                this.deletingPaths = new Set([...this.deletingPaths].filter((p) => p !== entry.path));
+                this.errorMessage = err.message ?? "No se pudo eliminar el archivo.";
+            },
+        });
+    }
+
     isImage(name: string): boolean {
         return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(name);
     }
@@ -259,7 +343,6 @@ export class ExplorerComponent implements OnInit {
         return /\.(mp3|ogg|wav|m4a|opus)$/i.test(name);
     }
 
-    // Determina el "tipo visual" de una entrada para elegir ícono/estilo
     kindOf(entry: ExplorerEntry): FileKind {
         if (entry.type === "directory") return "directory";
         if (this.isImage(entry.name)) return "image";
@@ -268,7 +351,7 @@ export class ExplorerComponent implements OnInit {
         return "document";
     }
 
-    // Formatea el tamaño del archivo en unidades legibles
+    // Formatea el peso del archivo en unidades legibles
     formatSize(bytes?: number): string {
         if (bytes === undefined || bytes === null) return "";
         if (bytes < 1024) return `${bytes} B`;
@@ -282,19 +365,26 @@ export class ExplorerComponent implements OnInit {
         return `${value.toFixed(1)} ${units[unitIndex]}`;
     }
 
-    // Cantidad de elementos en la carpeta actual, para el resumen del header
+    // Fecha abreviada para la "Vista de lista"
+    formatListDate(entry: ExplorerEntry): string {
+        if (!entry.modifiedAt) return "—";
+        return new Intl.DateTimeFormat("es-CO", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        }).format(new Date(entry.modifiedAt));
+    }
+
     get folderCount(): number {
-        return this.entries.filter((e) => e.type === "directory").length;
+        return this.applySearch().filter((e) => e.type === "directory").length;
     }
 
     get fileCount(): number {
-        return this.entries.filter((e) => e.type === "file").length;
+        return this.applySearch().filter((e) => e.type === "file").length;
     }
 
-    // Almacenamiento total ocupado por los archivos de la carpeta actual
-    // (reemplaza al contador de carpetas creadas en el resumen del header).
     get totalSize(): number {
-        return this.entries
+        return this.applySearch()
             .filter((e) => e.type === "file" && e.size)
             .reduce((sum, e) => sum + (e.size ?? 0), 0);
     }
@@ -303,12 +393,8 @@ export class ExplorerComponent implements OnInit {
         return this.formatSize(this.totalSize);
     }
 
-    // Archivos de la ruta actual, agrupados en bloques por fecha de
-    // modificación (todo lo subido el mismo día queda en un mismo bloque).
-    // Se llama UNA vez desde load(), no es un getter (ver comentario junto
-    // a la declaración de dateGroups más arriba).
-    private computeDateGroups(): DateGroup[] {
-        const files = this.entries.filter((e) => e.type === "file");
+    private computeDateGroups(entries: ExplorerEntry[]): DateGroup[] {
+        const files = entries.filter((e) => e.type === "file");
         const groupsMap = new Map<string, ExplorerEntry[]>();
 
         for (const file of files) {
@@ -327,8 +413,6 @@ export class ExplorerComponent implements OnInit {
             }));
     }
 
-    // Identidad estable para *ngFor: evita que Angular recree las tarjetas
-    // (y por lo tanto pierda clics) cuando solo cambia una miniatura.
     trackByGroupKey(_index: number, group: DateGroup): string {
         return group.key;
     }

@@ -39,6 +39,10 @@
     gap: 12px;
 }
 
+.home-logo-mark {
+    filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--primary) 30%, transparent));
+}
+
 .home-content {
     max-width: 800px;
     margin: 0 auto;
@@ -69,9 +73,12 @@
 
 .home-description p {
     font-size: 1.1rem;
-    line-height: 1.6;
+    line-height: 1.8;
     color: var(--foreground);
     margin-bottom: 48px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .home-cards {

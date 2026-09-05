@@ -9,12 +9,13 @@ import { HeaderComponent } from './shared/header/header.component';
 import { NavComponent } from './shared/nav/nav.component';
 import { UserConfigComponent } from './model/user-config/user-config.component';
 import { UserProfileComponent } from './model/user-profile/user-profile.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { ExplorerComponent } from './pages/explorer/explorer.component';
 import { SettingsMenuComponent } from './shared/settings-menu/settings-menu.component';
+import { AuthInterceptor } from './services/auth/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,9 @@ import { SettingsMenuComponent } from './shared/settings-menu/settings-menu.comp
     BrowserAnimationsModule,
     MatIconModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

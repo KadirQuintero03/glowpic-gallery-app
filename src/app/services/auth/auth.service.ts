@@ -5,6 +5,7 @@ import { environment } from "src/app/environments/environment";
 
 const PHONE_KEY = "teledrive_phone";
 const OWNER_KEY = "teledrive_owner";
+const TOKEN_KEY = "teledrive_token";
 
 interface RequestCodeResponse {
   success: boolean;
@@ -14,6 +15,11 @@ interface RequestCodeResponse {
 interface VerifyCodeResponse {
   success: boolean;
   owner?: string;
+  // Token opcional (p. ej. JWT) que el backend puede devolver tras validar
+  // el código. Se guarda en sessionStorage y se adjunta a cada petición
+  // vía AuthInterceptor (nunca viaja por la URL, contrariamente a lo que
+  // pasaba con el número/token expuesto en parámetros de querystring).
+  token?: string;
 }
 
 /**
@@ -48,6 +54,9 @@ export class AuthService {
           if (!res.owner) {
             throw new Error("El servidor no devolvió un usuario válido.");
           }
+          if (res.token) {
+            this.saveToken(res.token);
+          }
           this.savePhone(phone);
           this.saveOwner(res.owner);
           return res.owner;
@@ -56,24 +65,36 @@ export class AuthService {
       );
   }
 
-  // Guarda el número de teléfono ingresado
+  // La sesión se guarda en sessionStorage (no en localStorage) para que
+  // desaparezca al cerrar el navegador y reducir la superficie de ataque
+  // frente a un token persistido sin necesidad.
   savePhone(phone: string): void {
-    localStorage.setItem(PHONE_KEY, phone);
+    sessionStorage.setItem(PHONE_KEY, phone);
   }
 
   // Obtiene el número de teléfono guardado
   getPhone(): string | null {
-    return localStorage.getItem(PHONE_KEY);
+    return sessionStorage.getItem(PHONE_KEY);
   }
 
   // Guarda el "owner" (carpeta) asignado tras verificar el código. Es el
   // dato que determina qué carpeta puede ver este usuario en TeleDrive.
   private saveOwner(owner: string): void {
-    localStorage.setItem(OWNER_KEY, owner);
+    sessionStorage.setItem(OWNER_KEY, owner);
   }
 
   getOwner(): string | null {
-    return localStorage.getItem(OWNER_KEY);
+    return sessionStorage.getItem(OWNER_KEY);
+  }
+
+  // Guarda el token de sesión (JWT si el backend lo emite) de forma segura.
+  // Nunca se expone en la URL; AuthInterceptor lo adjunta como cabecera.
+  saveToken(token: string): void {
+    sessionStorage.setItem(TOKEN_KEY, token);
+  }
+
+  getToken(): string | null {
+    return sessionStorage.getItem(TOKEN_KEY);
   }
 
   // true solo si el usuario completó el login en dos pasos (teléfono +
@@ -83,10 +104,11 @@ export class AuthService {
     return !!this.getOwner();
   }
 
-  // Cierra sesión: elimina el teléfono y el owner guardados
+  // Cierra sesión: elimina el teléfono, el owner y el token guardados
   logout(): void {
-    localStorage.removeItem(PHONE_KEY);
-    localStorage.removeItem(OWNER_KEY);
+    sessionStorage.removeItem(PHONE_KEY);
+    sessionStorage.removeItem(OWNER_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
   }
 
   private toErrorMessage(err: HttpErrorResponse): Error {

@@ -31,11 +31,19 @@
 }
 
 .login-form {
-  background-color: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Elevación sutil al pasar el cursor sobre la tarjeta de inicio de sesión */
+.login-form:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 22%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
 }
 
 .login-form-group {
