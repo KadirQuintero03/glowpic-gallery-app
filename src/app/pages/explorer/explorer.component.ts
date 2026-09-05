@@ -234,12 +234,21 @@ export class ExplorerComponent implements OnInit, OnDestroy {
         }
     }
 
-    onVideoPlaying(entry: ExplorerEntry, event: Event): void {
+    // Al cargar los metadatos del video buscamos hasta un fotograma inicial
+    // SIN reproducirlo (búsqueda muda) y capturamos ahí la miniatura. Así el
+    // elemento nunca emite sonido ni se reproduce al entrar a una carpeta.
+    onVideoMetadata(entry: ExplorerEntry, event: Event): void {
         const video = event.target as HTMLVideoElement;
-        window.setTimeout(() => {
+        if (this.thumbnails[entry.path]) return;
+
+        const capture = () => {
+            video.removeEventListener("seeked", capture);
             video.pause();
             this.captureVideoThumbnail(entry, video);
-        }, 400);
+        };
+
+        video.addEventListener("seeked", capture);
+        video.currentTime = 0.1;
     }
 
     private async captureVideoThumbnail(entry: ExplorerEntry, video: HTMLVideoElement): Promise<void> {

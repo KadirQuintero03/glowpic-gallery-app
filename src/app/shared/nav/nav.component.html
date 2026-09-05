@@ -3,12 +3,12 @@
     <div class="sidebar-inner">
         <div class="sidebar-section">
             <button type="button" class="sidebar-item" [class.active]="active === 'inicio'" (click)="goToHome()">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">home</mat-icon>
+                <mat-icon class="sidebar-icon">home</mat-icon>
                 <span>Inicio</span>
             </button>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'galeria'" (click)="goToGallery()">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">photo_library</mat-icon>
+                <mat-icon class="sidebar-icon">photo_library</mat-icon>
                 <span>Mi Galería</span>
             </button>
         </div>
@@ -17,22 +17,22 @@
             <p class="sidebar-label">Categorías</p>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'imagenes'" (click)="openCategory('Imagenes')">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">image</mat-icon>
+                <mat-icon class="sidebar-icon">image</mat-icon>
                 <span>Imágenes</span>
             </button>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'video'" (click)="openCategory('Video')">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">video_library</mat-icon>
+                <mat-icon class="sidebar-icon">video_library</mat-icon>
                 <span>Video</span>
             </button>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'audio'" (click)="openCategory('Audio')">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">music_note</mat-icon>
+                <mat-icon class="sidebar-icon">music_note</mat-icon>
                 <span>Audio</span>
             </button>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'documentos'" (click)="openCategory('Documentos')">
-                <mat-icon class="sidebar-icon" fontSet="material-icons">description</mat-icon>
+                <mat-icon class="sidebar-icon">description</mat-icon>
                 <span>Documentos</span>
             </button>
         </div>
@@ -43,7 +43,7 @@
             <span class="sidebar-user-name">Usuario: {{ username }}</span>
         </div>
         <button type="button" class="sidebar-item sidebar-logout" (click)="logout()">
-            <mat-icon class="sidebar-icon" fontSet="material-icons">logout</mat-icon>
+            <mat-icon class="sidebar-icon">logout</mat-icon>
             <span>Cerrar sesión</span>
         </button>
     </div>

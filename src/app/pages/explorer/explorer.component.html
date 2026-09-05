@@ -112,8 +112,8 @@
                                 <img *ngIf="thumbnails[entry.path]" [src]="thumbnails[entry.path].dataUrl" alt=""
                                     loading="lazy" />
                                 <video *ngIf="!thumbnails[entry.path]" class="thumb-video"
-                                    [src]="explorerService.getFileUrl(entry.path)" muted autoplay playsinline
-                                    preload="auto" (playing)="onVideoPlaying(entry, $event)"></video>
+                                    [src]="explorerService.getFileUrl(entry.path)" muted playsinline
+                                    preload="metadata" (loadedmetadata)="onVideoMetadata(entry, $event)"></video>
                             </ng-container>
 
                             <div class="item-icon audio" *ngIf="kindOf(entry) === 'audio'">
