@@ -7,8 +7,13 @@ import { AuthService } from 'src/app/services/auth/auth.service';
  * Panel lateral estático de TeleDrive. Contiene la navegación principal
  * ("Inicio", "Mi Galería"), las secciones por categoría ("Imágenes",
  * "Video", "Audio", "Documentos") y el botón de "Cerrar sesión".
- * Las categorías navegan al explorador pasando la carpeta como parámetro
- * de ruta; el item activo se resalta según la URL actual.
+ *
+ * - "Inicio" lleva al explorador en su raíz (/home/explorer), que es la
+ *   pantalla donde se sitúa el usuario al entrar a la app.
+ * - "Mi Galería" muestra la galería mezclada de imágenes y videos vía el
+ *   parámetro ?view=gallery.
+ * - Las categorías navegan al explorador pasando la carpeta como parámetro
+ *   de ruta; el item activo se resalta según la URL actual.
  */
 @Component({
   selector: 'app-nav',
@@ -40,11 +45,16 @@ export class NavComponent implements OnInit, OnDestroy {
     }
 
     const q = this.router.parseUrl(this.router.url).queryParamMap;
+    const view = q.get('view') ?? '';
     const path = q.get('path') ?? '';
     const search = q.get('search') ?? '';
 
-    if (!path || search) {
+    if (view === 'gallery') {
       this.active = 'galeria';
+      return;
+    }
+    if (!path || search) {
+      this.active = 'inicio';
       return;
     }
     this.active = this.keyForPath(path);
@@ -58,23 +68,31 @@ export class NavComponent implements OnInit, OnDestroy {
     if (norm.startsWith('video')) return 'video';
     if (norm.startsWith('audio')) return 'audio';
     if (norm.startsWith('document')) return 'documentos';
-    return 'galeria';
+    return 'inicio';
   }
 
-  goToLanding(): void {
-    this.router.navigate(['/mainpage']);
+  // Inicio: raíz del explorador (donde aterriza el usuario al entrar).
+  goToHome(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { path: null, search: null, view: null },
+    });
   }
 
+  // Mi Galería: vista mezclada de imágenes y videos (?view=gallery).
   goToGallery(): void {
-    this.router.navigate(['/home/explorer'], { queryParams: { path: null, search: null } });
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'gallery', path: null, search: null },
+    });
   }
 
   openCategory(folder: string): void {
-    this.router.navigate(['/home/explorer'], { queryParams: { path: folder, search: null } });
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { path: folder, search: null, view: null },
+    });
   }
 
-  get userPhone(): string {
-    return this.authService.getPhone() ?? '';
+  get username(): string {
+    return this.authService.getUsername() ?? '';
   }
 
   logout(): void {

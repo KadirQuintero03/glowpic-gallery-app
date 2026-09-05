@@ -87,6 +87,13 @@ export class AuthService {
     return sessionStorage.getItem(OWNER_KEY);
   }
 
+  // Nombre de usuario para mostrar en la interfaz. El "owner" devuelto por
+  // el backend tras verificar el código es la identidad (nombre de carpeta)
+  // vinculada al teléfono, así que se usa como nombre visible del usuario.
+  getUsername(): string | null {
+    return this.getOwner();
+  }
+
   // Guarda el token de sesión (JWT si el backend lo emite) de forma segura.
   // Nunca se expone en la URL; AuthInterceptor lo adjunta como cabecera.
   saveToken(token: string): void {

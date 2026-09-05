@@ -10,11 +10,16 @@
     color: var(--sidebar-foreground);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 12px 10px;
     overflow-y: auto;
     flex-shrink: 0;
     z-index: 90;
+}
+
+.sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .sidebar-section {
@@ -23,8 +28,9 @@
     gap: 2px;
 }
 
+/* Categorías justo debajo de "Mi Galería" */
 .sidebar-categories {
-    margin-top: 20px;
+    margin-top: 4px;
 }
 
 .sidebar-label {
@@ -70,7 +76,9 @@
 
 .sidebar-icon {
     flex-shrink: 0;
-    opacity: 0.9;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 .sidebar-footer {
@@ -79,17 +87,18 @@
     gap: 6px;
     border-top: 1px solid var(--sidebar-border);
     padding-top: 12px;
-    margin-top: 16px;
+    margin-top: auto;
 }
 
 .sidebar-user {
     padding: 4px 12px 8px;
 }
 
-.sidebar-user-phone {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    word-break: break-all;
+.sidebar-user-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--sidebar-foreground);
+    word-break: break-word;
 }
 
 .sidebar-logout {

@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Subscription } from "rxjs";
+import { firstValueFrom, Subscription } from "rxjs";
 import { ExplorerEntry, ExplorerService } from "src/app/services/explorer/explorer.service";
 import { ThumbnailService } from "src/app/services/thumbnail/thumbnail.service";
 import type { StoredThumbnail } from "src/app/services/thumbnail/thumbnail.service";
@@ -54,7 +54,12 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     selectedPaths = new Set<string>();
     deletingPaths = new Set<string>();
 
-    private loadedAtPath: string | null = null;
+    // Modo "Mi Galería": agrega imágenes y videos de todas las carpetas
+    // del usuario y los muestra mezclados, sin depender de la estructura
+    // de carpetas (se activa con ?view=gallery).
+    isGalleryMode = false;
+
+    private loadedMode: string | null = null;
     private querySub?: Subscription;
 
     constructor(
@@ -66,13 +71,21 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.querySub = this.route.queryParamMap.subscribe((params) => {
             const path = params.get("path") ?? "";
+            const view = params.get("view") ?? "";
             this.searchQuery = params.get("search") ?? "";
-            if (this.loadedAtPath !== null && this.loadedAtPath === path) {
+
+            const modeKey = view === "gallery" ? "gallery" : `path:${path}`;
+            if (this.loadedMode === modeKey) {
                 // Cambió solo la búsqueda: re-filtra sin recargar del backend.
                 this.applyFilters();
             } else {
-                this.loadedAtPath = path;
-                this.load(path);
+                this.loadedMode = modeKey;
+                if (view === "gallery") {
+                    this.loadGallery();
+                } else {
+                    this.isGalleryMode = false;
+                    this.load(path);
+                }
             }
         });
     }
@@ -106,6 +119,52 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             console.error("Error al listar directorio:", err);
             this.errorMessage = msg;
             this.loading = false;
+        }
+    }
+
+    // Modo galería: recorre todas las carpetas del usuario y agrupa las
+    // imágenes y videos encontrados en una sola vista mezclada.
+    async loadGallery(): Promise<void> {
+        this.loading = true;
+        this.errorMessage = "";
+        this.isGalleryMode = true;
+        this.currentPath = "";
+        this.viewerEntry = null;
+
+        try {
+            const media: ExplorerEntry[] = [];
+            await this.collectMedia("", 0, media);
+            this.entries = this.sortEntries(media);
+            this.setDisplayedEntries();
+            this.preloadThumbnails();
+        } catch (err) {
+            console.error("Error al cargar la galería:", err);
+            this.errorMessage = err instanceof Error ? err.message : "No se pudo cargar la galería.";
+        } finally {
+            this.loading = false;
+        }
+    }
+
+    // Recorrido recursivo con límite de profundidad para no saturar al backend.
+    private async collectMedia(path: string, depth: number, acc: ExplorerEntry[], maxDepth = 3): Promise<void> {
+        if (depth > maxDepth) {
+            return;
+        }
+
+        try {
+            const res = await firstValueFrom(this.explorerService.listDirectory(path));
+            for (const entry of res.entries) {
+                if (entry.type === "directory") {
+                    await this.collectMedia(entry.path, depth + 1, acc, maxDepth);
+                } else {
+                    const kind = this.kindOf(entry);
+                    if (kind === "image" || kind === "video") {
+                        acc.push(entry);
+                    }
+                }
+            }
+        } catch {
+            // Si una carpeta falla, se omite y se continúa con las demás.
         }
     }
 
@@ -322,7 +381,11 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             next: () => {
                 this.selectedPaths = new Set([...this.selectedPaths].filter((p) => p !== entry.path));
                 this.deletingPaths = new Set([...this.deletingPaths].filter((p) => p !== entry.path));
-                this.load(this.currentPath);
+                if (this.isGalleryMode) {
+                    this.loadGallery();
+                } else {
+                    this.load(this.currentPath);
+                }
             },
             error: (err: Error) => {
                 this.deletingPaths = new Set([...this.deletingPaths].filter((p) => p !== entry.path));
