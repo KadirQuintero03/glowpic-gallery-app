@@ -1,13 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsageService } from 'src/app/services/usage/usage.service';
 
 /**
- * Panel lateral estático de TeleDrive. Contiene la navegación principal
- * ("Inicio", "Mi Galería"), las secciones por categoría ("Imágenes",
- * "Video", "Audio", "Documentos") y el botón de "Cerrar sesión".
+ * Panel lateral de TeleDrive. En escritorio es estático y siempre visible;
+ * en móvil (<680px) se convierte en un drawer que se desliza desde la
+ * izquierda, controlado por el botón de menú del header (ver home.component).
+ * Contiene la navegación principal ("Inicio", "Mi Galería"), las secciones
+ * por categoría ("Imágenes", "Video", "Audio", "Documentos") y el botón de
+ * "Cerrar sesión".
  *
  * - "Inicio" lleva al explorador en su raíz (/home/explorer), que es la
  *   pantalla donde se sitúa el usuario al entrar a la app.
@@ -22,6 +25,9 @@ import { UsageService } from 'src/app/services/usage/usage.service';
   styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit, OnDestroy {
+  @Input() open = false;
+  @Output() closeNav = new EventEmitter<void>();
+
   active = '';
   private navSub?: Subscription;
 
@@ -77,6 +83,7 @@ export class NavComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home/explorer'], {
       queryParams: { path: null, search: null, view: null },
     });
+    this.closeNav.emit();
   }
 
   // Mi Galería: vista mezclada de imágenes y videos (?view=gallery).
@@ -84,12 +91,26 @@ export class NavComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home/explorer'], {
       queryParams: { view: 'gallery', path: null, search: null },
     });
+    this.closeNav.emit();
   }
 
   openCategory(folder: string): void {
     this.router.navigate(['/home/explorer'], {
       queryParams: { path: folder, search: null, view: null },
     });
+    this.closeNav.emit();
+  }
+
+  // Cierra el drawer móvil (lo invoca el scrim, el botón cerrar o Escape).
+  close(): void {
+    this.closeNav.emit();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.open) {
+      this.close();
+    }
   }
 
   get username(): string {

@@ -548,6 +548,10 @@
         gap: 10px;
     }
 
+    /* En móvil no existe el hover, así que las acciones rápidas del
+       grid (que aparecen al pasar el cursor) no son alcanzables: se
+       dejan visibles SIEMPRE en la vista de lista, que es su
+       alternativa táctil (regla responsiva #11). */
     .list-actions {
         opacity: 1;
     }
@@ -557,166 +561,91 @@
     }
 }
 
-/* ===== Visor modal: imagen / video / audio ===== */
-.viewer-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3000;
-    padding: 24px;
-    animation: fadeInOverlay 0.15s ease;
-}
-
-@keyframes fadeInOverlay {
-    from {
-        opacity: 0;
+/* ===== Resp. — Tablet vertical (≤768px) ===== */
+@media (max-width: 768px) {
+    .explorer-container {
+        padding: 22px 18px 44px;
     }
 
-    to {
-        opacity: 1;
+    .explorer-toolbar {
+        gap: 10px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+    }
+
+    .crumb {
+        max-width: 150px;
     }
 }
 
-.viewer-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    max-width: min(90vw, 1100px);
-    max-height: 90vh;
-}
+/* ===== Resp. — Móvil estándar (≤480px) ===== */
+@media (max-width: 480px) {
+    .explorer-summary {
+        display: none;
+    }
 
-.viewer-actions {
-    position: absolute;
-    top: -44px;
-    right: 0;
-    display: flex;
-    gap: 10px;
-}
+    .selection-summary {
+        font-size: 0.8rem;
+    }
 
-.viewer-action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: none;
-    background-color: var(--card);
-    color: var(--foreground);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color .15s, color .15s;
-}
+    .crumb {
+        max-width: 96px;
+        font-size: 0.82rem;
+    }
 
-.viewer-action-btn:hover,
-.viewer-action-btn.active {
-    background-color: var(--accent);
-    color: var(--accent-foreground);
-}
+    .crumb-label {
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-.viewer-info-panel {
-    position: absolute;
-    top: 0;
-    right: -300px;
-    width: 280px;
-    max-height: 100%;
-    overflow-y: auto;
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px var(--shadow-color);
-    padding: 18px;
-}
+    /* Área táctil mínima de 44px para el alternador de vistas */
+    .view-toggle button {
+        width: 44px;
+        height: 44px;
+    }
 
-.viewer-info-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+    .explorer-item {
+        padding: 6px;
+        border-radius: 12px;
+    }
 
-.viewer-info-list li {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
+    .item-name {
+        font-size: 0.78rem;
+    }
 
-.info-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--muted-foreground);
-}
+    .list-row {
+        gap: 10px;
+        padding: 10px 10px;
+        min-height: 68px;
+    }
 
-.info-value {
-    font-size: 0.9rem;
-    color: var(--foreground);
-    word-break: break-word;
-}
+    .list-thumb {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+    }
 
-@media (max-width: 900px) {
-    .viewer-info-panel {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-        max-height: 60vh;
-        border-radius: 16px 16px 0 0;
+    .list-date {
+        display: none;
     }
 }
 
-.viewer-media {
-    max-width: 100%;
-    max-height: 80vh;
-    border-radius: 10px;
-    background-color: #000;
+/* ===== Resp. — Móvil pequeño (≤375px): minimizar espacios ===== */
+@media (max-width: 375px) {
+    .explorer-container {
+        padding: 18px 12px 36px;
+    }
+
+    .explorer-grid-cards {
+        gap: 8px;
+    }
+
+    .up-btn,
+    .view-toggle {
+        display: none;
+    }
 }
 
-.viewer-image {
-    object-fit: contain;
-}
-
-.viewer-video {
-    width: 100%;
-}
-
-.viewer-audio-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px 32px;
-    min-width: min(90vw, 400px);
-}
-
-.viewer-audio-icon {
-    font-size: 48px;
-    color: var(--tone-green);
-}
-
-.viewer-audio {
-    width: 100%;
-}
-
-.viewer-filename {
-    color: #fff;
-    font-size: 0.9rem;
-    text-align: center;
-    max-width: 90vw;
-    word-break: break-word;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+/* El visor modal (.viewer-*) vive ahora en src/styles.css (global),
+   junto con su ajuste responsivo y las unidades dvh. */

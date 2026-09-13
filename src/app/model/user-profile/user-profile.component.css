@@ -81,3 +81,21 @@ button:hover {
     transform: translateY(0);
   }
 }
+
+/* ============================================================
+   Resp. — Móvil estándar (≤480px): el panel pasa a ancho flexible
+   casi a pantalla completa y limita su altura con dvh, con scroll
+   interno, para no desbordar ni quedar cortado por la barra de
+   direcciones del navegador.
+   ============================================================ */
+@media (max-width: 480px) {
+  .user-profile-overlay {
+    top: calc(env(safe-area-inset-top, 0px) + 58px);
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: calc(100vh - 78px);
+    max-height: calc(100dvh - 78px);
+    overflow-y: auto;
+  }
+}

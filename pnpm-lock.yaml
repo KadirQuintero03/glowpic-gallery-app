@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  typescript: ~5.1.6
+
 importers:
 
   .:
@@ -129,7 +132,7 @@ packages:
       ng-packagr: ^16.0.0
       protractor: ^7.0.0
       tailwindcss: ^2.0.0 || ^3.0.0
-      typescript: '>=4.9.3 <5.2'
+      typescript: ~5.1.6
     peerDependenciesMeta:
       '@angular/localize':
         optional: true
@@ -201,7 +204,7 @@ packages:
     hasBin: true
     peerDependencies:
       '@angular/compiler': 16.2.12
-      typescript: '>=4.9.3 <5.2'
+      typescript: ~5.1.6
 
   '@angular/compiler@16.2.12':
     resolution: {integrity: sha512-6SMXUgSVekGM7R6l1Z9rCtUGtlg58GFmgbpMCsGf+VXxP468Njw8rjT2YZkf5aEPxEuRpSHhDYjqz7n14cwCXQ==}
@@ -1198,7 +1201,7 @@ packages:
     engines: {node: ^16.14.0 || >=18.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^16.0.0
-      typescript: '>=4.9.3 <5.2'
+      typescript: ~5.1.6
       webpack: ^5.54.0
 
   '@nodelib/fs.scandir@2.1.5':
@@ -1421,7 +1424,7 @@ packages:
     engines: {node: '>=10.1.0'}
     deprecated: this package has been renamed to ts-evaluator. Please install ts-evaluator instead
     peerDependencies:
-      typescript: '>=3.2.x || >= 4.x'
+      typescript: ~5.1.6
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -1853,7 +1856,7 @@ packages:
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: '>=4.9.5'
+      typescript: ~5.1.6
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -2358,7 +2361,7 @@ packages:
   guess-parser@0.4.22:
     resolution: {integrity: sha512-KcUWZ5ACGaBM69SbqwVIuWGoSAgD+9iJnchR9j/IarVI1jHVeXv+bUXBIMeqVMSKt3zrn0Dgf9UpcOEpPBLbSg==}
     peerDependencies:
-      typescript: '>=3.7.5'
+      typescript: ~5.1.6
 
   handle-thing@2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}

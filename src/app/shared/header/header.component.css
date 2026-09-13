@@ -174,3 +174,80 @@
         flex-grow: 1;
     }
 }
+
+/* Resp. — Tablet vertical (≤768px): el logo y los iconos dejan crecer
+   la búsqueda sin desbordar la barra. */
+@media (max-width: 768px) {
+    .navbar {
+        gap: 12px;
+    }
+
+    .search-box {
+        min-width: 0;
+    }
+}
+
+/* ============================================================
+   Resp. — Móvil (<680px): aparece el botón de menú (drawer) y todos
+   los controles táctiles crecen a ≥44px. El texto del buscador pasa
+   a 16px para evitar el auto-zoom de iOS en los inputs.
+   ============================================================ */
+@media (max-width: 680px) {
+    .navbar {
+        gap: 8px;
+        padding: 0 10px;
+        min-height: 64px;
+    }
+
+    .menu-btn {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted-foreground);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .menu-btn:hover {
+        background-color: var(--secondary);
+        color: var(--foreground);
+    }
+
+    .icon-button {
+        width: 44px;
+        height: 44px;
+    }
+
+    .search-box {
+        padding: 0 11px;
+        height: 44px;
+    }
+
+    .search-input {
+        font-size: 16px;
+    }
+}
+
+/* ============================================================
+   Resp. — Móvil estándar (≤480px): para liberar espacio no se
+   muestra el texto "TeleDrive" (queda solo la marca) y el logo se
+   encoge; así el buscador conserva un ancho usable.
+   ============================================================ */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0 8px;
+    }
+
+    .logo-title {
+        display: none;
+    }
+
+    .logoContainer .brand-mark {
+        width: 30px;
+        height: 30px;
+    }
+}

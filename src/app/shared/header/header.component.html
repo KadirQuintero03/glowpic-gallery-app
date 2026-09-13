@@ -1,5 +1,11 @@
 <!-- Navbar Superior -->
 <header class="navbar sticky-navbar">
+    <!-- Botón de menú: abre el drawer del sidebar en móvil (oculto en
+         escritorio mediante la utilidad .mobile-only) -->
+    <button type="button" class="menu-btn mobile-only" (click)="menuClick.emit()" aria-label="Abrir menú">
+        <mat-icon>menu</mat-icon>
+    </button>
+
     <div class="logoContainer clickable" (click)="goToGallery()" role="link" tabindex="0" aria-label="Ir a mi galería"
         (keydown.enter)="goToGallery()">
         <span class="brand-mark"><mat-icon>image</mat-icon></span>

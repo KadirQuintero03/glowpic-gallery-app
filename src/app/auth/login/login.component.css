@@ -1,11 +1,13 @@
 /* Página de login — port del diseño React de tele-drive */
 .login-shell {
     min-height: 100vh;
+    min-height: 100dvh;
     background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 34%), var(--background);
     color: var(--foreground);
     display: grid;
     place-items: center;
     padding: 32px 20px;
+    box-sizing: border-box;
 }
 
 .login-card {
@@ -133,9 +135,55 @@
 @media (max-width: 680px) {
     .login-shell {
         padding: 24px 16px;
+        box-sizing: border-box;
     }
 
     .login-card {
         padding: 26px 21px;
+    }
+}
+
+/* ============================================================
+   Resp. — Móvil (≤480px): los inputs pasan a 16px (evita el
+   auto-zoom de iOS al enfocar) y los botones crecen a ≥48px de
+   altura para una buena área táctil.
+   ============================================================ */
+@media (max-width: 480px) {
+    .login-card {
+        width: 100%;
+    }
+
+    .login-input {
+        font-size: 16px;
+        height: 50px;
+    }
+
+    .login-card .primary-button,
+    .login-card .secondary-button {
+        min-height: 48px;
+    }
+
+    .back-button {
+        min-height: 44px;
+        padding: 8px 4px;
+        margin-bottom: 18px;
+    }
+}
+
+/* ============================================================
+   Resp. — Móvil pequeño (≤375px): se compacta la tarjeta para
+   aprovechar mejor el ancho disponible.
+   ============================================================ */
+@media (max-width: 375px) {
+    .login-shell {
+        padding: 18px 12px;
+    }
+
+    .login-card {
+        padding: 22px 17px;
+    }
+
+    .login-card h1 {
+        font-size: 25px;
     }
 }

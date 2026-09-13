@@ -84,3 +84,12 @@
     background-color: color-mix(in srgb, var(--destructive) 15%, transparent);
     color: var(--destructive);
 }
+
+/* Resp. — Móvil (<680px): el disparador alcanza 44px de área táctil
+   para igualar el resto de botones del header. */
+@media (max-width: 680px) {
+    .settings-trigger {
+        width: 44px;
+        height: 44px;
+    }
+}

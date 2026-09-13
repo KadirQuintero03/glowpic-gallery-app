@@ -38,6 +38,23 @@
     --sidebar-border: #2b3c4e;
     --shadow-color: rgba(0, 0, 0, 0.35);
 
+    /* ============================================================
+       Puntos de ruptura responsivos centralizados (reglas responsive
+       design). Los media queries usan los mismos valores literales
+       (CSS custom properties no funcionan dentro de @media), cada uno
+       documentado según el dispositivo que representa:
+         --bp-mobile-sm 375px  → móvil pequeño
+         --bp-mobile    480px  → móvil estándar
+         --bp-tablet    768px  → tablet vertical
+         --bp-laptop    1024px → tablet horizontal / laptop pequeña
+         (680px)               → corte nav/sidebar: ≥681px sidebar
+                                 estática, <680px drawer + hamburguesa
+       ============================================================ */
+    --bp-mobile-sm: 375px;
+    --bp-mobile: 480px;
+    --bp-tablet: 768px;
+    --bp-laptop: 1024px;
+
     /* Tonos de categoría (carpetas/tipos de archivo), igual que en el diseño
        de referencia: cada categoría conserva su propio matiz, pero el color
        de marca (--primary) es uno solo en toda la app. */
@@ -107,6 +124,34 @@ body {
    íconos de línea (estilo lucide) en vez de glifos rellenos. */
 .mat-icon {
     font-family: 'Material Icons Outlined' !important;
+}
+
+/* ============================================================
+   Resp. — Utilidades de aislamiento para estilos responsivos:
+   permiten mostrar/ocultar elementos según la ventana sin tocar
+   los estilos base de escritorio (que siguen siendo la línea base).
+   - .mobile-only: visible solo por debajo de 680px (header: botón
+     menú hamburguesa, drawer del sidebar: botón cerrar).
+   - .desktop-only: visible solo en escritorio/tablet grande.
+   ============================================================ */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 680px) {
+    .mobile-only {
+        display: inline-flex;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+}
+
+/* Scroll-lock temporal mientras el drawer móvil está abierto. La
+   clase se agrega/elimina desde home.component (nunca queda fija). */
+body.nav-drawer-open {
+    overflow: hidden;
 }
 
 /* Estilos para botones */
@@ -537,5 +582,223 @@ body {
     .folder-section {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
+    }
+}
+
+/* ============================================================
+   Visor modal del explorador (imagen / video / audio). Vive en
+   global para no inflar el presupuesto CSS del componente y para
+   poder usar viewport units din�micas (dvh) en m�vil.
+   ============================================================ */
+.viewer-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 24px;
+    animation: fadeInOverlay 0.15s ease;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Resp. � altura del visor: 90vh como fallback y 90dvh como valor
+   din�mico para que la barra de direcci�n del navegador m�vil no
+   recorte ni desplace el contenido (reglas responsivas). */
+.viewer-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: min(90vw, 1100px);
+    max-height: 90vh;
+    max-height: 90dvh;
+}
+
+.viewer-actions {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.viewer-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--card);
+    color: var(--foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .15s, color .15s;
+}
+
+.viewer-action-btn:hover,
+.viewer-action-btn.active {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.viewer-info-panel {
+    position: absolute;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    max-height: 100%;
+    overflow-y: auto;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    padding: 18px;
+}
+
+.viewer-info-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.viewer-info-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted-foreground);
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: var(--foreground);
+    word-break: break-word;
+}
+
+@media (max-width: 900px) {
+    .viewer-info-panel {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-height: 60vh;
+        max-height: 60dvh;
+        border-radius: 16px 16px 0 0;
+    }
+}
+
+.viewer-media {
+    max-width: 100%;
+    max-height: 80vh;
+    max-height: 80dvh;
+    border-radius: 10px;
+    background-color: #000;
+}
+
+.viewer-image {
+    object-fit: contain;
+}
+
+.viewer-video {
+    width: 100%;
+}
+
+.viewer-audio-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 32px;
+    min-width: min(90vw, 400px);
+}
+
+.viewer-audio-icon {
+    font-size: 48px;
+    color: var(--tone-green);
+}
+
+.viewer-audio {
+    width: 100%;
+}
+
+.viewer-filename {
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: center;
+    max-width: 90vw;
+    word-break: break-word;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Resp. � M�vil est�ndar y peque�o (=640px): el visor ocupa casi
+   toda la pantalla sin padding, los botones flotan arriba a la
+   izquierda (no tapan los controles del video, que viven a la
+   derecha) y las celdas t�ctiles miden al menos 44px. */
+@media (max-width: 640px) {
+    .viewer-overlay {
+        padding: 0;
+    }
+
+    .viewer-content {
+        max-height: 100vh;
+        max-height: 100dvh;
+        padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .viewer-actions {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 10px);
+        left: 10px;
+        right: auto;
+    }
+
+    .viewer-action-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .viewer-info-panel {
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+    }
+
+    .viewer-audio-box {
+        min-width: 0;
+        width: 100%;
+        padding: 28px 18px;
+        margin: auto 12px;
+    }
+
+    .viewer-filename {
+        max-width: 92vw;
+        padding: 0 8px 8px;
     }
 }

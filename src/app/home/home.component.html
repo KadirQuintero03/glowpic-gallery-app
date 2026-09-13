@@ -2,10 +2,11 @@
     <app-header
         (StateConfigTrue)="configState = $event"
         (showUserProfile)="userProfileState = $event"
+        (menuClick)="setNavOpen(!navOpen)"
     />
 
     <div class="app-body">
-        <app-nav />
+        <app-nav [open]="navOpen" (closeNav)="setNavOpen(false)" />
 
         <div class="app-content">
             <router-outlet></router-outlet>

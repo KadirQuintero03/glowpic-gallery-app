@@ -23,6 +23,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Mostrar perfil de usuario
   @Output() showUserProfile = new EventEmitter<boolean>();
 
+  // Abre el drawer móvil (solo visible <680px)
+  @Output() menuClick = new EventEmitter<void>();
+
   openUserProfile() {
     this.showUserProfile.emit(true);
   }

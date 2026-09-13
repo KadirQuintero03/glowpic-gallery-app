@@ -1,4 +1,13 @@
-<aside class="sidebar" aria-label="Navegación principal">
+<!-- Scrim: zona oscura que aparece con el drawer en móvil. Solo existe
+     en pantallas pequeñas (mirar el media query del CSS correspondiente). -->
+<div class="sidebar-scrim" *ngIf="open" (click)="close()" aria-hidden="true"></div>
+
+<aside class="sidebar" [class.open]="open" aria-label="Navegación principal">
+
+    <!-- Botón cerrar del drawer móvil (oculto en escritorio vía .mobile-only) -->
+    <button type="button" class="sidebar-close mobile-only" (click)="close()" aria-label="Cerrar menú">
+        <mat-icon>close</mat-icon>
+    </button>
 
     <div class="sidebar-inner">
         <div class="sidebar-section">

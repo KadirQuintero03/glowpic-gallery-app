@@ -1,12 +1,14 @@
 :host {
     display: block;
     min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .app-shell {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .app-body {
@@ -14,6 +16,16 @@
     align-items: flex-start;
     flex: 1 1 auto;
     min-width: 0;
+}
+
+/* Resp. — Móvil (<680px): el sidebar pasa a drawer fijo fuera del flujo;
+   ocultamos el desbordamiento del contenedor para evitar una barra de
+   scroll horizontal indeseada. En escritorio el sidebar es estático y
+   necesita overflow visible para funcionar con position: sticky. */
+@media (max-width: 680px) {
+    .app-body {
+        overflow: hidden;
+    }
 }
 
 .app-content {

@@ -1,6 +1,7 @@
 {
   "name": "images-gallery",
   "version": "0.0.0",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
