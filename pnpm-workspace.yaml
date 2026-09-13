@@ -5,9 +5,19 @@
 overrides:
   typescript: ~5.1.6
 
-# pnpm >=10 bloquea por defecto los scripts de build de dependencias. Angula
-# necesita esbuild y el proyecto declara opencode-ai; hay que autorizarlos
-# explícitamente o la instalación falla con ERR_PNPM_IGNORED_BUILDS.
+# Control de scripts de build:
+#  - pnpm 10 (legacy) lee "onlyBuiltDependencies" (lista).
+#  - pnpm 11/12 leen "allowBuilds" (mapa de nombre -> booleano).
+# Se declaran AMBOS con el mismo conjunto de paquetes para que cualquier
+# versión de pnpm que use el CI apruebe la ejecución de estos scripts y no
+# falle con ERR_PNPM_IGNORED_BUILDS (esbuild y nice-napi se necesitan para
+# el build de Angular; opencode-ai es dependencia directa del proyecto).
 onlyBuiltDependencies:
   - esbuild
+  - nice-napi
   - opencode-ai
+
+allowBuilds:
+  esbuild: true
+  nice-napi: true
+  opencode-ai: true
