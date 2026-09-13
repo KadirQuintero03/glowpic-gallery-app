@@ -1,9 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { firstValueFrom, Subscription } from "rxjs";
+import { AuthService } from "src/app/services/auth/auth.service";
 import { ExplorerEntry, ExplorerService } from "src/app/services/explorer/explorer.service";
 import { ThumbnailService } from "src/app/services/thumbnail/thumbnail.service";
 import type { StoredThumbnail } from "src/app/services/thumbnail/thumbnail.service";
+import { UsageService } from "src/app/services/usage/usage.service";
 
 type FileKind = "directory" | "image" | "video" | "audio" | "document";
 type ViewMode = "grid" | "list";
@@ -65,7 +67,10 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     constructor(
         public explorerService: ExplorerService,
         private thumbnailService: ThumbnailService,
-        private route: ActivatedRoute
+        private usageService: UsageService,
+        private route: ActivatedRoute,
+        private router: Router,
+        private authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -106,6 +111,7 @@ export class ExplorerComponent implements OnInit, OnDestroy {
                     this.loading = false;
                     this.setDisplayedEntries();
                     this.preloadThumbnails();
+                    this.syncUsage();
                 },
                 error: (err: Error) => {
                     console.error("Error al listar directorio:", err);
@@ -137,6 +143,7 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             this.entries = this.sortEntries(media);
             this.setDisplayedEntries();
             this.preloadThumbnails();
+            this.syncUsage();
         } catch (err) {
             console.error("Error al cargar la galería:", err);
             this.errorMessage = err instanceof Error ? err.message : "No se pudo cargar la galería.";
@@ -205,6 +212,14 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             if (a.type !== b.type) return a.type === "directory" ? -1 : 1;
             return a.name.localeCompare(b.name, "es", { sensitivity: "base" });
         });
+    }
+
+    // Actualiza el conteo de uso del almacenamiento con lo que se acaba de
+    // cargar (se muestra en el widget "Almacenamiento" del panel lateral).
+    private syncUsage(): void {
+        const files = this.entries.filter((e) => e.type === "file");
+        const bytes = files.reduce((sum, e) => sum + (e.size ?? 0), 0);
+        this.usageService.update(files.length, bytes);
     }
 
     // Recupera del almacenamiento local las miniaturas ya generadas
@@ -348,6 +363,66 @@ export class ExplorerComponent implements OnInit, OnDestroy {
 
     goToRoot(): void {
         this.load("");
+    }
+
+    // ---- Compañía del encabezado de vista (diseño tele-drive) ----
+
+    get username(): string {
+        return this.authService.getUsername() ?? '';
+    }
+
+    // Fecha de hoy larga y en mayúscula inicial: "Sábado, 12 de septiembre".
+    get todayLabel(): string {
+        const d = new Date();
+        const label = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+        return label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    // Título grande de la vista según el contexto: galería mezclada, una
+    // carpeta/categoría específica o el inicio (raíz sin búsqueda).
+    get pageTitle(): string {
+        if (this.isGalleryMode) return 'Galería';
+        if (this.isSearching) return 'Resultados';
+        const parts = this.currentPath.split('/').filter(Boolean);
+        if (parts.length === 0) return 'Inicio';
+        return this.smartFolderTitle(parts[parts.length - 1]);
+    }
+
+    // Tarjeta de bienvenida solo en la raíz (sin categoría ni búsqueda).
+    get showWelcome(): boolean {
+        return (
+            !this.loading &&
+            !this.errorMessage &&
+            !this.isGalleryMode &&
+            !this.currentPath &&
+            !this.isSearching
+        );
+    }
+
+    goToGalleryView(): void {
+        this.router.navigate(['/home/explorer'], {
+            queryParams: { view: 'gallery', path: null, search: null },
+        });
+    }
+
+    // Normaliza el nombre de la carpeta a la etiqueta amigable de la categoría.
+    private smartFolderTitle(name: string): string {
+        const n = name.toLowerCase();
+        if (n.startsWith('imagen')) return 'Imágenes';
+        if (n.startsWith('video')) return 'Vídeos';
+        if (n.startsWith('audio')) return 'Audio';
+        if (n.startsWith('document')) return 'Documentos';
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    // Tono del ícono de carpeta según su categoría (azul, morado, verde, ámbar).
+    folderTone(entry: ExplorerEntry): string {
+        const n = entry.name.toLowerCase();
+        if (n.startsWith('imagen')) return 'blue';
+        if (n.startsWith('video')) return 'purple';
+        if (n.startsWith('audio')) return 'green';
+        if (n.startsWith('document')) return 'amber';
+        return 'blue';
     }
 
     // ---- Acciones rápidas (overlay al pasar el cursor) ----

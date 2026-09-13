@@ -91,15 +91,80 @@
     margin-top: auto;
 }
 
-.sidebar-user {
-    padding: 4px 12px 8px;
+/* Widget de almacenamiento (port del prototipo React de tele-drive) */
+.storage-mini {
+    padding: 12px 10px 14px;
 }
 
-.sidebar-user-name {
-    font-size: 0.78rem;
-    font-weight: 600;
+.storage-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted-foreground);
+}
+
+.storage-head span:last-child {
     color: var(--sidebar-foreground);
-    word-break: break-word;
+    font-weight: 750;
+}
+
+.progress {
+    height: 5px;
+    background: var(--secondary);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 10px 0 7px;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+    border-radius: inherit;
+}
+
+.storage-mini small,
+.user-row small {
+    color: var(--muted-foreground);
+    font-size: 10px;
+}
+
+/* Fila del usuario con avatar de iniciales */
+.user-row {
+    border-top: 1px solid var(--sidebar-border);
+    padding: 14px 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.user-row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.user-row-info strong {
+    font-size: 12px;
+    color: var(--sidebar-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sidebar-logout {
@@ -130,7 +195,8 @@
 
     .sidebar-item span,
     .sidebar-label,
-    .sidebar-user {
+    .storage-mini,
+    .user-row {
         display: none;
     }
 }

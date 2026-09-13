@@ -2,22 +2,17 @@
 .logoContainer {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .logo-title {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: 1.05rem;
+    font-weight: 750;
+    letter-spacing: -0.04em;
     color: var(--foreground);
     white-space: nowrap;
-}
-
-.logoContainer img {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
 }
 
 /* Navbar fija arriba */
@@ -33,28 +28,30 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    height: 64px;
+    min-height: 72px;
     padding: 0 24px;
-    background: var(--sidebar);
+    background: color-mix(in srgb, var(--sidebar) 76%, transparent);
     border-bottom: 1px solid var(--sidebar-border);
+    backdrop-filter: blur(8px);
 }
 
 .navbar h2 {
     color: var(--foreground);
 }
 
-/* Barra de búsqueda: ancha, prominente y centrada, con radio cuadrado
-   (no en píldora) para igualar el estilo del diseño de referencia. */
+/* Barra de búsqueda: ancha, prominente y centrada */
 .search-box {
     flex: 0 1 560px;
+    width: min(470px, 58vw);
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: var(--input);
+    background-color: var(--secondary);
     border: 1px solid var(--border);
     border-radius: 11px;
-    padding: 0 14px;
-    height: 42px;
+    padding: 0 13px;
+    height: 40px;
+    color: var(--muted-foreground);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 

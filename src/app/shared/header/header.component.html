@@ -1,7 +1,8 @@
 <!-- Navbar Superior -->
 <header class="navbar sticky-navbar">
-    <div class="logoContainer clickable" (click)="goToGallery()">
-        <img src="../../assets/Log.png" alt="Logo">
+    <div class="logoContainer clickable" (click)="goToGallery()" role="link" tabindex="0" aria-label="Ir a mi galería"
+        (keydown.enter)="goToGallery()">
+        <span class="brand-mark"><mat-icon>image</mat-icon></span>
         <span class="logo-title">TeleDrive</span>
     </div>
 
@@ -17,6 +18,11 @@
     </div>
 
     <div class="nav-icons">
+        <button type="button" class="icon-button" (click)="toggleTheme()"
+            [attr.aria-label]="isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'"
+            [title]="isLight ? 'Modo oscuro' : 'Modo claro'">
+            <mat-icon>{{ isLight ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        </button>
         <app-settings-menu></app-settings-menu>
     </div>
 </header>

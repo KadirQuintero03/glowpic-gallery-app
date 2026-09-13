@@ -1,9 +1,10 @@
 .explorer-container {
     padding: 32px 40px 70px;
-    max-width: 1400px;
+    max-width: 1220px;
     margin: 0 auto;
 }
 
+/* ===== Barra superior ===== */
 .explorer-toolbar {
     display: flex;
     align-items: center;
@@ -26,6 +27,11 @@
     color: var(--foreground);
     cursor: pointer;
     transition: background-color .15s;
+    flex-shrink: 0;
+}
+
+.up-btn mat-icon {
+    transform: rotate(-45deg);
 }
 
 .up-btn:hover:not(:disabled) {
@@ -41,7 +47,7 @@
 .breadcrumbs {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     flex-wrap: wrap;
     font-size: 0.9rem;
     flex: 1;
@@ -68,25 +74,8 @@
     font-size: 16px;
 }
 
-/* Título del modo "Mi Galería" */
-.gallery-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--foreground);
-    flex: 1;
-    min-width: 0;
-}
-
-.gallery-title mat-icon {
-    color: var(--primary);
-    font-size: 22px;
-}
-
-.crumb:last-child {
+.crumb:last-child,
+.crumb.current {
     color: var(--foreground);
     font-weight: 700;
 }
@@ -120,7 +109,6 @@
     text-decoration: underline;
 }
 
-/* Alternador de vistas */
 .view-toggle {
     display: flex;
     gap: 3px;
@@ -150,10 +138,10 @@
 
 .view-toggle button.active {
     background-color: var(--accent);
-    color: var(--primary);
+    color: var(--accent-foreground);
 }
 
-/* Estados */
+/* ===== Estados ===== */
 .state-message {
     display: flex;
     flex-direction: column;
@@ -188,15 +176,7 @@
     }
 }
 
-/* Carpetas */
-.folder-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-    margin-bottom: 32px;
-}
-
-/* Bloques por fecha */
+/* ===== Bloques por fecha ===== */
 .date-group {
     margin-bottom: 32px;
 }
@@ -212,10 +192,10 @@
     text-transform: capitalize;
 }
 
-/* Grilla de archivos: celdas cuadradas, radio grande como en tele-drive */
+/* ===== Grilla de archivos (previews 1.18, 4 columnas) ===== */
 .explorer-grid-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
 }
 
@@ -240,9 +220,8 @@
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 45%, transparent);
 }
 
-/* Miniatura cuadrada 1:1 */
 .item-thumb.dynamic {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1.18 / 1;
     width: 100%;
     border-radius: 10px;
     overflow: hidden;
@@ -258,18 +237,6 @@
     display: block;
 }
 
-.folder-thumb {
-    width: 100%;
-    height: 76px;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--muted);
-    margin-bottom: 8px;
-}
-
 .item-icon {
     display: flex;
     align-items: center;
@@ -278,17 +245,11 @@
     height: 100%;
 }
 
-.item-icon.folder {
-    color: var(--primary);
-}
-
-/* Tono de categoría "audio" (verde), igual que en el diseño de referencia */
 .item-icon.audio {
     color: var(--tone-green);
     background-color: var(--tone-green-bg);
 }
 
-/* Tono de categoría "documento" (ámbar), igual que en el diseño de referencia */
 .item-icon.document {
     color: var(--tone-amber);
     background-color: var(--tone-amber-bg);
@@ -311,7 +272,6 @@
     color: #ffffff;
 }
 
-/* Marca de elemento seleccionado */
 .check-badge {
     position: absolute;
     top: 8px;
@@ -327,7 +287,6 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Overlay de acciones rápidas (sin capturar clics cuando está invisible) */
 .item-overlay {
     position: absolute;
     inset: 0;
@@ -385,7 +344,6 @@
     transform: none;
 }
 
-/* Truncamiento de nombres de archivo largos a una sola línea */
 .item-name {
     margin: 0;
     font-size: 0.82rem;
@@ -408,10 +366,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.explorer-item.is-folder .item-name {
-    font-weight: 700;
 }
 
 /* ===== Vista de lista ===== */
@@ -563,6 +517,17 @@
     cursor: default;
 }
 
+/* ===== Responsive ===== */
+@media (max-width: 920px) {
+    .explorer-container {
+        padding: 30px 24px 50px;
+    }
+
+    .explorer-grid-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 640px) {
     .list-size {
         display: none;
@@ -573,29 +538,22 @@
     }
 }
 
-@media (max-width: 920px) {
-    .explorer-container {
-        padding: 30px 24px 50px;
-    }
-}
-
 @media (max-width: 600px) {
     .explorer-container {
         padding: 23px 15px 40px;
     }
 
     .explorer-grid-cards {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-    }
-
-    .folder-section {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
 
     .list-actions {
         opacity: 1;
+    }
+
+    .up-btn {
+        display: none;
     }
 }
 
@@ -660,7 +618,6 @@
     color: var(--accent-foreground);
 }
 
-/* Panel de información del archivo abierto (metadata) */
 .viewer-info-panel {
     position: absolute;
     top: 0;

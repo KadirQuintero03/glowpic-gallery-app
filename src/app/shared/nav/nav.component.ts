@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { UsageService } from 'src/app/services/usage/usage.service';
 
 /**
  * Panel lateral estático de TeleDrive. Contiene la navegación principal
@@ -24,7 +25,7 @@ export class NavComponent implements OnInit, OnDestroy {
   active = '';
   private navSub?: Subscription;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService, private usageService: UsageService) {}
 
   ngOnInit(): void {
     this.syncActive();
@@ -93,6 +94,22 @@ export class NavComponent implements OnInit, OnDestroy {
 
   get username(): string {
     return this.authService.getUsername() ?? '';
+  }
+
+  // Iniciales del usuario para el avatar del panel lateral.
+  get avatar(): string {
+    const name = this.username.trim();
+    if (!name) return 'TD';
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  // Datos del widget "Almacenamiento" (totales reales del explorador).
+  get usageLabel(): string {
+    return this.usageService.sizeLabel;
+  }
+
+  get usagePercent(): number {
+    return this.usageService.percent;
   }
 
   logout(): void {

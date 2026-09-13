@@ -12,16 +12,16 @@
  * componente que ya las consume.
  */
 :root {
-    --background: #0e1621;
-    --foreground: #e1e9f0;
-    --card: #17212b;
-    --card-foreground: #e1e9f0;
-    --popover: #1c2733;
-    --popover-foreground: #e1e9f0;
+    --background: #0e1724;
+    --foreground: #f5f9ff;
+    --card: #172331;
+    --card-foreground: #f5f9ff;
+    --popover: #1d2b3a;
+    --popover-foreground: #f5f9ff;
     --primary: #2ca7e8;
     --primary-foreground: #ffffff;
     --secondary: #1d2b3a;
-    --secondary-foreground: #e1e9f0;
+    --secondary-foreground: #f5f9ff;
     --muted: #1d2b3a;
     --muted-foreground: #91a5bb;
     --accent: #183c55;
@@ -33,8 +33,8 @@
     --input: #1d2b3a;
     --ring: #2ca7e8;
     --radius: 0.75rem;
-    --sidebar: #17212b;
-    --sidebar-foreground: #e1e9f0;
+    --sidebar: #172331;
+    --sidebar-foreground: #f5f9ff;
     --sidebar-border: #2b3c4e;
     --shadow-color: rgba(0, 0, 0, 0.35);
 
@@ -105,8 +105,7 @@ body {
    aunque el link de Google Fonts ahora cargue el set "Outlined": forzamos
    la familia tipográfica para que todos los <mat-icon> se vean como
    íconos de línea (estilo lucide) en vez de glifos rellenos. */
-.material-icons,
-.mat-icon.material-icons {
+.mat-icon {
     font-family: 'Material Icons Outlined' !important;
 }
 
@@ -238,5 +237,305 @@ body {
     .btn {
         width: 100%;
         margin-bottom: 12px;
+    }
+}
+
+/* ============================================================
+   Primitivas de diseño compartidas (port del prototipo React de
+   tele-drive: app/globals.css). Son reutilizadas por la landing,
+   el login, el header y el explorador para igualar el diseño.
+   ============================================================ */
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--foreground);
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 5px 18px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.brand-mark mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+}
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 37px;
+    height: 37px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s, color .15s;
+}
+
+.icon-button:hover {
+    border-color: var(--border);
+    background: var(--secondary);
+    color: var(--foreground);
+}
+
+.icon-button mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+}
+
+.muted {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.primary-button,
+.secondary-button,
+.outline-button {
+    border-radius: 10px;
+    min-height: 42px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    font-size: 13px;
+    font-weight: 750;
+    font-family: inherit;
+    color: var(--foreground);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s, filter .2s;
+}
+
+.primary-button {
+    color: #fff;
+    background: var(--primary);
+    box-shadow: 0 7px 18px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.secondary-button,
+.outline-button {
+    background: var(--secondary);
+    border-color: var(--border);
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.outline-button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+    opacity: 0.55;
+    cursor: default;
+    filter: none;
+    transform: none;
+}
+
+.primary-button mat-icon,
+.secondary-button mat-icon,
+.outline-button mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================================
+   Superficie de vista del explorador (diseño tele-drive). Viven
+   aquí para no inflar el presupuesto de estilos del componente.
+   ============================================================ */
+.view-intro {
+    margin-bottom: 26px;
+}
+
+.welcome-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    flex-wrap: wrap;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 30px;
+    background: linear-gradient(110deg, color-mix(in srgb, var(--primary) 18%, var(--card)), var(--card));
+}
+
+.welcome-card h1 {
+    font-size: 28px;
+    letter-spacing: -.055em;
+    margin: 8px 0 3px;
+}
+
+.welcome-card h1 span {
+    color: var(--primary);
+}
+
+.welcome-card .primary-button {
+    flex-shrink: 0;
+}
+
+.gallery-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 25px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 23px;
+}
+
+.gallery-intro h1 {
+    font-size: 28px;
+    letter-spacing: -.05em;
+    margin: 6px 0 0;
+}
+
+.crumb-separator {
+    display: inline-flex;
+    align-items: center;
+    color: var(--muted-foreground);
+    opacity: 0.7;
+}
+
+.crumb-separator mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.folder-section {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.folder-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--card);
+    color: var(--foreground);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: transform .2s, border-color .2s;
+}
+
+.folder-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.folder-icon {
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.folder-icon mat-icon {
+    font-size: 21px;
+    width: 21px;
+    height: 21px;
+}
+
+.folder-icon.blue {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.folder-icon.purple {
+    background: var(--tone-purple-bg);
+    color: var(--tone-purple);
+}
+
+.folder-icon.green {
+    background: var(--tone-green-bg);
+    color: var(--tone-green);
+}
+
+.folder-icon.amber {
+    background: var(--tone-amber-bg);
+    color: var(--tone-amber);
+}
+
+.folder-card-info {
+    min-width: 0;
+}
+
+.folder-card-info strong {
+    display: block;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.folder-card-info span {
+    display: block;
+    font-size: 10px;
+    color: var(--muted-foreground);
+    margin-top: 4px;
+}
+
+.folder-arrow {
+    margin-left: auto;
+    color: var(--muted-foreground);
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 920px) {
+    .folder-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .folder-section {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 }

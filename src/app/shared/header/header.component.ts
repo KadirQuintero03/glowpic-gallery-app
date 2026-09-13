@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -28,7 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private routeSub?: Subscription;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute, private themeService: ThemeService) {}
 
   ngOnInit(): void {
     // Mantiene la barra sincronizada con la búsqueda activa del explorador
@@ -46,6 +47,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goToGallery(): void {
     this.router.navigate(['/home/explorer'], { queryParams: { path: null } });
+  }
+
+  get isLight(): boolean {
+    return this.themeService.getTheme() === 'light';
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   // Sanitiza la consulta antes de enviarla: elimina caracteres peligrosos

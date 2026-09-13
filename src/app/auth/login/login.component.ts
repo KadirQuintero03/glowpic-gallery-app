@@ -82,4 +82,9 @@ export class LoginComponent {
     this.errorMessage = "";
     this.infoMessage = "";
   }
+
+  // Botón "Volver": regresa al landing sin perder la sesión.
+  backHome(): void {
+    this.router.navigate(["/"]);
+  }
 }

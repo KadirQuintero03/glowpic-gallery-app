@@ -3,32 +3,27 @@
     <!-- Barra superior: migas de pan + resumen + alternador de vistas -->
     <div class="explorer-toolbar">
 
-        <!-- Modo galería mezclada (Mi Galería) -->
-        <div class="gallery-title" *ngIf="isGalleryMode">
-            <mat-icon fontSet="material-icons">photo_library</mat-icon>
-            <span>Galería</span>
-        </div>
+        <button class="up-btn" (click)="goUp()" [disabled]="!currentPath" aria-label="Subir un nivel">
+            <mat-icon fontSet="material-icons">arrow_upward</mat-icon>
+        </button>
 
-        <!-- Modo explorador normal -->
-        <ng-container *ngIf="!isGalleryMode">
-            <button class="up-btn" (click)="goUp()" [disabled]="!currentPath" aria-label="Subir un nivel">
-                <mat-icon fontSet="material-icons">arrow_upward</mat-icon>
-            </button>
-
-            <nav class="breadcrumbs" aria-label="Ruta actual">
-                <span class="crumb" (click)="goToRoot()">
-                    <mat-icon class="crumb-home-icon" fontSet="material-icons">home</mat-icon>
-                    <span class="crumb-label">Mi galería</span>
-                </span>
-                <ng-container *ngFor="let crumb of breadcrumbs">
-                    <span class="crumb-separator">/</span>
-                    <span class="crumb" (click)="goToBreadcrumb(crumb.path)">{{ crumb.name }}</span>
-                </ng-container>
-            </nav>
-        </ng-container>
+        <nav class="breadcrumbs" aria-label="Ruta actual">
+            <span class="crumb" (click)="goToRoot()">
+                <mat-icon class="crumb-home-icon" fontSet="material-icons">home</mat-icon>
+                <span class="crumb-label">Mi galería</span>
+            </span>
+            <ng-container *ngFor="let crumb of breadcrumbs">
+                <span class="crumb-separator"><mat-icon fontSet="material-icons">chevron_right</mat-icon></span>
+                <span class="crumb" (click)="goToBreadcrumb(crumb.path)">{{ crumb.name }}</span>
+            </ng-container>
+            <ng-container *ngIf="isGalleryMode">
+                <span class="crumb-separator"><mat-icon fontSet="material-icons">chevron_right</mat-icon></span>
+                <span class="crumb current">Galería</span>
+            </ng-container>
+        </nav>
 
         <span class="explorer-summary" *ngIf="!loading">
-            {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }} · {{ totalSizeLabel || '0 B' }} ocupados
+            {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }} · {{ totalSizeLabel || '0 B' }}
         </span>
 
         <span class="selection-summary" *ngIf="selectedCount > 0">
@@ -45,6 +40,28 @@
                 aria-label="Vista de lista" title="Vista de lista">
                 <mat-icon fontSet="material-icons">view_list</mat-icon>
             </button>
+        </div>
+    </div>
+
+    <!-- Cabecera de la vista: tarjeta de bienvenida (inicio) o título de biblioteca -->
+    <div class="view-intro" *ngIf="!loading && !errorMessage">
+        <div class="welcome-card" *ngIf="showWelcome">
+            <div>
+                <p class="eyebrow">{{ todayLabel }}</p>
+                <h1>Hola, {{ username }}<span>.</span></h1>
+                <p class="muted">Todo lo que guardas en Telegram, organizado en un solo lugar.</p>
+            </div>
+            <button type="button" class="primary-button" (click)="goToGalleryView()">
+                Ver mi galería <mat-icon fontSet="material-icons">chevron_right</mat-icon>
+            </button>
+        </div>
+
+        <div class="gallery-intro" *ngIf="!showWelcome">
+            <div>
+                <p class="eyebrow">Tu biblioteca</p>
+                <h1>{{ pageTitle }}</h1>
+                <p class="muted">Explora y administra tus archivos sincronizados.</p>
+            </div>
         </div>
     </div>
 
@@ -74,17 +91,18 @@
         <p *ngIf="!isGalleryMode">Envíale una foto, video o documento al bot en Telegram para que aparezca aquí.</p>
     </div>
 
-    <!-- Carpetas de la ruta actual: grilla compacta -->
+    <!-- Carpetas de la ruta actual: tarjetas de categoría con tono propio -->
     <div class="folder-section" *ngIf="!loading && !errorMessage && folderEntries.length > 0">
-        <div class="explorer-item is-folder" *ngFor="let entry of folderEntries; trackBy: trackByEntryPath"
+        <div class="folder-card" *ngFor="let entry of folderEntries; trackBy: trackByEntryPath"
             (click)="openEntry(entry)">
-            <div class="item-thumb folder-thumb">
-                <div class="item-icon folder">
-                    <mat-icon fontSet="material-icons">folder</mat-icon>
-                </div>
+            <div class="folder-icon" [ngClass]="folderTone(entry)">
+                <mat-icon fontSet="material-icons">folder</mat-icon>
             </div>
-            <p class="item-name" [title]="entry.name">{{ entry.name }}</p>
-            <span class="item-meta">Carpeta · {{ formatListDate(entry) }}</span>
+            <div class="folder-card-info">
+                <strong [title]="entry.name">{{ entry.name }}</strong>
+                <span>Carpeta</span>
+            </div>
+            <mat-icon class="folder-arrow" fontSet="material-icons">chevron_right</mat-icon>
         </div>
     </div>
 

@@ -23,7 +23,7 @@
 
             <button type="button" class="sidebar-item" [class.active]="active === 'video'" (click)="openCategory('Video')">
                 <mat-icon class="sidebar-icon">video_library</mat-icon>
-                <span>Video</span>
+                <span>Vídeos</span>
             </button>
 
             <button type="button" class="sidebar-item" [class.active]="active === 'audio'" (click)="openCategory('Audio')">
@@ -39,9 +39,23 @@
     </div>
 
     <div class="sidebar-footer">
-        <div class="sidebar-user" *ngIf="username">
-            <span class="sidebar-user-name">Usuario: {{ username }}</span>
+        <div class="storage-mini">
+            <div class="storage-head">
+                <span>Almacenamiento</span>
+                <span>{{ usageLabel }}</span>
+            </div>
+            <div class="progress"><span [style.width.%]="usagePercent"></span></div>
+            <small>de 2 GB utilizados</small>
         </div>
+
+        <div class="user-row">
+            <div class="avatar">{{ avatar }}</div>
+            <div class="user-row-info">
+                <strong>{{ username }}</strong>
+                <small>Cuenta personal</small>
+            </div>
+        </div>
+
         <button type="button" class="sidebar-item sidebar-logout" (click)="logout()">
             <mat-icon class="sidebar-icon">logout</mat-icon>
             <span>Cerrar sesión</span>
