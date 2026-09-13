@@ -5,23 +5,23 @@
 }
 
 .settings-trigger {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 37px;
+    height: 37px;
+    border-radius: 10px;
     border: 1px solid transparent;
     background-color: transparent;
-    color: var(--foreground);
+    color: var(--muted-foreground);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .settings-trigger:hover,
 .settings-trigger[aria-expanded="true"] {
-    background-color: var(--accent);
-    color: var(--accent-foreground);
+    background-color: var(--input);
+    color: var(--foreground);
     border-color: var(--border);
 }
 
@@ -32,7 +32,7 @@
     min-width: 200px;
     background-color: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     box-shadow: 0 8px 24px var(--shadow-color);
     padding: 8px;
     display: flex;
@@ -61,10 +61,11 @@
     width: 100%;
     padding: 10px 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
     background-color: transparent;
     color: var(--foreground);
-    font-size: 0.9rem;
+    font-size: 0.87rem;
+    font-weight: 600;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.15s ease, color 0.15s ease;
@@ -80,6 +81,6 @@
 }
 
 .settings-item.danger:hover {
-    background-color: var(--destructive);
-    color: var(--destructive-foreground);
+    background-color: color-mix(in srgb, var(--destructive) 15%, transparent);
+    color: var(--destructive);
 }

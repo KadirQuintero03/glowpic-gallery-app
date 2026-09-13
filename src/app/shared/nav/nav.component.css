@@ -1,16 +1,16 @@
-/* Panel lateral estático (estilo Google Drive) */
+/* Panel lateral estático (estilo Google Drive / tele-drive) */
 .sidebar {
     position: sticky;
     top: 60px;
     align-self: flex-start;
-    width: 240px;
+    width: 248px;
     height: calc(100vh - 60px);
     background-color: var(--sidebar);
     border-right: 1px solid var(--sidebar-border);
     color: var(--sidebar-foreground);
     display: flex;
     flex-direction: column;
-    padding: 12px 10px;
+    padding: 16px 12px;
     overflow-y: auto;
     flex-shrink: 0;
     z-index: 90;
@@ -31,14 +31,14 @@
 
 /* Categorías justo debajo de "Mi Galería" */
 .sidebar-categories {
-    margin-top: 4px;
+    margin-top: 12px;
 }
 
 .sidebar-label {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.68rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.09em;
     color: var(--muted-foreground);
     margin: 0 0 8px;
     padding: 0 12px;
@@ -49,13 +49,13 @@
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 12px;
     border: none;
     border-radius: 10px;
     background-color: transparent;
-    color: var(--sidebar-foreground);
-    font-size: 0.92rem;
-    font-weight: 500;
+    color: var(--muted-foreground);
+    font-size: 0.87rem;
+    font-weight: 700;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.15s ease, color 0.15s ease;
@@ -67,12 +67,12 @@
 }
 
 .sidebar-item.active {
-    background-color: color-mix(in srgb, var(--primary) 18%, transparent);
+    background-color: var(--accent);
     color: var(--primary);
 }
 
 .sidebar-item.active:hover {
-    color: var(--accent-foreground);
+    color: var(--primary);
 }
 
 .sidebar-icon {
@@ -97,7 +97,7 @@
 
 .sidebar-user-name {
     font-size: 0.78rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--sidebar-foreground);
     word-break: break-word;
 }
@@ -107,13 +107,13 @@
 }
 
 .sidebar-logout:hover {
-    background-color: var(--destructive);
-    color: var(--destructive-foreground);
+    background-color: color-mix(in srgb, var(--destructive) 15%, transparent);
+    color: var(--destructive);
 }
 
 @media (max-width: 760px) {
     .sidebar {
-        width: 200px;
+        width: 210px;
     }
 }
 
