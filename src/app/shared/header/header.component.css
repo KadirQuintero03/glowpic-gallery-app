@@ -1,253 +1,156 @@
-/*Imagen al lado del titulo (TeleDrive)*/
-.logoContainer {
+﻿.navbar {
     display: flex;
     align-items: center;
-    gap: 9px;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-.logo-title {
-    font-size: 1.05rem;
-    font-weight: 750;
-    letter-spacing: -0.04em;
-    color: var(--foreground);
-    white-space: nowrap;
-}
-
-/* Navbar fija arriba */
-.sticky-navbar {
-    position: sticky;
-    top: 0;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 24px;
+    background-color: var(--sidebar);
+    border-bottom: 1px solid var(--sidebar-border);
+    box-sizing: border-box;
     z-index: 100;
 }
 
-/* Navbar Superior */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    min-height: 72px;
-    padding: 0 24px;
-    background: color-mix(in srgb, var(--sidebar) 76%, transparent);
-    border-bottom: 1px solid var(--sidebar-border);
-    backdrop-filter: blur(8px);
+.sticky-navbar {
+    position: sticky;
+    top: 0;
 }
 
-.navbar h2 {
-    color: var(--foreground);
-}
-
-/* Barra de búsqueda: ancha, prominente y centrada */
-.search-box {
-    flex: 0 1 560px;
-    width: min(470px, 58vw);
+.logoContainer {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: var(--secondary);
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 0 13px;
-    height: 40px;
-    color: var(--muted-foreground);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    user-select: none;
 }
 
-.search-box:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 25%, transparent);
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}
+
+.logo-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--foreground);
+    letter-spacing: -0.02em;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(460px, 100%);
+    margin: 0 20px;
 }
 
 .search-icon {
-    flex-shrink: 0;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    position: absolute;
+    left: 14px;
     color: var(--muted-foreground);
+    pointer-events: none;
 }
 
 .search-input {
-    flex: 1;
-    min-width: 0;
-    background: transparent;
-    border: none;
-    outline: none;
+    width: 100%;
+    height: 40px;
+    padding: 0 38px 0 42px;
+    background-color: var(--input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     color: var(--foreground);
-    font-size: 0.9rem;
-    padding: 8px 0;
+    font-size: 13.5px;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
 }
 
 .search-input::placeholder {
-    color: var(--muted-foreground);
+    color: #475569;
 }
 
 .search-clear {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 7px;
+    position: absolute;
+    right: 10px;
+    background: none;
     border: none;
-    background-color: var(--muted);
     color: var(--muted-foreground);
+    cursor: pointer;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    border-radius: 4px;
 }
 
 .search-clear:hover {
-    background-color: var(--accent);
-    color: var(--accent-foreground);
-}
-
-.search-clear mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    color: var(--foreground);
 }
 
 .nav-icons {
     display: flex;
-    gap: 10px;
-    flex-shrink: 0;
     align-items: center;
+    gap: 10px;
 }
 
-.nav-icons button {
-    background-color: transparent;
-    border-color: transparent;
+.icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
     display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-.iconNav {
-    width: 24px;
+.icon-button:hover {
+    background-color: var(--secondary);
+    border-color: var(--primary);
 }
 
-.upload {
-    width: 30px;
-}
-
-.fileUpload {
+.menu-btn {
+    background: none;
+    border: none;
+    color: var(--foreground);
+    padding: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.fileUpload input {
+.mobile-only {
     display: none;
 }
 
-/* Icono de cerrar sesión: fondo sólido fijo para garantizar contraste
-   tanto en modo claro como en modo oscuro, sin depender de las variables
-   de color del tema activo. Radio cuadrado, igual que el resto de los
-   botones de ícono del header. */
-.exit-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background-color: var(--destructive);
-    color: #ffffff;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.exit-btn:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-}
-
-@media (max-width: 760px) {
-    .navbar {
-        padding: 0 12px;
-    }
-
-    .search-box {
-        flex-basis: auto;
-        flex-grow: 1;
-    }
-}
-
-/* Resp. — Tablet vertical (≤768px): el logo y los iconos dejan crecer
-   la búsqueda sin desbordar la barra. */
 @media (max-width: 768px) {
+    .mobile-only {
+        display: flex;
+    }
+
     .navbar {
-        gap: 12px;
+        padding: 0 16px;
     }
 
     .search-box {
-        min-width: 0;
-    }
-}
-
-/* ============================================================
-   Resp. — Móvil (<680px): aparece el botón de menú (drawer) y todos
-   los controles táctiles crecen a ≥44px. El texto del buscador pasa
-   a 16px para evitar el auto-zoom de iOS en los inputs.
-   ============================================================ */
-@media (max-width: 680px) {
-    .navbar {
-        gap: 8px;
-        padding: 0 10px;
-        min-height: 64px;
-    }
-
-    .menu-btn {
-        width: 44px;
-        height: 44px;
-        flex-shrink: 0;
-        border: none;
-        border-radius: 10px;
-        background: transparent;
-        color: var(--muted-foreground);
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-
-    .menu-btn:hover {
-        background-color: var(--secondary);
-        color: var(--foreground);
-    }
-
-    .icon-button {
-        width: 44px;
-        height: 44px;
-    }
-
-    .search-box {
-        padding: 0 11px;
-        height: 44px;
-    }
-
-    .search-input {
-        font-size: 16px;
-    }
-}
-
-/* ============================================================
-   Resp. — Móvil estándar (≤480px): para liberar espacio no se
-   muestra el texto "TeleDrive" (queda solo la marca) y el logo se
-   encoge; así el buscador conserva un ancho usable.
-   ============================================================ */
-@media (max-width: 480px) {
-    .navbar {
-        padding: 0 8px;
+        margin: 0 10px;
     }
 
     .logo-title {
         display: none;
-    }
-
-    .logoContainer .brand-mark {
-        width: 30px;
-        height: 30px;
     }
 }

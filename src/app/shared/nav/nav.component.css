@@ -1,17 +1,16 @@
-/* Panel lateral estático (estilo Google Drive / tele-drive) */
-.sidebar {
+﻿.sidebar {
+    width: 240px;
+    height: calc(100vh - 64px);
+    height: calc(100dvh - 64px);
     position: sticky;
-    top: 60px;
-    align-self: flex-start;
-    width: 248px;
-    height: calc(100vh - 60px);
+    top: 64px;
     background-color: var(--sidebar);
     border-right: 1px solid var(--sidebar-border);
-    color: var(--sidebar-foreground);
     display: flex;
     flex-direction: column;
-    padding: 16px 12px;
-    overflow-y: auto;
+    justify-content: space-between;
+    padding: 20px 14px;
+    box-sizing: border-box;
     flex-shrink: 0;
     z-index: 90;
 }
@@ -19,29 +18,23 @@
 .sidebar-inner {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex: 1;
+    gap: 24px;
+    overflow-y: auto;
 }
 
 .sidebar-section {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-}
-
-/* Categorías justo debajo de "Mi Galería" */
-.sidebar-categories {
-    margin-top: 12px;
+    gap: 4px;
 }
 
 .sidebar-label {
-    font-size: 0.68rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     color: var(--muted-foreground);
-    margin: 0 0 8px;
-    padding: 0 12px;
+    margin: 12px 0 6px 12px;
+    text-transform: uppercase;
 }
 
 .sidebar-item {
@@ -49,206 +42,178 @@
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 11px 12px;
-    border: none;
+    padding: 10px 14px;
     border-radius: 10px;
-    background-color: transparent;
-    color: var(--muted-foreground);
-    font-size: 0.87rem;
-    font-weight: 700;
-    text-align: left;
+    border: none;
+    background: transparent;
+    color: var(--sidebar-foreground);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    text-align: left;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
 }
 
 .sidebar-item:hover {
-    background-color: var(--accent);
-    color: var(--accent-foreground);
+    background-color: var(--secondary);
 }
 
 .sidebar-item.active {
     background-color: var(--accent);
-    color: var(--primary);
-}
-
-.sidebar-item.active:hover {
-    color: var(--primary);
+    color: var(--accent-foreground);
+    font-weight: 600;
 }
 
 .sidebar-icon {
+    color: var(--muted-foreground);
     flex-shrink: 0;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    transition: color 0.15s ease;
+}
+
+.sidebar-item.active .sidebar-icon {
+    color: var(--accent-foreground);
 }
 
 .sidebar-footer {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--sidebar-border);
-    padding-top: 12px;
-    margin-top: auto;
 }
 
-/* Widget de almacenamiento (port del prototipo React de tele-drive) */
 .storage-mini {
-    padding: 12px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 4px;
 }
 
 .storage-head {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    align-items: center;
+    font-size: 12px;
     color: var(--muted-foreground);
 }
 
-.storage-head span:last-child {
-    color: var(--sidebar-foreground);
-    font-weight: 750;
+.storage-head strong {
+    color: var(--foreground);
 }
 
 .progress {
-    height: 5px;
-    background: var(--secondary);
-    border-radius: 99px;
+    width: 100%;
+    height: 6px;
+    background-color: var(--secondary);
+    border-radius: 999px;
     overflow: hidden;
-    margin: 10px 0 7px;
 }
 
 .progress span {
     display: block;
     height: 100%;
-    background: var(--primary);
-    border-radius: inherit;
+    background-color: var(--primary);
+    border-radius: 999px;
+    transition: width 0.3s ease;
 }
 
-.storage-mini small,
-.user-row small {
+.storage-mini small {
+    font-size: 11px;
     color: var(--muted-foreground);
-    font-size: 10px;
 }
 
-/* Fila del usuario con avatar de iniciales */
 .user-row {
-    border-top: 1px solid var(--sidebar-border);
-    padding: 14px 8px 12px;
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
+    padding: 6px 4px;
 }
 
 .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #1e293b;
+    color: #38bdf8;
     display: grid;
     place-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 10px;
-    background: var(--accent);
-    color: var(--accent-foreground);
-    font-size: 10px;
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 700;
     flex-shrink: 0;
 }
 
 .user-row-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     min-width: 0;
-    flex: 1;
 }
 
 .user-row-info strong {
-    font-size: 12px;
-    color: var(--sidebar-foreground);
+    font-size: 13px;
+    color: var(--foreground);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+.user-row-info small {
+    font-size: 11px;
+    color: var(--muted-foreground);
+}
+
 .sidebar-logout {
-    color: var(--destructive);
+    color: #ef4444;
 }
 
 .sidebar-logout:hover {
-    background-color: color-mix(in srgb, var(--destructive) 15%, transparent);
-    color: var(--destructive);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
-@media (max-width: 760px) {
-    .sidebar {
-        width: 210px;
-    }
+.logout-icon {
+    color: #ef4444 !important;
 }
 
-/* ============================================================
-   Resp. — Móvil (<680px): el sidebar deja de ser un panel estático
-   y se convierte en un DRAWER que se desliza desde la izquierda,
-   con scrim oscuro detrás y botón de cerrar. El contraste con el
-   escritorio no cambia: aquí solo se sobreescribe la posición y el
-   ancho, nunca el contenido. Touch targets ≥44px (reglas resp.).
-   ============================================================ */
-@media (max-width: 680px) {
-    .sidebar-scrim {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1150;
-        animation: scrimIn 0.2s ease;
-    }
+.mobile-only {
+    display: none;
+}
 
-    @keyframes scrimIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
+@media (max-width: 768px) {
     .sidebar {
         position: fixed;
+        left: -280px;
         top: 0;
-        left: 0;
-        bottom: 0;
-        width: min(300px, 86vw);
         height: 100vh;
         height: 100dvh;
-        transform: translateX(-105%);
-        transition: transform 0.28s ease;
-        z-index: 1200;
-        padding: 20px 14px calc(env(safe-area-inset-bottom, 0px) + 16px);
-        border-right: 1px solid var(--sidebar-border);
-        border-radius: 0 16px 16px 0;
-        box-shadow: 0 0 44px rgba(0, 0, 0, 0.4);
+        width: 260px;
+        z-index: 1000;
+        transition: left 0.25s ease;
+        padding-top: 50px;
     }
 
     .sidebar.open {
-        transform: translateX(0);
+        left: 0;
+    }
+
+    .sidebar-scrim {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+    }
+
+    .mobile-only {
+        display: flex;
     }
 
     .sidebar-close {
-        width: 44px;
-        height: 44px;
-        margin: 0 0 8px auto;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
         border: none;
-        border-radius: 10px;
-        background-color: var(--secondary);
-        color: var(--muted-foreground);
-        align-items: center;
-        justify-content: center;
+        color: var(--foreground);
         cursor: pointer;
-    }
-
-    .sidebar-close:hover {
-        background-color: var(--accent);
-        color: var(--accent-foreground);
-    }
-
-    .sidebar-item {
-        min-height: 44px;
-        padding: 12px 13px;
     }
 }
