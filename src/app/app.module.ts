@@ -1,21 +1,27 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './auth/login/login.component';
-import { HeaderComponent } from './shared/header/header.component';
-import { NavComponent } from './shared/nav/nav.component';
-import { UserConfigComponent } from './model/user-config/user-config.component';
-import { UserProfileComponent } from './model/user-profile/user-profile.component';
+import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MainPageComponent } from './pages/main-page/main-page.component';
-import { ExplorerComponent } from './pages/explorer/explorer.component';
-import { SettingsMenuComponent } from './shared/settings-menu/settings-menu.component';
-import { AuthInterceptor } from './services/auth/auth-interceptor';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+import { AuthInterceptor } from '@core/interceptors/auth-interceptor';
+import { LoginComponent } from '@features/auth/pages/login/login.component';
+import { ExplorerComponent } from '@features/gallery/pages/explorer/explorer.component';
+import { HomeComponent } from '@features/gallery/pages/home/home.component';
+import { MainPageComponent } from '@features/landing/pages/main-page/main-page.component';
+import { HeaderComponent } from '@layout/header/header.component';
+import { NavComponent } from '@layout/nav/nav.component';
+import { SettingsMenuComponent } from '@layout/settings-menu/settings-menu.component';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { FolderCardComponent } from '@shared/components/folder-card/folder-card.component';
+import { UserConfigComponent } from '@shared/components/user-config/user-config.component';
+import { UserProfileComponent } from '@shared/components/user-profile/user-profile.component';
+import { FileSizePipe } from '@shared/pipes/file-size.pipe';
 
 @NgModule({
   declarations: [
@@ -28,10 +34,14 @@ import { AuthInterceptor } from './services/auth/auth-interceptor';
     UserProfileComponent,
     MainPageComponent,
     ExplorerComponent,
-    SettingsMenuComponent
+    SettingsMenuComponent,
+    FileSizePipe,
+    EmptyStateComponent,
+    FolderCardComponent
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,

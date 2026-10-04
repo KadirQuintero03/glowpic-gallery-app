@@ -1,0 +1,242 @@
+<div class="explorer-container">
+
+    <!-- Barra superior: migas de pan + resumen + alternador de vistas -->
+    <div class="explorer-toolbar">
+        <button class="up-btn" (click)="goUp()" [disabled]="!currentPath" aria-label="Subir un nivel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+            </svg>
+        </button>
+
+        <nav class="breadcrumbs" aria-label="Ruta actual">
+            <span class="crumb" (click)="goToRoot()">
+                <svg class="crumb-home-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span class="crumb-label">Mi galería</span>
+            </span>
+            <ng-container *ngFor="let crumb of breadcrumbs">
+                <span class="crumb-separator">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </span>
+                <span class="crumb" (click)="goToBreadcrumb(crumb.path)">{{ crumb.name }}</span>
+            </ng-container>
+            <ng-container *ngIf="isGalleryMode">
+                <span class="crumb-separator">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </span>
+                <span class="crumb current">Galería</span>
+            </ng-container>
+        </nav>
+
+        <span class="explorer-summary" *ngIf="!loading">
+            {{ fileCount }} archivo{{ fileCount === 1 ? '' : 's' }} · {{ (totalSize | fileSize) }}
+        </span>
+
+        <span class="selection-summary" *ngIf="selectedCount > 0">
+            {{ selectedCount }} seleccionado{{ selectedCount === 1 ? '' : 's' }}
+            <button type="button" class="selection-clear" (click)="clearSelection()">Limpiar</button>
+        </span>
+
+        <div class="view-toggle" role="group" aria-label="Alternar vista" *ngIf="!loading">
+            <button type="button" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'"
+                aria-label="Vista de cuadrícula" title="Vista de cuadrícula">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="7" height="7" x="3" y="3" rx="1"/>
+                    <rect width="7" height="7" x="14" y="3" rx="1"/>
+                    <rect width="7" height="7" x="14" y="14" rx="1"/>
+                    <rect width="7" height="7" x="3" y="14" rx="1"/>
+                </svg>
+            </button>
+            <button type="button" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'"
+                aria-label="Vista de lista" title="Vista de lista">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cabecera de la vista: bienvenida o biblioteca -->
+    <div class="view-intro" *ngIf="!loading && !errorMessage">
+        <div class="welcome-card" *ngIf="showWelcome">
+            <div>
+                <p class="eyebrow">{{ todayLabel }}</p>
+                <h1>Hola, {{ username }}<span>.</span></h1>
+                <p class="muted">Todo lo que guardas en Telegram, organizado en un solo lugar.</p>
+            </div>
+            <button type="button" class="primary-button" (click)="goToGalleryView()">
+                <span>Ver mi galería</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="gallery-intro" *ngIf="!showWelcome">
+            <div>
+                <p class="eyebrow">TU BIBLIOTECA</p>
+                <h1>{{ pageTitle }}</h1>
+                <p class="muted">Explora y administra tus archivos sincronizados.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado de carga -->
+    <div class="state-message" *ngIf="loading">
+        <div class="spinner"></div>
+        <span>{{ isGalleryMode ? 'Recopilando tu galería...' : 'Cargando tu galería...' }}</span>
+    </div>
+
+    <!-- Estado de error -->
+    <div class="state-message error" *ngIf="errorMessage && !loading">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Sin resultados para la búsqueda -->
+    <app-empty-state *ngIf="!loading && !errorMessage && showEmpty && isSearching"
+        title="Sin resultados para tu búsqueda."
+        description="Prueba con otro término o borra la búsqueda desde la barra superior."
+        [isSearch]="true">
+    </app-empty-state>
+
+    <!-- Estado vacío de carpeta -->
+    <app-empty-state *ngIf="!loading && !errorMessage && showEmpty && !isSearching"
+        [title]="isGalleryMode ? 'Aún no tienes imágenes ni videos.' : 'Esta carpeta está vacía todavía.'"
+        [description]="!isGalleryMode ? 'Envíale una foto, video o documento al bot en Telegram para que aparezca aquí.' : ''"
+        [isSearch]="false">
+    </app-empty-state>
+
+    <!-- Carpetas de la ruta actual -->
+    <div class="folder-section" *ngIf="!loading && !errorMessage && folderEntries.length > 0">
+        <app-folder-card *ngFor="let entry of folderEntries; trackBy: trackByEntryPath"
+            [name]="entry.name"
+            [tone]="folderTone(entry)"
+            (cardClick)="openEntry(entry)">
+        </app-folder-card>
+    </div>
+
+    <!-- Archivos agrupados por fecha -->
+    <ng-container *ngIf="!loading && !errorMessage && dateGroups.length > 0">
+        <section class="date-group" *ngIf="viewMode === 'grid'">
+            <ng-container *ngFor="let group of dateGroups; trackBy: trackByGroupKey">
+                <h3 class="date-group-header">{{ group.label }}</h3>
+
+                <div class="explorer-grid-cards">
+                    <div class="explorer-item file-card" [class.selected]="isSelected(entry)"
+                        *ngFor="let entry of group.entries; trackBy: trackByEntryPath" (click)="openEntry(entry)">
+
+                        <div class="item-thumb dynamic">
+                            <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy"
+                                (load)="onImageLoad(entry, $event)" />
+
+                            <ng-container *ngIf="kindOf(entry) === 'video'">
+                                <img *ngIf="thumbnails[entry.path]" [src]="thumbnails[entry.path].dataUrl" alt=""
+                                    loading="lazy" />
+                                <video *ngIf="!thumbnails[entry.path]" class="thumb-video"
+                                    [src]="explorerService.getFileUrl(entry.path)" muted playsinline
+                                    preload="metadata" (loadedmetadata)="onVideoMetadata(entry, $event)"></video>
+                            </ng-container>
+
+                            <div class="item-icon audio" *ngIf="kindOf(entry) === 'audio'">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18V5l12-2v13"/>
+                                    <circle cx="6" cy="18" r="3"/>
+                                    <circle cx="18" cy="16" r="3"/>
+                                </svg>
+                            </div>
+
+                            <div class="item-icon document" *ngIf="kindOf(entry) === 'document'">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                            </div>
+
+                            <span class="play-overlay-icon" *ngIf="kindOf(entry) === 'video'">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </span>
+
+                            <span class="check-badge" *ngIf="isSelected(entry)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </span>
+
+                            <div class="item-overlay" (click)="$event.stopPropagation()">
+                                <button type="button" class="overlay-btn" title="Descargar" (click)="downloadFile(entry)">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
+                                <button type="button" class="overlay-btn" [class.on]="isSelected(entry)" title="Seleccionar" (click)="toggleSelect(entry)">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </button>
+                                <button type="button" class="overlay-btn danger" title="Eliminar" [disabled]="isDeleting(entry)" (click)="deleteFile(entry)">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="item-footer">
+                            <p class="item-name" [title]="entry.name">{{ entry.name }}</p>
+                            <span class="item-meta" *ngIf="entry.size">{{ entry.size | fileSize }}</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </ng-container>
+
+    <!-- Visor modal -->
+    <div class="viewer-overlay" *ngIf="viewerEntry" (click)="closeViewer()">
+        <div class="viewer-content" (click)="$event.stopPropagation()">
+            <div class="viewer-actions">
+                <button class="viewer-action-btn" (click)="closeViewer()" aria-label="Cerrar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry?.name || ''"
+                class="viewer-media viewer-image" />
+
+            <video *ngIf="viewerKind === 'video'" [src]="viewerUrl" class="viewer-media viewer-video" controls
+                autoplay></video>
+
+            <div class="viewer-audio-box" *ngIf="viewerKind === 'audio'">
+                <audio [src]="viewerUrl" class="viewer-audio" controls autoplay></audio>
+            </div>
+
+            <p class="viewer-filename" *ngIf="viewerEntry">{{ viewerEntry.name }}</p>
+        </div>
+    </div>
+</div>

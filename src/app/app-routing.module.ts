@@ -1,39 +1,34 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './auth/login/login.component';
-import { MainPageComponent } from './pages/main-page/main-page.component';
-import { ExplorerComponent } from './pages/explorer/explorer.component';
-import { AuthGuard } from './auth/auth.guard';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { LoginComponent } from '@features/auth/pages/login/login.component';
+import { ExplorerComponent } from '@features/gallery/pages/explorer/explorer.component';
+import { HomeComponent } from '@features/gallery/pages/home/home.component';
+import { MainPageComponent } from '@features/landing/pages/main-page/main-page.component';
 
-// Rutas protegidas: ni /home ni /galeria (ni sus subrutas) son accesibles
-// sin haber completado el login en dos pasos (teléfono + código). AuthGuard
-// redirige a /login si no hay sesión activa.
 const galleryRoutes: Routes = [
   { path: 'explorer', component: ExplorerComponent },
-  { path: '', redirectTo: 'explorer', pathMatch: 'full' },  // Redirigir por defecto al explorer
+  { path: '', redirectTo: 'explorer', pathMatch: 'full' },
 ];
 
 const routes: Routes = [
-  { path: '', redirectTo: 'mainpage', pathMatch: 'full' },  // Redirige a la página de inicio por defecto
+  { path: '', redirectTo: 'mainpage', pathMatch: 'full' },
   { path: 'mainpage', component: MainPageComponent },
   { path: 'login', component: LoginComponent },
   {
     path: 'home',
     component: HomeComponent,
-    canActivate: [AuthGuard],  // Subrutas dentro de home, protegidas
+    canActivate: [AuthGuard],
     children: galleryRoutes,
   },
   {
-    // Alias de la galería: /galeria y sus subrutas también quedan protegidas
     path: 'galeria',
     component: HomeComponent,
     canActivate: [AuthGuard],
     children: galleryRoutes,
   },
-  { path: '**', redirectTo: 'login' }  // Ruta en caso de error
+  { path: '**', redirectTo: 'login' }
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -1,0 +1,76 @@
+.folder-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--foreground);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.folder-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.folder-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.folder-icon.blue {
+    background: var(--tone-blue-bg);
+    color: var(--tone-blue);
+}
+
+.folder-icon.purple {
+    background: var(--tone-purple-bg);
+    color: var(--tone-purple);
+}
+
+.folder-icon.green {
+    background: var(--tone-green-bg);
+    color: var(--tone-green);
+}
+
+.folder-icon.amber {
+    background: var(--tone-amber-bg);
+    color: var(--tone-amber);
+}
+
+.folder-card-info {
+    min-width: 0;
+    flex-grow: 1;
+}
+
+.folder-card-info strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--foreground);
+}
+
+.folder-card-info span {
+    display: block;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    margin-top: 2px;
+}
+
+.folder-arrow {
+    color: var(--muted-foreground);
+    flex-shrink: 0;
+}
