@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '@core/services/theme/theme.service';
+import { UsageService } from '@core/services/usage/usage.service';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +28,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private routeSub?: Subscription;
 
-  constructor(private router: Router, private route: ActivatedRoute, private themeService: ThemeService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private themeService: ThemeService,
+    public usageService: UsageService
+  ) {}
 
   ngOnInit(): void {
     this.routeSub = this.route.queryParamMap.subscribe((params) => {

@@ -103,6 +103,36 @@
     gap: 10px;
 }
 
+.header-storage-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 0 12px;
+    height: 36px;
+    white-space: nowrap;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.header-storage-pill .storage-count {
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.header-storage-pill .storage-separator {
+    color: var(--muted-foreground);
+    opacity: 0.6;
+}
+
+.header-storage-pill .storage-size {
+    color: var(--muted-foreground);
+}
+
 .icon-button {
     width: 36px;
     height: 36px;
