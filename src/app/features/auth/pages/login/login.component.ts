@@ -62,7 +62,7 @@ export class LoginComponent {
     this.authService.verifyAccessCode(this.phone.trim(), cleanedCode).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(["/home"]);
+        this.router.navigate(["/home/explorer"], { queryParams: { view: "gallery" } });
       },
       error: (err: Error) => {
         this.loading = false;
