@@ -1,4 +1,6 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { HomeComponent } from './home.component';
 
@@ -8,7 +10,10 @@ describe('HomeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [HomeComponent]
+      declarations: [HomeComponent],
+      providers: [provideRouter([])],
+      // Test superficial: header, nav, user-config y user-profile tienen sus propios specs.
+      schemas: [NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;

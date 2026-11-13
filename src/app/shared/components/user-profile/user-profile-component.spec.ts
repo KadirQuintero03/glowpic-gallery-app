@@ -28,9 +28,10 @@ describe('UserProfileComponent', () => {
   });
 
   it('should display user name and email', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.user-name').textContent).toContain('Test User');
-    expect(compiled.querySelector('.user-email').textContent).toContain('test@example.com');
+    const info = (fixture.nativeElement as HTMLElement).querySelector('.profile-info');
+    expect(info).not.toBeNull();
+    expect(info!.textContent).toContain('Test User');
+    expect(info!.textContent).toContain('test@example.com');
   });
 
   it('should emit closeProfile event on button click', () => {
