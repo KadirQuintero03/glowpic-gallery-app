@@ -44,6 +44,14 @@ export class NavComponent implements OnInit, OnDestroy {
       this.active = 'galeria';
       return;
     }
+    if (view === 'videos') {
+      this.active = 'video';
+      return;
+    }
+    if (view === 'recent') {
+      this.active = 'recientes';
+      return;
+    }
     if (!path || search) {
       this.active = 'inicio';
       return;
@@ -53,8 +61,13 @@ export class NavComponent implements OnInit, OnDestroy {
 
   private keyForPath(path: string): string {
     const norm = path.toLowerCase().replace(/í/g, 'i');
-    if (norm.startsWith('imagen')) return 'imagenes';
+    if (norm.startsWith('album')) return 'albumes';
+    if (norm.startsWith('favorit')) return 'favoritos';
     if (norm.startsWith('video')) return 'video';
+    if (norm.startsWith('reciente') || norm.startsWith('anadido')) return 'recientes';
+    if (norm.startsWith('archiv')) return 'archivo';
+    if (norm.startsWith('papeler') || norm.startsWith('trash')) return 'papelera';
+    if (norm.startsWith('imagen')) return 'imagenes';
     if (norm.startsWith('audio')) return 'audio';
     if (norm.startsWith('document')) return 'documentos';
     return 'inicio';
@@ -70,6 +83,20 @@ export class NavComponent implements OnInit, OnDestroy {
   goToGallery(): void {
     this.router.navigate(['/home/explorer'], {
       queryParams: { view: 'gallery', path: null, search: null },
+    });
+    this.closeNav.emit();
+  }
+
+  goToVideos(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'videos', path: null, search: null },
+    });
+    this.closeNav.emit();
+  }
+
+  goToRecent(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'recent', path: null, search: null },
     });
     this.closeNav.emit();
   }
