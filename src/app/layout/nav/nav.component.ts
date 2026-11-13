@@ -40,8 +40,20 @@ export class NavComponent implements OnInit, OnDestroy {
     const path = q.get('path') ?? '';
     const search = q.get('search') ?? '';
 
-    if (view === 'gallery') {
+    if (view === 'inicio') {
+      this.active = 'inicio';
+      return;
+    }
+    if (view === 'gallery' || (!view && !path && !search)) {
       this.active = 'galeria';
+      return;
+    }
+    if (view === 'albums' || path.toLowerCase().startsWith('album')) {
+      this.active = 'albumes';
+      return;
+    }
+    if (view === 'favorites' || path.toLowerCase().startsWith('favorit')) {
+      this.active = 'favoritos';
       return;
     }
     if (view === 'videos') {
@@ -50,6 +62,10 @@ export class NavComponent implements OnInit, OnDestroy {
     }
     if (view === 'recent') {
       this.active = 'recientes';
+      return;
+    }
+    if (view === 'archive' || path.toLowerCase().startsWith('archiv')) {
+      this.active = 'archivo';
       return;
     }
     if (!path || search) {
@@ -75,35 +91,56 @@ export class NavComponent implements OnInit, OnDestroy {
 
   goToHome(): void {
     this.router.navigate(['/home/explorer'], {
-      queryParams: { path: null, search: null, view: null },
+      queryParams: { view: 'inicio', path: null, search: null, album: null },
     });
     this.closeNav.emit();
   }
 
   goToGallery(): void {
     this.router.navigate(['/home/explorer'], {
-      queryParams: { view: 'gallery', path: null, search: null },
+      queryParams: { view: 'gallery', path: null, search: null, album: null },
+    });
+    this.closeNav.emit();
+  }
+
+  goToAlbums(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'albums', path: null, search: null, album: null },
+    });
+    this.closeNav.emit();
+  }
+
+  goToFavorites(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'favorites', path: null, search: null, album: null },
     });
     this.closeNav.emit();
   }
 
   goToVideos(): void {
     this.router.navigate(['/home/explorer'], {
-      queryParams: { view: 'videos', path: null, search: null },
+      queryParams: { view: 'videos', path: null, search: null, album: null },
     });
     this.closeNav.emit();
   }
 
   goToRecent(): void {
     this.router.navigate(['/home/explorer'], {
-      queryParams: { view: 'recent', path: null, search: null },
+      queryParams: { view: 'recent', path: null, search: null, album: null },
+    });
+    this.closeNav.emit();
+  }
+
+  goToArchived(): void {
+    this.router.navigate(['/home/explorer'], {
+      queryParams: { view: 'archive', path: null, search: null, album: null },
     });
     this.closeNav.emit();
   }
 
   openCategory(folder: string): void {
     this.router.navigate(['/home/explorer'], {
-      queryParams: { path: folder, search: null, view: null },
+      queryParams: { path: folder, search: null, view: null, album: null },
     });
     this.closeNav.emit();
   }

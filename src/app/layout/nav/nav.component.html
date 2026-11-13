@@ -36,7 +36,7 @@
         <div class="sidebar-section sidebar-categories">
             <p class="sidebar-label">CATEGORÍAS</p>
 
-            <button type="button" class="sidebar-item" [class.active]="active === 'albumes'" (click)="openCategory('Albumes')">
+            <button type="button" class="sidebar-item" [class.active]="active === 'albumes'" (click)="goToAlbums()">
                 <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
                     <path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/>
@@ -46,7 +46,7 @@
                 <span>Álbumes</span>
             </button>
 
-            <button type="button" class="sidebar-item" [class.active]="active === 'favoritos'" (click)="openCategory('Favoritos')">
+            <button type="button" class="sidebar-item" [class.active]="active === 'favoritos'" (click)="goToFavorites()">
                 <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                 </svg>
@@ -69,7 +69,7 @@
                 <span>Añadido recientemente</span>
             </button>
 
-            <button type="button" class="sidebar-item" [class.active]="active === 'archivo'" (click)="openCategory('Archivo')">
+            <button type="button" class="sidebar-item" [class.active]="active === 'archivo'" (click)="goToArchived()">
                 <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="20" height="5" x="2" y="3" rx="1"/>
                     <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
