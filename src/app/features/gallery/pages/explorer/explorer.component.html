@@ -89,8 +89,15 @@
             <div>
                 <p class="eyebrow">TU BIBLIOTECA</p>
                 <h1>{{ pageTitle }}</h1>
-                <p class="muted">Explora y administra tus archivos sincronizados.</p>
+                <p class="muted">{{ pageSubtitle }}</p>
             </div>
+            <button type="button" class="primary-button create-album-btn" *ngIf="isAlbumsFolder" (click)="openCreateAlbumModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Nuevo álbum</span>
+            </button>
         </div>
     </div>
 
@@ -118,11 +125,34 @@
     </app-empty-state>
 
     <!-- Estado vacío de carpeta -->
-    <app-empty-state *ngIf="!loading && !errorMessage && showEmpty && !isSearching"
-        [title]="isGalleryMode ? 'Aún no tienes imágenes ni videos.' : 'Esta carpeta está vacía todavía.'"
-        [description]="!isGalleryMode ? 'Envíale una foto, video o documento al bot en Telegram para que aparezca aquí.' : ''"
-        [isSearch]="false">
-    </app-empty-state>
+    <ng-container *ngIf="!loading && !errorMessage && showEmpty && !isSearching">
+        <!-- Estado vacío especial para Álbumes cuando no hay ninguno creado -->
+        <div class="state-message empty album-empty-box" *ngIf="isAlbumsFolder">
+            <div class="empty-icon-box album-icon-box">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
+                    <path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/>
+                    <circle cx="12" cy="8" r="2"/>
+                    <rect width="16" height="16" x="6" y="2" rx="2"/>
+                </svg>
+            </div>
+            <strong class="empty-title">{{ emptyStateTitle }}</strong>
+            <p>{{ emptyStateDescription }}</p>
+            <button type="button" class="primary-button create-first-album-btn" (click)="openCreateAlbumModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Crear mi primer álbum</span>
+            </button>
+        </div>
+
+        <app-empty-state *ngIf="!isAlbumsFolder"
+            [title]="emptyStateTitle"
+            [description]="emptyStateDescription"
+            [isSearch]="false">
+        </app-empty-state>
+    </ng-container>
 
     <!-- Carpetas de la ruta actual -->
     <div class="folder-section" *ngIf="!loading && !errorMessage && folderEntries.length > 0">
@@ -144,15 +174,17 @@
                         *ngFor="let entry of group.entries; trackBy: trackByEntryPath" (click)="openEntry(entry)">
 
                         <div class="item-thumb dynamic">
-                            <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy"
-                                (load)="onImageLoad(entry, $event)" />
+                            <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
 
                             <ng-container *ngIf="kindOf(entry) === 'video'">
-                                <img *ngIf="thumbnails[entry.path]" [src]="thumbnails[entry.path].dataUrl" alt=""
-                                    loading="lazy" />
-                                <video *ngIf="!thumbnails[entry.path]" class="thumb-video"
-                                    [src]="explorerService.getFileUrl(entry.path)" muted playsinline
-                                    preload="metadata" (loadedmetadata)="onVideoMetadata(entry, $event)"></video>
+                                <img *ngIf="hasThumb(entry)" [src]="videoThumbSrc(entry)" alt=""
+                                    loading="lazy" (error)="onThumbError(entry)" />
+                                <div class="item-icon video" *ngIf="!hasThumb(entry)">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                </div>
                             </ng-container>
 
                             <div class="item-icon audio" *ngIf="kindOf(entry) === 'audio'">
@@ -226,7 +258,7 @@
                 </button>
             </div>
 
-            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry?.name || ''"
+            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry.name"
                 class="viewer-media viewer-image" />
 
             <video *ngIf="viewerKind === 'video'" [src]="viewerUrl" class="viewer-media viewer-video" controls
@@ -237,6 +269,45 @@
             </div>
 
             <p class="viewer-filename" *ngIf="viewerEntry">{{ viewerEntry.name }}</p>
+        </div>
+    </div>
+
+    <!-- Modal para crear nuevo álbum -->
+    <div class="modal-overlay" *ngIf="showCreateAlbumModal" (click)="closeCreateAlbumModal()">
+        <div class="modal-content album-modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Crear mi primer álbum</h2>
+                <button type="button" class="modal-close-btn" (click)="closeCreateAlbumModal()" aria-label="Cerrar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="subtitle">Ingresa el título para el álbum. Se creará dentro de tu espacio en la nube.</p>
+
+            <form (ngSubmit)="submitCreateAlbum()">
+                <div class="form-group">
+                    <label for="albumTitle">Título del álbum</label>
+                    <input type="text" id="albumTitle" [(ngModel)]="newAlbumTitle" name="albumTitle"
+                        placeholder="Ej. Vacaciones 2026, Paseos, Favoritas..."
+                        [disabled]="creatingAlbum" autofocus required autocomplete="off" />
+                </div>
+
+                <div class="modal-error-text" *ngIf="albumErrorMessage">
+                    {{ albumErrorMessage }}
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-button" (click)="closeCreateAlbumModal()" [disabled]="creatingAlbum">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="submit-button" [disabled]="creatingAlbum || !newAlbumTitle.trim()">
+                        <span *ngIf="!creatingAlbum">Crear álbum</span>
+                        <span *ngIf="creatingAlbum">Creando...</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

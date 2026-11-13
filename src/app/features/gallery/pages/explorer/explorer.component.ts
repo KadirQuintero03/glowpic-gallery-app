@@ -4,8 +4,6 @@ import { firstValueFrom, Subscription } from "rxjs";
 import { DateGroup, ExplorerEntry, FileKind, ViewMode } from "@core/models/explorer.model";
 import { AuthService } from "@core/services/auth/auth.service";
 import { ExplorerService } from "@core/services/explorer/explorer.service";
-import { ThumbnailService } from "@core/services/thumbnail/thumbnail.service";
-import type { StoredThumbnail } from "@core/services/thumbnail/thumbnail.service";
 import { UsageService } from "@core/services/usage/usage.service";
 import { computeDateGroups, sortExplorerEntries } from "@shared/utils/explorer-date.utils";
 import { formatSize } from "@shared/utils/file-size.utils";
@@ -28,7 +26,6 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     viewerKind: FileKind | null = null;
     showInfo = false;
 
-    thumbnails: Record<string, StoredThumbnail> = {};
     viewMode: ViewMode = "grid";
 
     searchQuery = "";
@@ -37,15 +34,25 @@ export class ExplorerComponent implements OnInit, OnDestroy {
 
     selectedPaths = new Set<string>();
     deletingPaths = new Set<string>();
+    failedThumbs = new Set<string>();
+
+    folderCount = 0;
+    fileCount = 0;
+    totalSize = 0;
 
     isGalleryMode = false;
+    currentView: 'default' | 'gallery' | 'videos' | 'recent' = 'default';
+
+    showCreateAlbumModal = false;
+    newAlbumTitle = '';
+    creatingAlbum = false;
+    albumErrorMessage = '';
 
     private loadedMode: string | null = null;
     private querySub?: Subscription;
 
     constructor(
         public explorerService: ExplorerService,
-        private thumbnailService: ThumbnailService,
         private usageService: UsageService,
         private route: ActivatedRoute,
         private router: Router,
@@ -58,14 +65,23 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             const view = params.get("view") ?? "";
             this.searchQuery = params.get("search") ?? "";
 
-            const modeKey = view === "gallery" ? "gallery" : `path:${path}`;
-            if (this.loadedMode === modeKey) {
+            let activeMode = `path:${path}`;
+            if (view === "gallery") activeMode = "gallery";
+            else if (view === "videos" || path.toLowerCase() === "video") activeMode = "videos";
+            else if (view === "recent" || path.toLowerCase() === "recientes") activeMode = "recent";
+
+            if (this.loadedMode === activeMode) {
                 this.applyFilters();
             } else {
-                this.loadedMode = modeKey;
-                if (view === "gallery") {
+                this.loadedMode = activeMode;
+                if (activeMode === "gallery") {
                     this.loadGallery();
+                } else if (activeMode === "videos") {
+                    this.loadVideos();
+                } else if (activeMode === "recent") {
+                    this.loadRecent();
                 } else {
+                    this.currentView = "default";
                     this.isGalleryMode = false;
                     this.load(path);
                 }
@@ -80,6 +96,8 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     load(path: string): void {
         this.loading = true;
         this.errorMessage = "";
+        this.currentView = "default";
+        this.isGalleryMode = false;
 
         try {
             this.explorerService.listDirectory(path).subscribe({
@@ -88,7 +106,6 @@ export class ExplorerComponent implements OnInit, OnDestroy {
                     this.entries = sortExplorerEntries(res.entries);
                     this.loading = false;
                     this.setDisplayedEntries();
-                    this.preloadThumbnails();
                     this.syncUsage();
                 },
                 error: (err: Error) => {
@@ -106,16 +123,15 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     async loadGallery(): Promise<void> {
         this.loading = true;
         this.errorMessage = "";
+        this.currentView = "gallery";
         this.isGalleryMode = true;
         this.currentPath = "";
         this.viewerEntry = null;
 
         try {
-            const media: ExplorerEntry[] = [];
-            await this.collectMedia("", 0, media);
-            this.entries = sortExplorerEntries(media);
+            const res = await firstValueFrom(this.explorerService.listGallery());
+            this.entries = sortExplorerEntries(res.entries);
             this.setDisplayedEntries();
-            this.preloadThumbnails();
             this.syncUsage();
         } catch (err) {
             this.errorMessage = err instanceof Error ? err.message : "No se pudo cargar la galería.";
@@ -124,25 +140,43 @@ export class ExplorerComponent implements OnInit, OnDestroy {
         }
     }
 
-    private async collectMedia(path: string, depth: number, acc: ExplorerEntry[], maxDepth = 3): Promise<void> {
-        if (depth > maxDepth) {
-            return;
-        }
+    async loadVideos(): Promise<void> {
+        this.loading = true;
+        this.errorMessage = "";
+        this.currentView = "videos";
+        this.isGalleryMode = false;
+        this.currentPath = "";
+        this.viewerEntry = null;
 
         try {
-            const res = await firstValueFrom(this.explorerService.listDirectory(path));
-            for (const entry of res.entries) {
-                if (entry.type === "directory") {
-                    await this.collectMedia(entry.path, depth + 1, acc, maxDepth);
-                } else {
-                    const kind = this.kindOf(entry);
-                    if (kind === "image" || kind === "video") {
-                        acc.push(entry);
-                    }
-                }
-            }
-        } catch {
-            // Silencioso
+            const res = await firstValueFrom(this.explorerService.listVideos());
+            this.entries = sortExplorerEntries(res.entries);
+            this.setDisplayedEntries();
+            this.syncUsage();
+        } catch (err) {
+            this.errorMessage = err instanceof Error ? err.message : "No se pudieron cargar los vídeos.";
+        } finally {
+            this.loading = false;
+        }
+    }
+
+    async loadRecent(): Promise<void> {
+        this.loading = true;
+        this.errorMessage = "";
+        this.currentView = "recent";
+        this.isGalleryMode = false;
+        this.currentPath = "";
+        this.viewerEntry = null;
+
+        try {
+            const res = await firstValueFrom(this.explorerService.listRecent(24));
+            this.entries = sortExplorerEntries(res.entries);
+            this.setDisplayedEntries();
+            this.syncUsage();
+        } catch (err) {
+            this.errorMessage = err instanceof Error ? err.message : "No se pudieron cargar los archivos recientes.";
+        } finally {
+            this.loading = false;
         }
     }
 
@@ -156,6 +190,11 @@ export class ExplorerComponent implements OnInit, OnDestroy {
         this.dateGroups = computeDateGroups(visible);
         this.isSearching = this.searchQuery.trim().length > 0;
         this.showEmpty = visible.length === 0;
+
+        const files = visible.filter((e) => e.type === "file");
+        this.folderCount = this.folderEntries.length;
+        this.fileCount = files.length;
+        this.totalSize = files.reduce((sum, e) => sum + (e.size ?? 0), 0);
     }
 
     private applySearch(): ExplorerEntry[] {
@@ -180,59 +219,20 @@ export class ExplorerComponent implements OnInit, OnDestroy {
         this.usageService.update(files.length, bytes);
     }
 
-    private async preloadThumbnails(): Promise<void> {
-        for (const entry of this.entries) {
-            if (entry.type !== "file") continue;
-            const kind = this.kindOf(entry);
-            if (kind !== "image" && kind !== "video") continue;
-            if (this.thumbnails[entry.path]) continue;
-
-            const cached = await this.thumbnailService.get(entry.path);
-            if (cached) {
-                this.thumbnails = { ...this.thumbnails, [entry.path]: cached };
-            }
-        }
-    }
-
-    async onImageLoad(entry: ExplorerEntry, event: Event): Promise<void> {
-        if (this.thumbnails[entry.path]) return;
-
-        const img = event.target as HTMLImageElement;
-        try {
-            const thumb = await this.thumbnailService.createFromImage(entry.path, img);
-            this.thumbnails = { ...this.thumbnails, [entry.path]: thumb };
-        } catch {
-            // Silencioso
-        }
-    }
-
-    onVideoMetadata(entry: ExplorerEntry, event: Event): void {
-        const video = event.target as HTMLVideoElement;
-        if (this.thumbnails[entry.path]) return;
-
-        const capture = () => {
-            video.removeEventListener("seeked", capture);
-            video.pause();
-            this.captureVideoThumbnail(entry, video);
-        };
-
-        video.addEventListener("seeked", capture);
-        video.currentTime = 0.1;
-    }
-
-    private async captureVideoThumbnail(entry: ExplorerEntry, video: HTMLVideoElement): Promise<void> {
-        if (this.thumbnails[entry.path]) return;
-
-        try {
-            const thumb = await this.thumbnailService.createFromVideo(entry.path, video);
-            this.thumbnails = { ...this.thumbnails, [entry.path]: thumb };
-        } catch {
-            // Silencioso
-        }
-    }
-
     imageThumbSrc(entry: ExplorerEntry): string {
-        return this.thumbnails[entry.path]?.dataUrl ?? this.explorerService.getFileUrl(entry.path);
+        return this.explorerService.getThumbnailUrl(entry.path);
+    }
+
+    videoThumbSrc(entry: ExplorerEntry): string {
+        return this.explorerService.getThumbnailUrl(entry.path);
+    }
+
+    onThumbError(entry: ExplorerEntry): void {
+        this.failedThumbs.add(entry.path);
+    }
+
+    hasThumb(entry: ExplorerEntry): boolean {
+        return !this.failedThumbs.has(entry.path);
     }
 
     openEntry(entry: ExplorerEntry): void {
@@ -266,10 +266,6 @@ export class ExplorerComponent implements OnInit, OnDestroy {
         return this.viewerEntry ? this.explorerService.getFileUrl(this.viewerEntry.path) : "";
     }
 
-    get viewerThumbnail(): StoredThumbnail | undefined {
-        return this.viewerEntry ? this.thumbnails[this.viewerEntry.path] : undefined;
-    }
-
     get viewerExtension(): string {
         if (!this.viewerEntry) return "";
         const parts = this.viewerEntry.name.split(".");
@@ -299,12 +295,15 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     }
 
     get breadcrumbs(): { name: string; path: string }[] {
+        if (this.currentView === 'gallery') return [{ name: 'Mi galería', path: '' }];
+        if (this.currentView === 'videos') return [{ name: 'Vídeos', path: '' }];
+        if (this.currentView === 'recent') return [{ name: 'Añadido recientemente', path: '' }];
         if (!this.currentPath) return [];
         const parts = this.currentPath.split("/").filter(Boolean);
         let acc = "";
         return parts.map((name) => {
             acc = acc ? `${acc}/${name}` : name;
-            return { name, path: acc };
+            return { name: this.smartFolderTitle(name), path: acc };
         });
     }
 
@@ -327,21 +326,88 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     }
 
     get pageTitle(): string {
-        if (this.isGalleryMode) return 'Galería';
+        if (this.currentView === 'gallery') return 'Galería';
+        if (this.currentView === 'videos') return 'Vídeos';
+        if (this.currentView === 'recent') return 'Añadido recientemente';
         if (this.isSearching) return 'Resultados';
         const parts = this.currentPath.split('/').filter(Boolean);
         if (parts.length === 0) return 'Inicio';
         return this.smartFolderTitle(parts[parts.length - 1]);
     }
 
+    get pageSubtitle(): string {
+        if (this.currentView === 'gallery') return 'Todas tus fotos y vídeos en un solo lugar.';
+        if (this.currentView === 'videos') return 'Todos los vídeos guardados en tu espacio.';
+        if (this.currentView === 'recent') return 'Archivos añadidos o guardados en las últimas 24 horas.';
+        if (this.isAlbumsFolder) return 'Colecciones y álbumes organizados de tus fotos.';
+        return 'Explora y administra tus archivos sincronizados.';
+    }
+
     get showWelcome(): boolean {
         return (
             !this.loading &&
             !this.errorMessage &&
-            !this.isGalleryMode &&
+            this.currentView === 'default' &&
             !this.currentPath &&
             !this.isSearching
         );
+    }
+
+    get isAlbumsFolder(): boolean {
+        return (this.currentPath || "").toLowerCase().startsWith("album");
+    }
+
+    get emptyStateTitle(): string {
+        if (this.isSearching) return 'Sin resultados para tu búsqueda.';
+        if (this.currentView === 'videos') return 'Aún no tienes vídeos.';
+        if (this.currentView === 'recent') return 'No hay archivos recientes.';
+        if (this.isGalleryMode) return 'Aún no tienes imágenes ni videos.';
+        if (this.isAlbumsFolder) return 'Crea tu primer álbum';
+        return 'Esta carpeta está vacía todavía.';
+    }
+
+    get emptyStateDescription(): string {
+        if (this.isSearching) return 'Prueba con otro término o borra la búsqueda desde la barra superior.';
+        if (this.currentView === 'videos') return 'Envía o sube un vídeo al bot en Telegram para verlo aquí.';
+        if (this.currentView === 'recent') return 'Los archivos guardados en las últimas 24 horas aparecerán automáticamente aquí.';
+        if (this.isAlbumsFolder) return 'Organiza y agrupa tus fotos y vídeos en colecciones personalizadas.';
+        if (this.isGalleryMode) return '';
+        return 'Envíale una foto, video o documento al bot en Telegram para que aparezca aquí.';
+    }
+
+    openCreateAlbumModal(): void {
+        this.newAlbumTitle = '';
+        this.albumErrorMessage = '';
+        this.showCreateAlbumModal = true;
+    }
+
+    closeCreateAlbumModal(): void {
+        if (this.creatingAlbum) return;
+        this.showCreateAlbumModal = false;
+        this.newAlbumTitle = '';
+        this.albumErrorMessage = '';
+    }
+
+    async submitCreateAlbum(): Promise<void> {
+        const title = this.newAlbumTitle.trim();
+        if (!title) {
+            this.albumErrorMessage = 'Por favor ingresa un título para el álbum.';
+            return;
+        }
+
+        this.creatingAlbum = true;
+        this.albumErrorMessage = '';
+
+        try {
+            await firstValueFrom(this.explorerService.createAlbum(title));
+            this.showCreateAlbumModal = false;
+            this.newAlbumTitle = '';
+            this.load(this.currentPath || 'Albumes');
+        } catch (err) {
+            this.albumErrorMessage = err instanceof Error ? err.message : 'No se pudo crear el álbum.';
+        } finally {
+            this.creatingAlbum = false;
+        }
     }
 
     goToGalleryView(): void {
@@ -351,20 +417,30 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     }
 
     private smartFolderTitle(name: string): string {
-        const n = name.toLowerCase();
+        const n = name.toLowerCase().replace(/í/g, 'i');
         if (n.startsWith('imagen')) return 'Imágenes';
         if (n.startsWith('video')) return 'Vídeos';
         if (n.startsWith('audio')) return 'Audio';
         if (n.startsWith('document')) return 'Documentos';
+        if (n.startsWith('album')) return 'Álbumes';
+        if (n.startsWith('favorit')) return 'Favoritos';
+        if (n.startsWith('reciente') || n.startsWith('anadido')) return 'Añadido recientemente';
+        if (n.startsWith('archiv')) return 'Archivo';
+        if (n.startsWith('papeler') || n.startsWith('trash')) return 'Papelera';
         return name.charAt(0).toUpperCase() + name.slice(1);
     }
 
     folderTone(entry: ExplorerEntry): string {
-        const n = entry.name.toLowerCase();
+        const n = entry.name.toLowerCase().replace(/í/g, 'i');
         if (n.startsWith('imagen')) return 'blue';
         if (n.startsWith('video')) return 'purple';
         if (n.startsWith('audio')) return 'green';
         if (n.startsWith('document')) return 'amber';
+        if (n.startsWith('album')) return 'purple';
+        if (n.startsWith('favorit')) return 'amber';
+        if (n.startsWith('reciente') || n.startsWith('anadido')) return 'blue';
+        if (n.startsWith('archiv')) return 'green';
+        if (n.startsWith('papeler') || n.startsWith('trash')) return 'amber';
         return 'blue';
     }
 
@@ -451,20 +527,6 @@ export class ExplorerComponent implements OnInit, OnDestroy {
             month: "short",
             year: "numeric",
         }).format(new Date(entry.modifiedAt));
-    }
-
-    get folderCount(): number {
-        return this.applySearch().filter((e) => e.type === "directory").length;
-    }
-
-    get fileCount(): number {
-        return this.applySearch().filter((e) => e.type === "file").length;
-    }
-
-    get totalSize(): number {
-        return this.applySearch()
-            .filter((e) => e.type === "file" && e.size)
-            .reduce((sum, e) => sum + (e.size ?? 0), 0);
     }
 
     get totalSizeLabel(): string {
