@@ -23,10 +23,58 @@ export class ExplorerService {
             .pipe(catchError((err: unknown) => throwError(() => this.toErrorMessage(err))));
     }
 
+    listGallery(): Observable<ExplorerResponse> {
+        const owner = this.requireOwner();
+        const params = new HttpParams().set("owner", owner);
+        return this.http
+            .get<ExplorerResponse>(`${this.baseURL}explorer/gallery`, { params })
+            .pipe(catchError((err: unknown) => throwError(() => this.toErrorMessage(err))));
+    }
+
+    listVideos(): Observable<ExplorerResponse> {
+        const owner = this.requireOwner();
+        const params = new HttpParams().set("owner", owner);
+        return this.http
+            .get<ExplorerResponse>(`${this.baseURL}explorer/videos`, { params })
+            .pipe(catchError((err: unknown) => throwError(() => this.toErrorMessage(err))));
+    }
+
+    listRecent(hours = 24): Observable<ExplorerResponse> {
+        const owner = this.requireOwner();
+        const params = new HttpParams().set("owner", owner).set("hours", hours.toString());
+        return this.http
+            .get<ExplorerResponse>(`${this.baseURL}explorer/recent`, { params })
+            .pipe(catchError((err: unknown) => throwError(() => this.toErrorMessage(err))));
+    }
+
+    createAlbum(title: string): Observable<ExplorerEntry> {
+        const owner = this.requireOwner();
+        return this.http
+            .post<ExplorerEntry>(`${this.baseURL}explorer/albums`, { owner, title })
+            .pipe(catchError((err: unknown) => throwError(() => this.toErrorMessage(err))));
+    }
+
     getFileUrl(path: string): string {
         const owner = this.authService.getOwner() ?? "";
-        const params = new HttpParams().set("path", path).set("owner", owner);
+        const token = this.authService.getToken() ?? "";
+        let params = new HttpParams().set("path", path).set("owner", owner);
+        if (token) {
+            params = params.set("token", token);
+        }
         return `${this.baseURL}explorer/file?${params.toString()}`;
+    }
+
+    getThumbnailUrl(path: string, width = 320): string {
+        const owner = this.authService.getOwner() ?? "";
+        const token = this.authService.getToken() ?? "";
+        let params = new HttpParams()
+            .set("path", path)
+            .set("owner", owner)
+            .set("w", width.toString());
+        if (token) {
+            params = params.set("token", token);
+        }
+        return `${this.baseURL}explorer/thumbnail?${params.toString()}`;
     }
 
     deleteFile(path: string): Observable<void> {
