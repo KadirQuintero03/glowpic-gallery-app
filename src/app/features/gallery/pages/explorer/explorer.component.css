@@ -1,96 +1,13 @@
 .explorer-container {
     padding: 24px 32px 60px;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* ===== Barra superior ===== */
-.explorer-toolbar {
+.gallery-intro-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-}
-
-.up-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    color: var(--foreground);
-    cursor: pointer;
-    transition: all .15s ease;
-    flex-shrink: 0;
-}
-
-.up-btn:hover:not(:disabled) {
-    background-color: var(--secondary);
-    border-color: var(--primary);
-}
-
-.up-btn:disabled {
-    opacity: 0.4;
-    cursor: default;
-}
-
-.breadcrumbs {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    font-size: 0.88rem;
-    flex: 1;
-    min-width: 0;
-    color: var(--muted-foreground);
-}
-
-.crumb {
-    color: var(--muted-foreground);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all .15s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.crumb-home-icon {
-    color: var(--muted-foreground);
-}
-
-.crumb:last-child,
-.crumb.current {
-    color: var(--foreground);
-    font-weight: 600;
-}
-
-.crumb:hover {
-    background-color: var(--secondary);
-    color: var(--primary);
-}
-
-.crumb-separator {
-    display: inline-flex;
-    align-items: center;
-    color: var(--muted-foreground);
-    opacity: 0.6;
-}
-
-.explorer-summary {
-    font-size: 0.82rem;
-    color: var(--muted-foreground);
-    white-space: nowrap;
 }
 
 .selection-summary {
@@ -200,7 +117,7 @@
 /* ===== Carpetas de categoría ===== */
 .folder-section {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 16px;
     margin-bottom: 32px;
 }
@@ -354,7 +271,7 @@
 /* ===== Grilla de archivos ===== */
 .explorer-grid-cards {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: 16px;
 }
 
@@ -503,6 +420,182 @@
     margin-top: 2px;
     font-size: 0.72rem;
     color: var(--muted-foreground);
+}
+
+/* ===== Vista de lista ===== */
+.list-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: var(--card);
+}
+
+.list-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 16px;
+    min-height: 58px;
+    background-color: var(--card);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.list-row:hover:not(.list-head) {
+    background-color: var(--secondary);
+}
+
+.list-row.selected {
+    background-color: rgba(14, 165, 233, 0.12);
+}
+
+.list-head {
+    cursor: default;
+    background-color: var(--secondary);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: var(--muted-foreground);
+    min-height: 42px;
+}
+
+.list-head-thumb {
+    flex: 0 0 44px;
+    width: 44px;
+}
+
+.list-thumb {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    position: relative;
+}
+
+.list-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.list-file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.list-file-icon.video {
+    color: var(--tone-purple);
+    background-color: var(--tone-purple-bg);
+}
+
+.list-file-icon.audio {
+    color: var(--tone-green);
+    background-color: var(--tone-green-bg);
+}
+
+.list-file-icon.document {
+    color: var(--tone-amber);
+    background-color: var(--tone-amber-bg);
+}
+
+.list-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.list-size {
+    flex: 0 0 95px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+
+.list-date {
+    flex: 0 0 130px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+}
+
+.list-actions {
+    flex: 0 0 120px;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+
+.list-row:hover .list-actions,
+.list-row.selected .list-actions {
+    opacity: 1;
+}
+
+.list-head .list-actions {
+    opacity: 1;
+}
+
+.row-action {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--card);
+    color: var(--muted-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.row-action:hover {
+    background-color: var(--secondary);
+    color: var(--foreground);
+    border-color: var(--primary);
+}
+
+.row-action.on {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.row-action.danger:hover {
+    background-color: var(--destructive);
+    color: #ffffff;
+    border-color: var(--destructive);
+}
+
+.row-action:disabled {
+    opacity: 0.5;
+    cursor: default;
 }
 
 @media (max-width: 920px) {
@@ -752,4 +845,111 @@
 .cancel-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* --- ESTILOS DE FAVORITOS, ARCHIVO Y ÁLBUMES --- */
+
+.fav-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+}
+
+.overlay-btn.fav.on {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.overlay-btn.archive.on {
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+.overlay-btn.album-remove {
+    background-color: var(--destructive);
+    color: #ffffff;
+}
+
+.row-action.fav-action.on {
+    color: #ef4444;
+}
+
+.list-fav-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+    color: #ef4444;
+}
+
+.viewer-action-btn.active-fav {
+    color: #ef4444 !important;
+}
+
+.viewer-action-btn.active-archive {
+    color: #10b981 !important;
+}
+
+.breadcrumbs-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+.crumb-link {
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.crumb-sep {
+    color: var(--muted-foreground);
+}
+
+.crumb-current {
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+.danger-outline-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 9px;
+    border: 1px solid var(--destructive);
+    background: transparent;
+    color: var(--destructive);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.danger-outline-button:hover {
+    background-color: var(--destructive);
+    color: #ffffff;
+}
+
+.compact-btn {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+}
+
+.selection-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
