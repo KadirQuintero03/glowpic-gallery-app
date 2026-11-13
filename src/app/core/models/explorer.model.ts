@@ -9,6 +9,14 @@ export interface ExplorerEntry {
     modifiedAt?: number;
     width?: number;
     height?: number;
+    isFavorite?: boolean;
+    isArchived?: boolean;
+    // Campos opcionales para álbumes y resúmenes
+    id?: string;
+    title?: string;
+    itemCount?: number;
+    coverPath?: string;
+    createdAt?: number;
 }
 
 export interface ExplorerResponse {
@@ -20,4 +28,13 @@ export interface DateGroup {
     key: string;
     label: string;
     entries: ExplorerEntry[];
+}
+
+export interface AlbumSummary {
+    id: string;
+    title: string;
+    path?: string;
+    itemCount: number;
+    coverPath?: string;
+    createdAt?: number;
 }

@@ -9,15 +9,18 @@ export class UsageService {
 
     private totalBytes = 0;
     private fileCount = 0;
+    hasLoaded = false;
 
     reset(): void {
         this.totalBytes = 0;
         this.fileCount = 0;
+        this.hasLoaded = false;
     }
 
     update(fileCount: number, totalBytes: number): void {
         this.fileCount = fileCount;
         this.totalBytes = totalBytes;
+        this.hasLoaded = true;
     }
 
     get count(): number {
