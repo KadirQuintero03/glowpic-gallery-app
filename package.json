@@ -43,7 +43,7 @@
   },
   "pnpm": {
     "overrides": {
-      "typescript": "~5.8.3"
+      "typescript": "~5.9.3"
     }
   }
 }
