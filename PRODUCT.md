@@ -25,8 +25,8 @@ Web application environment supporting image uploading, file browsing via main e
 ## Capabilities and Constraints
 
 - **Capabilities:** User authentication (login/register), media upload, album/folder creation & management, image favoriting, passcode-protected private image access, user profile & configuration views.
-- **Technical Stack:** Angular 16, Tailwind CSS, RxJS, Angular Material, Docker + Nginx deployment.
-- **Constraints:** Preserve the Angular 16 + Tailwind CSS architecture and existing API routes/authentication flows.
+- **Technical Stack:** Angular 22, Tailwind CSS 3, RxJS, Docker + Nginx deployment.
+- **Constraints:** Preserve the Angular 22 + Tailwind CSS architecture and existing API routes/authentication flows.
 
 ## Brand Commitments
 

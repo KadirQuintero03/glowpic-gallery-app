@@ -6,9 +6,8 @@
       @if (showWelcome) {
         <div class="welcome-card">
           <div>
-            <p class="eyebrow">{{ todayLabel }}</p>
             <h1>Hola, {{ username }}<span>.</span></h1>
-            <p class="muted">Todo lo que guardas en Telegram, organizado en un solo lugar.</p>
+            <p class="muted">Tus fotos, vídeos y álbumes organizados en un solo lugar seguro.</p>
           </div>
           <button type="button" class="primary-button" (click)="goToGalleryView()">
             <span>Ver mi galería</span>
@@ -195,14 +194,16 @@
           <div class="explorer-grid-cards">
             @for (entry of group.entries; track trackByEntryPath($index, entry)) {
               <div class="explorer-item file-card" [class.selected]="isSelected(entry)"
+                role="button" tabindex="0" [attr.aria-label]="'Abrir archivo ' + entry.name"
+                (keydown.enter)="openEntry(entry)" (keydown.space)="$event.preventDefault(); openEntry(entry)"
                 (click)="openEntry(entry)">
                 <div class="item-thumb dynamic">
                   @if (kindOf(entry) === 'image') {
-                    <img [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
+                    <img [src]="imageThumbSrc(entry)" [alt]="entry.name || 'Miniatura de imagen'" loading="lazy" />
                   }
                   @if (kindOf(entry) === 'video') {
                     @if (hasThumb(entry)) {
-                      <img [src]="videoThumbSrc(entry)" alt=""
+                      <img [src]="videoThumbSrc(entry)" [alt]="entry.name || 'Miniatura de vídeo'"
                         loading="lazy" (error)="onThumbError(entry)" />
                     }
                     @if (!hasThumb(entry)) {
@@ -253,9 +254,10 @@
                       </svg>
                     </span>
                   }
-                  <div class="item-overlay">
+                  <div class="item-overlay" (click)="$event.stopPropagation()">
                     <!-- Botón Favorito -->
                     <button type="button" class="overlay-btn fav" [class.on]="entry.isFavorite"
+                      [attr.aria-label]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
                       [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
                       (click)="toggleFavorite(entry, $event)">
                       <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
@@ -264,6 +266,7 @@
                     </button>
                     <!-- Botón Archivo -->
                     <button type="button" class="overlay-btn archive" [class.on]="entry.isArchived"
+                      [attr.aria-label]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
                       [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
                       (click)="toggleArchive(entry, $event)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -275,6 +278,7 @@
                     <!-- Botón Añadir a Álbum (o quitar si estamos en detalle de álbum) -->
                     @if (currentView !== 'album-detail') {
                       <button type="button" class="overlay-btn album-btn"
+                        aria-label="Añadir a un álbum"
                         title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
@@ -285,6 +289,7 @@
                     }
                     @if (currentView === 'album-detail') {
                       <button type="button" class="overlay-btn album-remove"
+                        aria-label="Quitar de este álbum"
                         title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="18" y1="6" x2="6" y2="18"/>
@@ -293,13 +298,15 @@
                       </button>
                     }
                     <!-- Botón Seleccionar -->
-                    <button type="button" class="overlay-btn" [class.on]="isSelected(entry)" title="Seleccionar" (click)="$event.stopPropagation(); toggleSelect(entry)">
+                    <button type="button" class="overlay-btn" [class.on]="isSelected(entry)"
+                      [attr.aria-label]="isSelected(entry) ? 'Deseleccionar archivo' : 'Seleccionar archivo'"
+                      title="Seleccionar" (click)="toggleSelect(entry)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     </button>
                     <!-- Botón Descargar -->
-                    <button type="button" class="overlay-btn" title="Descargar" (click)="$event.stopPropagation(); downloadFile(entry)">
+                    <button type="button" class="overlay-btn" aria-label="Descargar archivo" title="Descargar" (click)="downloadFile(entry)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
@@ -307,7 +314,7 @@
                       </svg>
                     </button>
                     <!-- Botón Eliminar definitivo -->
-                    <button type="button" class="overlay-btn danger" title="Eliminar de almacenamiento" [disabled]="isDeleting(entry)" (click)="$event.stopPropagation(); deleteFile(entry)">
+                    <button type="button" class="overlay-btn danger" aria-label="Eliminar archivo" title="Eliminar de almacenamiento" [disabled]="isDeleting(entry)" (click)="deleteFile(entry)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -345,7 +352,7 @@
                 (click)="openEntry(entry)">
                 <div class="list-thumb">
                   @if (kindOf(entry) === 'image') {
-                    <img [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
+                    <img [src]="imageThumbSrc(entry)" [alt]="entry.name || 'Miniatura de imagen'" loading="lazy" />
                   }
                   @if (kindOf(entry) === 'video') {
                     <span class="list-file-icon video">
@@ -386,6 +393,7 @@
                 <div class="list-actions" role="cell" (click)="$event.stopPropagation()">
                   <!-- Favorito -->
                   <button type="button" class="row-action fav-action" [class.on]="entry.isFavorite"
+                    [attr.aria-label]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
                     [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
                     (click)="toggleFavorite(entry, $event)">
                     <svg width="15" height="15" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
@@ -394,6 +402,7 @@
                   </button>
                   <!-- Archivar -->
                   <button type="button" class="row-action" [class.on]="entry.isArchived"
+                    [attr.aria-label]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
                     [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
                     (click)="toggleArchive(entry, $event)">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -405,6 +414,7 @@
                   <!-- Añadir a álbum (o quitar) -->
                   @if (currentView !== 'album-detail') {
                     <button type="button" class="row-action"
+                      aria-label="Añadir a un álbum"
                       title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
@@ -415,6 +425,7 @@
                   }
                   @if (currentView === 'album-detail') {
                     <button type="button" class="row-action danger"
+                      aria-label="Quitar de este álbum"
                       title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
@@ -458,7 +469,7 @@
 
   <!-- Visor modal -->
   @if (viewerEntry) {
-    <div class="viewer-overlay" (click)="closeViewer()">
+    <div class="viewer-overlay" role="dialog" aria-modal="true" [attr.aria-label]="'Visor de medios: ' + viewerEntry.name" (click)="closeViewer()">
       <div class="viewer-top-bar" (click)="$event.stopPropagation()">
         <div class="viewer-file-info">
           <span class="viewer-title">{{ viewerEntry.name }}</span>
@@ -469,6 +480,7 @@
         <div class="viewer-controls">
           <!-- Botón Favorito en visor -->
           <button type="button" class="viewer-action-btn" [class.active-fav]="viewerEntry.isFavorite"
+            [attr.aria-label]="viewerEntry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
             [title]="viewerEntry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
             (click)="toggleFavorite(viewerEntry, $event)">
             <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="viewerEntry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
@@ -477,6 +489,7 @@
           </button>
           <!-- Botón Archivar en visor -->
           <button type="button" class="viewer-action-btn" [class.active-archive]="viewerEntry.isArchived"
+            [attr.aria-label]="viewerEntry.isArchived ? 'Desarchivar' : 'Archivar'"
             [title]="viewerEntry.isArchived ? 'Desarchivar' : 'Archivar'"
             (click)="toggleArchive(viewerEntry, $event)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -488,6 +501,7 @@
           <!-- Botón Añadir a álbum en visor -->
           @if (currentView !== 'album-detail') {
             <button type="button" class="viewer-action-btn"
+              aria-label="Añadir a un álbum"
               title="Añadir a un álbum" (click)="openAddToAlbumModal(viewerEntry, $event)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
@@ -499,6 +513,7 @@
           <!-- Botón Quitar de álbum en visor -->
           @if (currentView === 'album-detail') {
             <button type="button" class="viewer-action-btn"
+              aria-label="Quitar de este álbum"
               title="Quitar de este álbum" (click)="removeFromCurrentAlbum(viewerEntry, $event)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -507,7 +522,7 @@
             </button>
           }
           <!-- Descargar -->
-          <button type="button" class="viewer-action-btn" title="Descargar archivo original" (click)="downloadFile(viewerEntry)">
+          <button type="button" class="viewer-action-btn" aria-label="Descargar archivo original" title="Descargar archivo original" (click)="downloadFile(viewerEntry)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
@@ -515,7 +530,7 @@
             </svg>
           </button>
           <!-- Cerrar -->
-          <button type="button" class="viewer-action-btn" title="Cerrar visor (Esc)" (click)="closeViewer()" aria-label="Cerrar">
+          <button type="button" class="viewer-action-btn" title="Cerrar visor (Esc)" (click)="closeViewer()" aria-label="Cerrar visor">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
@@ -552,10 +567,10 @@
 
   <!-- Modal para crear nuevo álbum -->
   @if (showCreateAlbumModal) {
-    <div class="modal-overlay" (click)="closeCreateAlbumModal()">
+    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="createAlbumTitle" (click)="closeCreateAlbumModal()">
       <div class="modal-content album-modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2>Crear nuevo álbum</h2>
+          <h2 id="createAlbumTitle">Crear nuevo álbum</h2>
           <button type="button" class="modal-close-btn" (click)="closeCreateAlbumModal()" aria-label="Cerrar">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -596,10 +611,10 @@
 
     <!-- Modal para añadir fotos a un álbum -->
     @if (showAddToAlbumModal) {
-      <div class="modal-overlay" (click)="closeAddToAlbumModal()">
+      <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="addToAlbumTitle" (click)="closeAddToAlbumModal()">
         <div class="modal-content album-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h2>Añadir a un álbum</h2>
+            <h2 id="addToAlbumTitle">Añadir a un álbum</h2>
             <button type="button" class="modal-close-btn" (click)="closeAddToAlbumModal()" aria-label="Cerrar">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>

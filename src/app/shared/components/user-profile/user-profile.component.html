@@ -1,12 +1,12 @@
-<div class="user-profile-overlay">
+<div class="user-profile-overlay" role="dialog" aria-modal="true" aria-labelledby="userProfileTitle">
     <div class="modal-content user-profile-box">
   
       <!-- Avatar circular con ícono -->
       <div class="avatar-container">
-        <img src="../../assets/profile.svg" alt="User Avatar" class="avatar-img">
+        <img src="../../assets/profile.svg" alt="Avatar de usuario" class="avatar-img">
       </div>
   
-      <h2>Perfil de Usuario</h2>
+      <h2 id="userProfileTitle">Perfil de Usuario</h2>
   
       <div class="profile-info">
         <p><strong>Nombre:</strong> {{ user?.name }}</p>
