@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -23,35 +22,28 @@ import { UserConfigComponent } from '@shared/components/user-config/user-config.
 import { UserProfileComponent } from '@shared/components/user-profile/user-profile.component';
 import { FileSizePipe } from '@shared/pipes/file-size.pipe';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    LoginComponent,
-    HeaderComponent,
-    NavComponent,
-    UserConfigComponent,
-    UserProfileComponent,
-    MainPageComponent,
-    ExplorerComponent,
-    SettingsMenuComponent,
-    FileSizePipe,
-    EmptyStateComponent,
-    FolderCardComponent
-  ],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    AppRoutingModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    BrowserAnimationsModule,
-    MatIconModule
-  ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HomeComponent,
+        LoginComponent,
+        HeaderComponent,
+        NavComponent,
+        UserConfigComponent,
+        UserProfileComponent,
+        MainPageComponent,
+        ExplorerComponent,
+        SettingsMenuComponent,
+        FileSizePipe,
+        EmptyStateComponent,
+        FolderCardComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        CommonModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        BrowserAnimationsModule], providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        provideHttpClient(withXhr(), withInterceptorsFromDi())
+    ] })
 export class AppModule { }

@@ -1,590 +1,654 @@
 <div class="explorer-container">
 
-    <!-- Cabecera de la vista: bienvenida o biblioteca -->
-    <div class="view-intro" *ngIf="!loading && !errorMessage">
-        <div class="welcome-card" *ngIf="showWelcome">
-            <div>
-                <p class="eyebrow">{{ todayLabel }}</p>
-                <h1>Hola, {{ username }}<span>.</span></h1>
-                <p class="muted">Todo lo que guardas en Telegram, organizado en un solo lugar.</p>
-            </div>
-            <button type="button" class="primary-button" (click)="goToGalleryView()">
-                <span>Ver mi galería</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </button>
+  <!-- Cabecera de la vista: bienvenida o biblioteca -->
+  @if (!loading && !errorMessage) {
+    <div class="view-intro">
+      @if (showWelcome) {
+        <div class="welcome-card">
+          <div>
+            <p class="eyebrow">{{ todayLabel }}</p>
+            <h1>Hola, {{ username }}<span>.</span></h1>
+            <p class="muted">Todo lo que guardas en Telegram, organizado en un solo lugar.</p>
+          </div>
+          <button type="button" class="primary-button" (click)="goToGalleryView()">
+            <span>Ver mi galería</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
         </div>
-
-        <div class="gallery-intro" *ngIf="!showWelcome">
-            <div>
-                <div class="breadcrumbs-bar" *ngIf="breadcrumbs.length > 1">
-                    <ng-container *ngFor="let b of breadcrumbs; let last = last">
-                        <span class="crumb-link" *ngIf="!last" (click)="goToBreadcrumb(b.path)">{{ b.name }}</span>
-                        <span class="crumb-sep" *ngIf="!last">/</span>
-                        <span class="crumb-current" *ngIf="last">{{ b.name }}</span>
-                    </ng-container>
-                </div>
-                <h1>{{ pageTitle }}</h1>
-                <p class="muted">{{ pageSubtitle }}</p>
-            </div>
-
-            <div class="gallery-intro-actions">
-                <!-- Acciones para selección múltiple -->
-                <div class="selection-actions" *ngIf="selectedCount > 0">
-                    <span class="selection-summary">
-                        {{ selectedCount }} seleccionado{{ selectedCount === 1 ? '' : 's' }}
-                    </span>
-                    <button type="button" class="primary-button compact-btn" (click)="openAddToAlbumModal()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
-                            <rect width="16" height="16" x="6" y="2" rx="2"/>
-                            <line x1="14" y1="10" x2="14" y2="10"/>
-                        </svg>
-                        <span>Añadir a álbum</span>
-                    </button>
-                    <button type="button" class="selection-clear" (click)="clearSelection()">Limpiar</button>
-                </div>
-
-                <!-- Botón eliminar álbum actual si estamos dentro de un álbum -->
-                <button type="button" class="danger-outline-button" *ngIf="currentView === 'album-detail'" (click)="deleteCurrentAlbum()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                    <span>Eliminar álbum</span>
-                </button>
-
-                <!-- Botón nuevo álbum si estamos en la vista de álbumes -->
-                <button type="button" class="primary-button create-album-btn" *ngIf="isAlbumsFolder && currentView !== 'album-detail'" (click)="openCreateAlbumModal()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    <span>Nuevo álbum</span>
-                </button>
-
-                <div class="view-toggle" role="group" aria-label="Alternar vista" *ngIf="currentView !== 'albums'">
-                    <button type="button" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'"
-                        aria-label="Vista de cuadrícula" title="Vista de cuadrícula">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect width="7" height="7" x="3" y="3" rx="1"/>
-                            <rect width="7" height="7" x="14" y="3" rx="1"/>
-                            <rect width="7" height="7" x="14" y="14" rx="1"/>
-                            <rect width="7" height="7" x="3" y="14" rx="1"/>
-                        </svg>
-                    </button>
-                    <button type="button" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'"
-                        aria-label="Vista de lista" title="Vista de lista">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="8" y1="6" x2="21" y2="6"/>
-                            <line x1="8" y1="12" x2="21" y2="12"/>
-                            <line x1="8" y1="18" x2="21" y2="18"/>
-                            <line x1="3" y1="6" x2="3.01" y2="6"/>
-                            <line x1="3" y1="12" x2="3.01" y2="12"/>
-                            <line x1="3" y1="18" x2="3.01" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Estado de carga -->
-    <div class="state-message" *ngIf="loading">
-        <div class="spinner"></div>
-        <span>Cargando contenido...</span>
-    </div>
-
-    <!-- Estado de error -->
-    <div class="state-message error" *ngIf="errorMessage && !loading">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <span>{{ errorMessage }}</span>
-    </div>
-
-    <!-- Sin resultados para la búsqueda -->
-    <app-empty-state *ngIf="!loading && !errorMessage && showEmpty && isSearching"
-        title="Sin resultados para tu búsqueda."
-        description="Prueba con otro término o borra la búsqueda desde la barra superior."
-        [isSearch]="true">
-    </app-empty-state>
-
-    <!-- Estado vacío de carpeta / vista -->
-    <ng-container *ngIf="!loading && !errorMessage && showEmpty && !isSearching">
-        <!-- Estado vacío especial para Álbumes cuando no hay ninguno creado -->
-        <div class="state-message empty album-empty-box" *ngIf="isAlbumsFolder && currentView !== 'album-detail'">
-            <div class="empty-icon-box album-icon-box">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      }
+      @if (!showWelcome) {
+        <div class="gallery-intro">
+          <div>
+            @if (breadcrumbs.length > 1) {
+              <div class="breadcrumbs-bar">
+                @for (b of breadcrumbs; track b; let last = $last) {
+                  @if (!last) {
+                    <span class="crumb-link" (click)="goToBreadcrumb(b.path)">{{ b.name }}</span>
+                  }
+                  @if (!last) {
+                    <span class="crumb-sep">/</span>
+                  }
+                  @if (last) {
+                    <span class="crumb-current">{{ b.name }}</span>
+                  }
+                }
+              </div>
+            }
+            <h1>{{ pageTitle }}</h1>
+            <p class="muted">{{ pageSubtitle }}</p>
+          </div>
+          <div class="gallery-intro-actions">
+            <!-- Acciones para selección múltiple -->
+            @if (selectedCount > 0) {
+              <div class="selection-actions">
+                <span class="selection-summary">
+                  {{ selectedCount }} seleccionado{{ selectedCount === 1 ? '' : 's' }}
+                </span>
+                <button type="button" class="primary-button compact-btn" (click)="openAddToAlbumModal()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
-                    <path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/>
-                    <circle cx="12" cy="8" r="2"/>
                     <rect width="16" height="16" x="6" y="2" rx="2"/>
-                </svg>
-            </div>
-            <strong class="empty-title">{{ emptyStateTitle }}</strong>
-            <p>{{ emptyStateDescription }}</p>
-            <button type="button" class="primary-button create-first-album-btn" (click)="openCreateAlbumModal()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                <span>Crear mi primer álbum</span>
-            </button>
-        </div>
-
-        <app-empty-state *ngIf="!isAlbumsFolder || currentView === 'album-detail'"
-            [title]="emptyStateTitle"
-            [description]="emptyStateDescription"
-            [isSearch]="false">
-        </app-empty-state>
-    </ng-container>
-
-    <!-- Carpetas de la ruta actual o Álbumes -->
-    <div class="folder-section" *ngIf="!loading && !errorMessage && folderEntries.length > 0">
-        <app-folder-card *ngFor="let entry of folderEntries; trackBy: trackByEntryPath"
-            [name]="entry.title || entry.name"
-            [tone]="folderTone(entry)"
-            [subtitle]="folderSubtitle(entry)"
-            (cardClick)="openEntry(entry)">
-        </app-folder-card>
-    </div>
-
-    <!-- Archivos agrupados por fecha -->
-    <ng-container *ngIf="!loading && !errorMessage && dateGroups.length > 0">
-        <!-- VISTA DE CUADRÍCULA -->
-        <section class="date-group" *ngIf="viewMode === 'grid'">
-            <ng-container *ngFor="let group of dateGroups; trackBy: trackByGroupKey">
-                <h3 class="date-group-header">{{ group.label }}</h3>
-
-                <div class="explorer-grid-cards">
-                    <div class="explorer-item file-card" [class.selected]="isSelected(entry)"
-                        *ngFor="let entry of group.entries; trackBy: trackByEntryPath" (click)="openEntry(entry)">
-
-                        <div class="item-thumb dynamic">
-                            <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
-
-                            <ng-container *ngIf="kindOf(entry) === 'video'">
-                                <img *ngIf="hasThumb(entry)" [src]="videoThumbSrc(entry)" alt=""
-                                    loading="lazy" (error)="onThumbError(entry)" />
-                                <div class="item-icon video" *ngIf="!hasThumb(entry)">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="23 7 16 12 23 17 23 7"/>
-                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                                    </svg>
-                                </div>
-                            </ng-container>
-
-                            <div class="item-icon audio" *ngIf="kindOf(entry) === 'audio'">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 18V5l12-2v13"/>
-                                    <circle cx="6" cy="18" r="3"/>
-                                    <circle cx="18" cy="16" r="3"/>
-                                </svg>
-                            </div>
-
-                            <div class="item-icon document" *ngIf="kindOf(entry) === 'document'">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                </svg>
-                            </div>
-
-                            <span class="play-overlay-icon" *ngIf="kindOf(entry) === 'video'">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5 3 19 12 5 21 5 3"/>
-                                </svg>
-                            </span>
-
-                            <!-- Insignia de favorito -->
-                            <span class="fav-badge" *ngIf="entry.isFavorite">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
-                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                </svg>
-                            </span>
-
-                            <span class="check-badge" *ngIf="isSelected(entry)">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                            </span>
-
-                            <div class="item-overlay">
-                                <!-- Botón Favorito -->
-                                <button type="button" class="overlay-btn fav" [class.on]="entry.isFavorite"
-                                    [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
-                                    (click)="toggleFavorite(entry, $event)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Botón Archivo -->
-                                <button type="button" class="overlay-btn archive" [class.on]="entry.isArchived"
-                                    [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
-                                    (click)="toggleArchive(entry, $event)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect width="20" height="5" x="2" y="3" rx="1"/>
-                                        <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
-                                        <path d="M10 12h4"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Botón Añadir a Álbum (o quitar si estamos en detalle de álbum) -->
-                                <button type="button" class="overlay-btn album-btn" *ngIf="currentView !== 'album-detail'"
-                                    title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
-                                        <rect width="16" height="16" x="6" y="2" rx="2"/>
-                                        <line x1="14" y1="10" x2="14" y2="10"/>
-                                    </svg>
-                                </button>
-                                <button type="button" class="overlay-btn album-remove" *ngIf="currentView === 'album-detail'"
-                                    title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Botón Seleccionar -->
-                                <button type="button" class="overlay-btn" [class.on]="isSelected(entry)" title="Seleccionar" (click)="$event.stopPropagation(); toggleSelect(entry)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Botón Descargar -->
-                                <button type="button" class="overlay-btn" title="Descargar" (click)="$event.stopPropagation(); downloadFile(entry)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7 10 12 15 17 10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-
-                                <!-- Botón Eliminar definitivo -->
-                                <button type="button" class="overlay-btn danger" title="Eliminar de almacenamiento" [disabled]="isDeleting(entry)" (click)="$event.stopPropagation(); deleteFile(entry)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="item-footer">
-                            <p class="item-name" [title]="entry.name">{{ entry.name }}</p>
-                            <span class="item-meta" *ngIf="entry.size">{{ entry.size | fileSize }}</span>
-                        </div>
-                    </div>
-                </div>
-            </ng-container>
-        </section>
-
-        <!-- VISTA DE LISTA -->
-        <section class="date-group" *ngIf="viewMode === 'list'">
-            <ng-container *ngFor="let group of dateGroups; trackBy: trackByGroupKey">
-                <h3 class="date-group-header">{{ group.label }}</h3>
-
-                <div class="list-table" role="table" aria-label="Archivos">
-                    <div class="list-row list-head" role="row">
-                        <span class="list-head-thumb"></span>
-                        <span class="list-name" role="columnheader">Nombre</span>
-                        <span class="list-size" role="columnheader">Tamaño</span>
-                        <span class="list-date" role="columnheader">Fecha</span>
-                        <span class="list-actions" role="columnheader">Acciones</span>
-                    </div>
-
-                    <div class="list-row" [class.selected]="isSelected(entry)" role="row"
-                        *ngFor="let entry of group.entries; trackBy: trackByEntryPath" (click)="openEntry(entry)">
-
-                        <div class="list-thumb">
-                            <img *ngIf="kindOf(entry) === 'image'" [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
-
-                            <span class="list-file-icon video" *ngIf="kindOf(entry) === 'video'">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="23 7 16 12 23 17 23 7"/>
-                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                                </svg>
-                            </span>
-
-                            <span class="list-file-icon audio" *ngIf="kindOf(entry) === 'audio'">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 18V5l12-2v13"/>
-                                    <circle cx="6" cy="18" r="3"/>
-                                    <circle cx="18" cy="16" r="3"/>
-                                </svg>
-                            </span>
-
-                            <span class="list-file-icon document" *ngIf="kindOf(entry) === 'document'">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                </svg>
-                            </span>
-                        </div>
-
-                        <span class="list-name" [title]="entry.name">
-                            {{ entry.name }}
-                            <svg class="list-fav-icon" *ngIf="entry.isFavorite" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                            </svg>
-                        </span>
-                        <span class="list-size">{{ formatSize(entry.size) || '—' }}</span>
-                        <span class="list-date">{{ formatListDate(entry) }}</span>
-
-                        <div class="list-actions" role="cell" (click)="$event.stopPropagation()">
-                            <!-- Favorito -->
-                            <button type="button" class="row-action fav-action" [class.on]="entry.isFavorite"
-                                [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
-                                (click)="toggleFavorite(entry, $event)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                </svg>
-                            </button>
-
-                            <!-- Archivar -->
-                            <button type="button" class="row-action" [class.on]="entry.isArchived"
-                                [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
-                                (click)="toggleArchive(entry, $event)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect width="20" height="5" x="2" y="3" rx="1"/>
-                                    <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
-                                    <path d="M10 12h4"/>
-                                </svg>
-                            </button>
-
-                            <!-- Añadir a álbum (o quitar) -->
-                            <button type="button" class="row-action" *ngIf="currentView !== 'album-detail'"
-                                title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
-                                    <rect width="16" height="16" x="6" y="2" rx="2"/>
-                                    <line x1="14" y1="10" x2="14" y2="10"/>
-                                </svg>
-                            </button>
-                            <button type="button" class="row-action danger" *ngIf="currentView === 'album-detail'"
-                                title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
-
-                            <!-- Descargar -->
-                            <button type="button" class="row-action" title="Descargar" aria-label="Descargar"
-                                (click)="downloadFile(entry)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                            </button>
-
-                            <!-- Seleccionar -->
-                            <button type="button" class="row-action" [class.on]="isSelected(entry)"
-                                title="Seleccionar" aria-label="Seleccionar" (click)="toggleSelect(entry)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                            </button>
-
-                            <!-- Eliminar -->
-                            <button type="button" class="row-action danger" title="Eliminar" aria-label="Eliminar"
-                                [disabled]="isDeleting(entry)" (click)="deleteFile(entry)">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </ng-container>
-        </section>
-    </ng-container>
-
-    <!-- Visor modal -->
-    <div class="viewer-overlay" *ngIf="viewerEntry" (click)="closeViewer()">
-        <div class="viewer-top-bar" (click)="$event.stopPropagation()">
-            <div class="viewer-file-info">
-                <span class="viewer-title">{{ viewerEntry.name }}</span>
-                <span class="viewer-meta" *ngIf="viewerEntry.size">· {{ viewerEntry.size | fileSize }}</span>
-            </div>
-
-            <div class="viewer-controls">
-                <!-- Botón Favorito en visor -->
-                <button type="button" class="viewer-action-btn" [class.active-fav]="viewerEntry.isFavorite"
-                    [title]="viewerEntry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
-                    (click)="toggleFavorite(viewerEntry, $event)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="viewerEntry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                    </svg>
+                    <line x1="14" y1="10" x2="14" y2="10"/>
+                  </svg>
+                  <span>Añadir a álbum</span>
                 </button>
+                <button type="button" class="selection-clear" (click)="clearSelection()">Limpiar</button>
+              </div>
+            }
+            <!-- Botón eliminar álbum actual si estamos dentro de un álbum -->
+            @if (currentView === 'album-detail') {
+              <button type="button" class="danger-outline-button" (click)="deleteCurrentAlbum()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                <span>Eliminar álbum</span>
+              </button>
+            }
+            <!-- Botón nuevo álbum si estamos en la vista de álbumes -->
+            @if (isAlbumsFolder && currentView !== 'album-detail') {
+              <button type="button" class="primary-button create-album-btn" (click)="openCreateAlbumModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Nuevo álbum</span>
+              </button>
+            }
+            @if (currentView !== 'albums') {
+              <div class="view-toggle" role="group" aria-label="Alternar vista">
+                <button type="button" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'"
+                  aria-label="Vista de cuadrícula" title="Vista de cuadrícula">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="7" height="7" x="3" y="3" rx="1"/>
+                    <rect width="7" height="7" x="14" y="3" rx="1"/>
+                    <rect width="7" height="7" x="14" y="14" rx="1"/>
+                    <rect width="7" height="7" x="3" y="14" rx="1"/>
+                  </svg>
+                </button>
+                <button type="button" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'"
+                  aria-label="Vista de lista" title="Vista de lista">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 
-                <!-- Botón Archivar en visor -->
-                <button type="button" class="viewer-action-btn" [class.active-archive]="viewerEntry.isArchived"
-                    [title]="viewerEntry.isArchived ? 'Desarchivar' : 'Archivar'"
-                    (click)="toggleArchive(viewerEntry, $event)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- Estado de carga -->
+  @if (loading) {
+    <div class="state-message">
+      <div class="spinner"></div>
+      <span>Cargando contenido...</span>
+    </div>
+  }
+
+  <!-- Estado de error -->
+  @if (errorMessage && !loading) {
+    <div class="state-message error">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  <!-- Sin resultados para la búsqueda -->
+  @if (!loading && !errorMessage && showEmpty && isSearching) {
+    <app-empty-state
+      title="Sin resultados para tu búsqueda."
+      description="Prueba con otro término o borra la búsqueda desde la barra superior."
+      [isSearch]="true">
+    </app-empty-state>
+  }
+
+  <!-- Estado vacío de carpeta / vista -->
+  @if (!loading && !errorMessage && showEmpty && !isSearching) {
+    <!-- Estado vacío especial para Álbumes cuando no hay ninguno creado -->
+    @if (isAlbumsFolder && currentView !== 'album-detail') {
+      <div class="state-message empty album-empty-box">
+        <div class="empty-icon-box album-icon-box">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
+            <path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/>
+            <circle cx="12" cy="8" r="2"/>
+            <rect width="16" height="16" x="6" y="2" rx="2"/>
+          </svg>
+        </div>
+        <strong class="empty-title">{{ emptyStateTitle }}</strong>
+        <p>{{ emptyStateDescription }}</p>
+        <button type="button" class="primary-button create-first-album-btn" (click)="openCreateAlbumModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Crear mi primer álbum</span>
+        </button>
+      </div>
+    }
+    @if (!isAlbumsFolder || currentView === 'album-detail') {
+      <app-empty-state
+        [title]="emptyStateTitle"
+        [description]="emptyStateDescription"
+        [isSearch]="false">
+      </app-empty-state>
+    }
+  }
+
+  <!-- Carpetas de la ruta actual o Álbumes -->
+  @if (!loading && !errorMessage && folderEntries.length > 0) {
+    <div class="folder-section">
+      @for (entry of folderEntries; track trackByEntryPath($index, entry)) {
+        <app-folder-card
+          [name]="entry.title || entry.name"
+          [tone]="folderTone(entry)"
+          [subtitle]="folderSubtitle(entry)"
+          (cardClick)="openEntry(entry)">
+        </app-folder-card>
+      }
+    </div>
+  }
+
+  <!-- Archivos agrupados por fecha -->
+  @if (!loading && !errorMessage && dateGroups.length > 0) {
+    <!-- VISTA DE CUADRÍCULA -->
+    @if (viewMode === 'grid') {
+      <section class="date-group">
+        @for (group of dateGroups; track trackByGroupKey($index, group)) {
+          <h3 class="date-group-header">{{ group.label }}</h3>
+          <div class="explorer-grid-cards">
+            @for (entry of group.entries; track trackByEntryPath($index, entry)) {
+              <div class="explorer-item file-card" [class.selected]="isSelected(entry)"
+                (click)="openEntry(entry)">
+                <div class="item-thumb dynamic">
+                  @if (kindOf(entry) === 'image') {
+                    <img [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
+                  }
+                  @if (kindOf(entry) === 'video') {
+                    @if (hasThumb(entry)) {
+                      <img [src]="videoThumbSrc(entry)" alt=""
+                        loading="lazy" (error)="onThumbError(entry)" />
+                    }
+                    @if (!hasThumb(entry)) {
+                      <div class="item-icon video">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="23 7 16 12 23 17 23 7"/>
+                          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                      </div>
+                    }
+                  }
+                  @if (kindOf(entry) === 'audio') {
+                    <div class="item-icon audio">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                      </svg>
+                    </div>
+                  }
+                  @if (kindOf(entry) === 'document') {
+                    <div class="item-icon document">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                    </div>
+                  }
+                  @if (kindOf(entry) === 'video') {
+                    <span class="play-overlay-icon">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                      </svg>
+                    </span>
+                  }
+                  <!-- Insignia de favorito -->
+                  @if (entry.isFavorite) {
+                    <span class="fav-badge">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                      </svg>
+                    </span>
+                  }
+                  @if (isSelected(entry)) {
+                    <span class="check-badge">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </span>
+                  }
+                  <div class="item-overlay">
+                    <!-- Botón Favorito -->
+                    <button type="button" class="overlay-btn fav" [class.on]="entry.isFavorite"
+                      [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+                      (click)="toggleFavorite(entry, $event)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                      </svg>
+                    </button>
+                    <!-- Botón Archivo -->
+                    <button type="button" class="overlay-btn archive" [class.on]="entry.isArchived"
+                      [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
+                      (click)="toggleArchive(entry, $event)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect width="20" height="5" x="2" y="3" rx="1"/>
                         <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
                         <path d="M10 12h4"/>
-                    </svg>
-                </button>
-
-                <!-- Botón Añadir a álbum en visor -->
-                <button type="button" class="viewer-action-btn" *ngIf="currentView !== 'album-detail'"
-                    title="Añadir a un álbum" (click)="openAddToAlbumModal(viewerEntry, $event)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
-                        <rect width="16" height="16" x="6" y="2" rx="2"/>
-                        <line x1="14" y1="10" x2="14" y2="10"/>
-                    </svg>
-                </button>
-
-                <!-- Botón Quitar de álbum en visor -->
-                <button type="button" class="viewer-action-btn" *ngIf="currentView === 'album-detail'"
-                    title="Quitar de este álbum" (click)="removeFromCurrentAlbum(viewerEntry, $event)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-
-                <!-- Descargar -->
-                <button type="button" class="viewer-action-btn" title="Descargar archivo original" (click)="downloadFile(viewerEntry)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      </svg>
+                    </button>
+                    <!-- Botón Añadir a Álbum (o quitar si estamos en detalle de álbum) -->
+                    @if (currentView !== 'album-detail') {
+                      <button type="button" class="overlay-btn album-btn"
+                        title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
+                          <rect width="16" height="16" x="6" y="2" rx="2"/>
+                          <line x1="14" y1="10" x2="14" y2="10"/>
+                        </svg>
+                      </button>
+                    }
+                    @if (currentView === 'album-detail') {
+                      <button type="button" class="overlay-btn album-remove"
+                        title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"/>
+                          <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    }
+                    <!-- Botón Seleccionar -->
+                    <button type="button" class="overlay-btn" [class.on]="isSelected(entry)" title="Seleccionar" (click)="$event.stopPropagation(); toggleSelect(entry)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </button>
+                    <!-- Botón Descargar -->
+                    <button type="button" class="overlay-btn" title="Descargar" (click)="$event.stopPropagation(); downloadFile(entry)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                    <!-- Botón Eliminar definitivo -->
+                    <button type="button" class="overlay-btn danger" title="Eliminar de almacenamiento" [disabled]="isDeleting(entry)" (click)="$event.stopPropagation(); deleteFile(entry)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="item-footer">
+                  <p class="item-name" [title]="entry.name">{{ entry.name }}</p>
+                  @if (entry.size) {
+                    <span class="item-meta">{{ entry.size | fileSize }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+    <!-- VISTA DE LISTA -->
+    @if (viewMode === 'list') {
+      <section class="date-group">
+        @for (group of dateGroups; track trackByGroupKey($index, group)) {
+          <h3 class="date-group-header">{{ group.label }}</h3>
+          <div class="list-table" role="table" aria-label="Archivos">
+            <div class="list-row list-head" role="row">
+              <span class="list-head-thumb"></span>
+              <span class="list-name" role="columnheader">Nombre</span>
+              <span class="list-size" role="columnheader">Tamaño</span>
+              <span class="list-date" role="columnheader">Fecha</span>
+              <span class="list-actions" role="columnheader">Acciones</span>
+            </div>
+            @for (entry of group.entries; track trackByEntryPath($index, entry)) {
+              <div class="list-row" [class.selected]="isSelected(entry)" role="row"
+                (click)="openEntry(entry)">
+                <div class="list-thumb">
+                  @if (kindOf(entry) === 'image') {
+                    <img [src]="imageThumbSrc(entry)" alt="" loading="lazy" />
+                  }
+                  @if (kindOf(entry) === 'video') {
+                    <span class="list-file-icon video">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                      </svg>
+                    </span>
+                  }
+                  @if (kindOf(entry) === 'audio') {
+                    <span class="list-file-icon audio">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                      </svg>
+                    </span>
+                  }
+                  @if (kindOf(entry) === 'document') {
+                    <span class="list-file-icon document">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                    </span>
+                  }
+                </div>
+                <span class="list-name" [title]="entry.name">
+                  {{ entry.name }}
+                  @if (entry.isFavorite) {
+                    <svg class="list-fav-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     </svg>
-                </button>
-
-                <!-- Cerrar -->
-                <button type="button" class="viewer-action-btn" title="Cerrar visor (Esc)" (click)="closeViewer()" aria-label="Cerrar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  }
+                </span>
+                <span class="list-size">{{ formatSize(entry.size) || '—' }}</span>
+                <span class="list-date">{{ formatListDate(entry) }}</span>
+                <div class="list-actions" role="cell" (click)="$event.stopPropagation()">
+                  <!-- Favorito -->
+                  <button type="button" class="row-action fav-action" [class.on]="entry.isFavorite"
+                    [title]="entry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+                    (click)="toggleFavorite(entry, $event)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" [attr.fill]="entry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    </svg>
+                  </button>
+                  <!-- Archivar -->
+                  <button type="button" class="row-action" [class.on]="entry.isArchived"
+                    [title]="entry.isArchived ? 'Desarchivar' : 'Archivar'"
+                    (click)="toggleArchive(entry, $event)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="20" height="5" x="2" y="3" rx="1"/>
+                      <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
+                      <path d="M10 12h4"/>
+                    </svg>
+                  </button>
+                  <!-- Añadir a álbum (o quitar) -->
+                  @if (currentView !== 'album-detail') {
+                    <button type="button" class="row-action"
+                      title="Añadir a un álbum" (click)="openAddToAlbumModal(entry, $event)">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
+                        <rect width="16" height="16" x="6" y="2" rx="2"/>
+                        <line x1="14" y1="10" x2="14" y2="10"/>
+                      </svg>
+                    </button>
+                  }
+                  @if (currentView === 'album-detail') {
+                    <button type="button" class="row-action danger"
+                      title="Quitar de este álbum" (click)="removeFromCurrentAlbum(entry, $event)">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="viewer-content" (click)="$event.stopPropagation()">
-            <div class="viewer-loader" *ngIf="viewerLoading">
-                <div class="spinner"></div>
-                <span>Cargando en calidad original...</span>
-            </div>
-
-            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry.name"
-                class="viewer-media viewer-image"
-                [style.display]="viewerLoading ? 'none' : 'block'"
-                (load)="onViewerMediaLoad()" (error)="onViewerMediaError()" />
-
-            <video *ngIf="viewerKind === 'video'" [src]="viewerUrl" class="viewer-media viewer-video" controls
-                autoplay
-                (loadeddata)="onViewerMediaLoad()" (error)="onViewerMediaError()"></video>
-
-            <div class="viewer-audio-box" *ngIf="viewerKind === 'audio'">
-                <audio [src]="viewerUrl" class="viewer-audio" controls autoplay></audio>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para crear nuevo álbum -->
-    <div class="modal-overlay" *ngIf="showCreateAlbumModal" (click)="closeCreateAlbumModal()">
-        <div class="modal-content album-modal" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <h2>Crear nuevo álbum</h2>
-                <button type="button" class="modal-close-btn" (click)="closeCreateAlbumModal()" aria-label="Cerrar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <p class="subtitle">Ingresa el título para el álbum. Podrás organizar fotos y vídeos en él sin duplicar almacenamiento.</p>
-
-            <form (ngSubmit)="submitCreateAlbum()">
-                <div class="form-group">
-                    <label for="albumTitle">Título del álbum</label>
-                    <input type="text" id="albumTitle" [(ngModel)]="newAlbumTitle" name="albumTitle"
-                        placeholder="Ej. Vacaciones 2026, Familia, Favoritas..."
-                        [disabled]="creatingAlbum" autofocus required autocomplete="off" />
-                </div>
-
-                <div class="modal-error-text" *ngIf="albumErrorMessage">
-                    {{ albumErrorMessage }}
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-button" (click)="closeCreateAlbumModal()" [disabled]="creatingAlbum">
-                        Cancelar
+                      </svg>
                     </button>
-                    <button type="submit" class="submit-button" [disabled]="creatingAlbum || !newAlbumTitle.trim()">
-                        <span *ngIf="!creatingAlbum">Crear álbum</span>
-                        <span *ngIf="creatingAlbum">Creando...</span>
-                    </button>
+                  }
+                  <!-- Descargar -->
+                  <button type="button" class="row-action" title="Descargar" aria-label="Descargar"
+                    (click)="downloadFile(entry)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </button>
+                  <!-- Seleccionar -->
+                  <button type="button" class="row-action" [class.on]="isSelected(entry)"
+                    title="Seleccionar" aria-label="Seleccionar" (click)="toggleSelect(entry)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </button>
+                  <!-- Eliminar -->
+                  <button type="button" class="row-action danger" title="Eliminar" aria-label="Eliminar"
+                    [disabled]="isDeleting(entry)" (click)="deleteFile(entry)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
                 </div>
-            </form>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+
+  <!-- Visor modal -->
+  @if (viewerEntry) {
+    <div class="viewer-overlay" (click)="closeViewer()">
+      <div class="viewer-top-bar" (click)="$event.stopPropagation()">
+        <div class="viewer-file-info">
+          <span class="viewer-title">{{ viewerEntry.name }}</span>
+          @if (viewerEntry.size) {
+            <span class="viewer-meta">· {{ viewerEntry.size | fileSize }}</span>
+          }
         </div>
+        <div class="viewer-controls">
+          <!-- Botón Favorito en visor -->
+          <button type="button" class="viewer-action-btn" [class.active-fav]="viewerEntry.isFavorite"
+            [title]="viewerEntry.isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+            (click)="toggleFavorite(viewerEntry, $event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="viewerEntry.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </button>
+          <!-- Botón Archivar en visor -->
+          <button type="button" class="viewer-action-btn" [class.active-archive]="viewerEntry.isArchived"
+            [title]="viewerEntry.isArchived ? 'Desarchivar' : 'Archivar'"
+            (click)="toggleArchive(viewerEntry, $event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="5" x="2" y="3" rx="1"/>
+              <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
+              <path d="M10 12h4"/>
+            </svg>
+          </button>
+          <!-- Botón Añadir a álbum en visor -->
+          @if (currentView !== 'album-detail') {
+            <button type="button" class="viewer-action-btn"
+              title="Añadir a un álbum" (click)="openAddToAlbumModal(viewerEntry, $event)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 22H4a2 2 0 0 1-2-2V6"/>
+                <rect width="16" height="16" x="6" y="2" rx="2"/>
+                <line x1="14" y1="10" x2="14" y2="10"/>
+              </svg>
+            </button>
+          }
+          <!-- Botón Quitar de álbum en visor -->
+          @if (currentView === 'album-detail') {
+            <button type="button" class="viewer-action-btn"
+              title="Quitar de este álbum" (click)="removeFromCurrentAlbum(viewerEntry, $event)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          }
+          <!-- Descargar -->
+          <button type="button" class="viewer-action-btn" title="Descargar archivo original" (click)="downloadFile(viewerEntry)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <!-- Cerrar -->
+          <button type="button" class="viewer-action-btn" title="Cerrar visor (Esc)" (click)="closeViewer()" aria-label="Cerrar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="viewer-content" (click)="$event.stopPropagation()">
+        @if (viewerLoading) {
+          <div class="viewer-loader">
+            <div class="spinner"></div>
+            <span>Cargando en calidad original...</span>
+          </div>
+        }
+        @if (viewerKind === 'image') {
+          <img [src]="viewerUrl" [alt]="viewerEntry.name"
+            class="viewer-media viewer-image"
+            [style.display]="viewerLoading ? 'none' : 'block'"
+            (load)="onViewerMediaLoad()" (error)="onViewerMediaError()" />
+        }
+        @if (viewerKind === 'video') {
+          <video [src]="viewerUrl" class="viewer-media viewer-video" controls
+            autoplay
+          (loadeddata)="onViewerMediaLoad()" (error)="onViewerMediaError()"></video>
+        }
+        @if (viewerKind === 'audio') {
+          <div class="viewer-audio-box">
+            <audio [src]="viewerUrl" class="viewer-audio" controls autoplay></audio>
+          </div>
+        }
+      </div>
     </div>
+  }
+
+  <!-- Modal para crear nuevo álbum -->
+  @if (showCreateAlbumModal) {
+    <div class="modal-overlay" (click)="closeCreateAlbumModal()">
+      <div class="modal-content album-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Crear nuevo álbum</h2>
+          <button type="button" class="modal-close-btn" (click)="closeCreateAlbumModal()" aria-label="Cerrar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <p class="subtitle">Ingresa el título para el álbum. Podrás organizar fotos y vídeos en él sin duplicar almacenamiento.</p>
+        <form (ngSubmit)="submitCreateAlbum()">
+          <div class="form-group">
+            <label for="albumTitle">Título del álbum</label>
+            <input type="text" id="albumTitle" [(ngModel)]="newAlbumTitle" name="albumTitle"
+              placeholder="Ej. Vacaciones 2026, Familia, Favoritas..."
+              [disabled]="creatingAlbum" autofocus required autocomplete="off" />
+            </div>
+            @if (albumErrorMessage) {
+              <div class="modal-error-text">
+                {{ albumErrorMessage }}
+              </div>
+            }
+            <div class="modal-buttons">
+              <button type="button" class="cancel-button" (click)="closeCreateAlbumModal()" [disabled]="creatingAlbum">
+                Cancelar
+              </button>
+              <button type="submit" class="submit-button" [disabled]="creatingAlbum || !newAlbumTitle.trim()">
+                @if (!creatingAlbum) {
+                  <span>Crear álbum</span>
+                }
+                @if (creatingAlbum) {
+                  <span>Creando...</span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
 
     <!-- Modal para añadir fotos a un álbum -->
-    <div class="modal-overlay" *ngIf="showAddToAlbumModal" (click)="closeAddToAlbumModal()">
+    @if (showAddToAlbumModal) {
+      <div class="modal-overlay" (click)="closeAddToAlbumModal()">
         <div class="modal-content album-modal" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <h2>Añadir a un álbum</h2>
-                <button type="button" class="modal-close-btn" (click)="closeAddToAlbumModal()" aria-label="Cerrar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+          <div class="modal-header">
+            <h2>Añadir a un álbum</h2>
+            <button type="button" class="modal-close-btn" (click)="closeAddToAlbumModal()" aria-label="Cerrar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <p class="subtitle">
+            Selecciona a qué álbum deseas vincular
+            <strong>{{ entryToAddToAlbum ? entryToAddToAlbum.name : (selectedCount + ' archivos seleccionados') }}</strong>.
+          </p>
+          <form (ngSubmit)="submitAddToAlbum()">
+            @if (availableAlbums.length > 0) {
+              <div class="form-group">
+                <label for="existingAlbum">Elige un álbum existente</label>
+                <select id="existingAlbum" [(ngModel)]="selectedTargetAlbum" name="selectedTargetAlbum" [disabled]="addingToAlbum">
+                  @for (alb of availableAlbums; track alb) {
+                    <option [value]="alb.title">
+                      {{ alb.title }} ({{ alb.itemCount }} archivos)
+                    </option>
+                  }
+                </select>
+              </div>
+            }
+            <div class="form-group">
+              <label for="newOrManualAlbum">O escribe el nombre de un nuevo álbum</label>
+              <input type="text" id="newOrManualAlbum" [(ngModel)]="selectedTargetAlbum" name="manualAlbum"
+                placeholder="Nombre del álbum..." [disabled]="addingToAlbum" autocomplete="off" />
+              </div>
+              @if (addToAlbumError) {
+                <div class="modal-error-text">
+                  {{ addToAlbumError }}
+                </div>
+              }
+              <div class="modal-buttons">
+                <button type="button" class="cancel-button" (click)="closeAddToAlbumModal()" [disabled]="addingToAlbum">
+                  Cancelar
                 </button>
-            </div>
-            <p class="subtitle">
-                Selecciona a qué álbum deseas vincular 
-                <strong>{{ entryToAddToAlbum ? entryToAddToAlbum.name : (selectedCount + ' archivos seleccionados') }}</strong>.
-            </p>
-
-            <form (ngSubmit)="submitAddToAlbum()">
-                <div class="form-group" *ngIf="availableAlbums.length > 0">
-                    <label for="existingAlbum">Elige un álbum existente</label>
-                    <select id="existingAlbum" [(ngModel)]="selectedTargetAlbum" name="selectedTargetAlbum" [disabled]="addingToAlbum">
-                        <option *ngFor="let alb of availableAlbums" [value]="alb.title">
-                            {{ alb.title }} ({{ alb.itemCount }} archivos)
-                        </option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="newOrManualAlbum">O escribe el nombre de un nuevo álbum</label>
-                    <input type="text" id="newOrManualAlbum" [(ngModel)]="selectedTargetAlbum" name="manualAlbum"
-                        placeholder="Nombre del álbum..." [disabled]="addingToAlbum" autocomplete="off" />
-                </div>
-
-                <div class="modal-error-text" *ngIf="addToAlbumError">
-                    {{ addToAlbumError }}
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-button" (click)="closeAddToAlbumModal()" [disabled]="addingToAlbum">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="submit-button" [disabled]="addingToAlbum || !selectedTargetAlbum.trim()">
-                        <span *ngIf="!addingToAlbum">Guardar en álbum</span>
-                        <span *ngIf="addingToAlbum">Guardando...</span>
-                    </button>
-                </div>
+                <button type="submit" class="submit-button" [disabled]="addingToAlbum || !selectedTargetAlbum.trim()">
+                  @if (!addingToAlbum) {
+                    <span>Guardar en álbum</span>
+                  }
+                  @if (addingToAlbum) {
+                    <span>Guardando...</span>
+                  }
+                </button>
+              </div>
             </form>
+          </div>
         </div>
+      }
     </div>
-</div>

@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-folder-card',
-  templateUrl: './folder-card.component.html',
-  styleUrls: ['./folder-card.component.css']
+    selector: 'app-folder-card',
+    templateUrl: './folder-card.component.html',
+    styleUrls: ['./folder-card.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class FolderCardComponent {
   @Input() name = '';

@@ -1,4 +1,7 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { provideRouter } from '@angular/router';
 
 import { HeaderComponent } from './header.component';
 
@@ -8,7 +11,11 @@ describe('HeaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderComponent]
+      declarations: [HeaderComponent],
+      imports: [FormsModule],
+      providers: [provideRouter([])],
+      // Test superficial: <app-settings-menu> (componente hijo) no se renderiza aquí.
+      schemas: [NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;

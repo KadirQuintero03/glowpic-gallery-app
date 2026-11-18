@@ -1,12 +1,14 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth.service';
 import { ThemeService } from '@core/services/theme/theme.service';
 
 @Component({
-  selector: 'app-settings-menu',
-  templateUrl: './settings-menu.component.html',
-  styleUrls: ['./settings-menu.component.css'],
+    selector: 'app-settings-menu',
+    templateUrl: './settings-menu.component.html',
+    styleUrls: ['./settings-menu.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class SettingsMenuComponent {
   open = false;
