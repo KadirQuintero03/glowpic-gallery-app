@@ -1,27 +1,29 @@
 <main class="app-shell">
-    <app-header
-        (StateConfigTrue)="configState = !!$event"
-        (showUserProfile)="userProfileState = !!$event"
-        (menuClick)="setNavOpen(!navOpen)"
+  <app-header
+    (StateConfigTrue)="configState = !!$event"
+    (showUserProfile)="userProfileState = !!$event"
+    (menuClick)="setNavOpen(!navOpen)"
     />
 
-    <div class="app-body">
-        <app-nav [open]="navOpen" (closeNav)="setNavOpen(false)" />
+  <div class="app-body">
+    <app-nav [open]="navOpen" (closeNav)="setNavOpen(false)" />
 
-        <div class="app-content">
-            <router-outlet></router-outlet>
-        </div>
+    <div class="app-content">
+      <router-outlet></router-outlet>
     </div>
+  </div>
 
+  @if (configState) {
     <app-user-config
-        *ngIf="configState"
-        (StateConfigFalse)="configState = !!$event"
-    />
+      (StateConfigFalse)="configState = !!$event"
+      />
+  }
 
-    <!-- Modal del perfil de usuario -->
+  <!-- Modal del perfil de usuario -->
+  @if (userProfileState) {
     <app-user-profile
-        *ngIf="userProfileState"
-        [user]="usuario"
-        (closeProfile)="userProfileState = false">
+      [user]="usuario"
+      (closeProfile)="userProfileState = false">
     </app-user-profile>
+  }
 </main>
