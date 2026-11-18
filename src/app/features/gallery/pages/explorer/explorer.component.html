@@ -226,7 +226,7 @@
                 </button>
             </div>
 
-            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry?.name || ''"
+            <img *ngIf="viewerKind === 'image'" [src]="viewerUrl" [alt]="viewerEntry.name"
                 class="viewer-media viewer-image" />
 
             <video *ngIf="viewerKind === 'video'" [src]="viewerUrl" class="viewer-media viewer-video" controls
