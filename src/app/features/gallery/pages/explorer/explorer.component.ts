@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { firstValueFrom, Subscription } from "rxjs";
 import { DateGroup, ExplorerEntry, FileKind, ViewMode } from "@core/models/explorer.model";
@@ -14,6 +14,7 @@ import { formatSize } from "@shared/utils/file-size.utils";
     selector: "app-explorer",
     templateUrl: "./explorer.component.html",
     styleUrls: ["./explorer.component.css"],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ExplorerComponent implements OnInit, OnDestroy {

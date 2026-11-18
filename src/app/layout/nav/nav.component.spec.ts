@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -12,7 +12,7 @@ describe('NavComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [NavComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideRouter([]), provideHttpClient(withXhr()), provideHttpClientTesting()]
     });
     fixture = TestBed.createComponent(NavComponent);
     component = fixture.componentInstance;
