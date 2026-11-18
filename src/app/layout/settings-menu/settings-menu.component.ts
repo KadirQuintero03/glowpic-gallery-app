@@ -4,9 +4,10 @@ import { AuthService } from '@core/services/auth/auth.service';
 import { ThemeService } from '@core/services/theme/theme.service';
 
 @Component({
-  selector: 'app-settings-menu',
-  templateUrl: './settings-menu.component.html',
-  styleUrls: ['./settings-menu.component.css'],
+    selector: 'app-settings-menu',
+    templateUrl: './settings-menu.component.html',
+    styleUrls: ['./settings-menu.component.css'],
+    standalone: false
 })
 export class SettingsMenuComponent {
   open = false;

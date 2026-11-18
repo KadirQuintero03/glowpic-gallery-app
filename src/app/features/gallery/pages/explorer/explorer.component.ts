@@ -14,6 +14,7 @@ import { formatSize } from "@shared/utils/file-size.utils";
     selector: "app-explorer",
     templateUrl: "./explorer.component.html",
     styleUrls: ["./explorer.component.css"],
+    standalone: false
 })
 export class ExplorerComponent implements OnInit, OnDestroy {
     currentPath = "";

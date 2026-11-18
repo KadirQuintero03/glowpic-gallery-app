@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-folder-card',
-  templateUrl: './folder-card.component.html',
-  styleUrls: ['./folder-card.component.css']
+    selector: 'app-folder-card',
+    templateUrl: './folder-card.component.html',
+    styleUrls: ['./folder-card.component.css'],
+    standalone: false
 })
 export class FolderCardComponent {
   @Input() name = '';

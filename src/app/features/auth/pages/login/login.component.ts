@@ -5,9 +5,10 @@ import { AuthService } from "@core/services/auth/auth.service";
 type LoginStep = "phone" | "code";
 
 @Component({
-  selector: "app-login",
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"],
+    selector: "app-login",
+    templateUrl: "./login.component.html",
+    styleUrls: ["./login.component.css"],
+    standalone: false
 })
 export class LoginComponent {
   step: LoginStep = "phone";

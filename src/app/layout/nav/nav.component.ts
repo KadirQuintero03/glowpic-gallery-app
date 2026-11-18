@@ -5,9 +5,10 @@ import { AuthService } from '@core/services/auth/auth.service';
 import { UsageService } from '@core/services/usage/usage.service';
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css'],
+    selector: 'app-nav',
+    templateUrl: './nav.component.html',
+    styleUrls: ['./nav.component.css'],
+    standalone: false
 })
 export class NavComponent implements OnInit, OnDestroy {
   @Input() open = false;
